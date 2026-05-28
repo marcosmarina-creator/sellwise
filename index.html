@@ -287,41 +287,35 @@
     display: flex; align-items: center; justify-content: center;
   }
   .auth-box {
-    display: flex; flex-direction: column; align-items: center;
-    width: 240px; padding: 28px 20px 24px;
-    background: #111a14; border: 1px solid rgba(34,197,94,0.18);
-    border-radius: 16px;
+    background: #111a14; border: 1px solid rgba(34,197,94,0.2);
+    border-radius: 16px; padding: 36px 32px;
+    width: 320px; display: flex; flex-direction: column; align-items: center;
   }
-  .auth-logo { display: flex; align-items: center; gap: 8px; margin-bottom: 20px; }
-  .auth-logo-icon { width: 26px; height: 26px; background: #16a34a; border-radius: 6px; display: flex; align-items: center; justify-content: center; }
-  .auth-logo-icon svg { width: 13px; height: 13px; fill: #fff; }
-  .auth-logo-name { font-family: 'Geist', sans-serif; font-size: 16px; font-weight: 700; color: #e8f5ec; letter-spacing: -0.4px; }
+  .auth-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; }
+  .auth-logo-icon { width: 34px; height: 34px; background: #16a34a; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+  .auth-logo-icon svg { width: 17px; height: 17px; fill: #fff; }
+  .auth-logo-name { font-family: 'Geist', sans-serif; font-size: 19px; font-weight: 700; color: #e8f5ec; letter-spacing: -0.4px; }
   .auth-logo-name span { color: #4ade80; }
-  .auth-hint { font-size: 11px; color: #506858; margin-bottom: 16px; font-family: 'Geist', sans-serif; }
-  .pin-dots { display: flex; gap: 10px; margin-bottom: 20px; }
-  .pin-dot {
-    width: 10px; height: 10px; border-radius: 50%;
-    border: 1.5px solid #506858; background: transparent;
-    transition: all 0.15s;
+  .auth-label { font-size: 11px; font-weight: 500; color: #506858; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; align-self: flex-start; }
+  .auth-input {
+    font-family: 'Geist', sans-serif; font-size: 15px;
+    color: #e8f5ec; background: #0a0f0c;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px; padding: 10px 13px;
+    width: 100%; outline: none; margin-bottom: 12px;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    letter-spacing: 0.15em;
   }
-  .pin-dot.filled { background: #22c55e; border-color: #22c55e; }
-  .pin-dot.error { background: #f87171; border-color: #f87171; }
-  .pin-keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; width: 100%; }
-  .pin-key {
-    font-family: 'Geist', sans-serif; font-size: 16px; font-weight: 500;
-    color: #e8f5ec; background: #1a2b1c;
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 9px; padding: 11px 8px;
-    cursor: pointer; transition: all 0.12s;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    line-height: 1; user-select: none; -webkit-tap-highlight-color: transparent;
+  .auth-input:focus { border-color: #22c55e; box-shadow: 0 0 0 3px rgba(34,197,94,0.12); }
+  .auth-btn {
+    font-family: 'Geist', sans-serif; font-size: 14px; font-weight: 600;
+    padding: 10px; width: 100%; border-radius: 8px;
+    background: #15803d; border: 1px solid #16a34a; color: #fff;
+    cursor: pointer; transition: background 0.15s; margin-bottom: 10px;
   }
-  .pin-key:active { background: rgba(34,197,94,0.12); border-color: #22c55e55; transform: scale(0.93); }
-  .pin-key .pin-key-sub { font-size: 7px; color: #3d5445; letter-spacing: 0.1em; margin-top: 2px; font-weight: 600; }
-  .pin-key-empty { background: transparent !important; border-color: transparent !important; cursor: default; }
-  .pin-key-empty:active { transform: none !important; }
-  .pin-key-del { font-size: 17px; }
-  .auth-error-msg { font-size: 11px; color: #f87171; margin-top: 10px; font-family: 'Geist', sans-serif; min-height: 16px; }
+  .auth-btn:hover { background: #166534; }
+  .auth-error { font-size: 12px; color: #f87171; display: none; text-align: center; }
+  .auth-error.show { display: block; }
 </style>
 
 <div id="auth-overlay">
@@ -332,81 +326,36 @@
       </div>
       <span class="auth-logo-name">Sell<span>wise</span></span>
     </div>
-    <div class="auth-hint">Digite seu PIN de acesso</div>
-    <div class="pin-dots" id="pin-dots">
-      <div class="pin-dot" id="d0"></div>
-      <div class="pin-dot" id="d1"></div>
-      <div class="pin-dot" id="d2"></div>
-      <div class="pin-dot" id="d3"></div>
-      <div class="pin-dot" id="d4"></div>
-      <div class="pin-dot" id="d5"></div>
-    </div>
-    <div class="pin-keypad">
-      <button class="pin-key" onclick="pinPress('1')">1<span class="pin-key-sub"></span></button>
-      <button class="pin-key" onclick="pinPress('2')">2<span class="pin-key-sub">ABC</span></button>
-      <button class="pin-key" onclick="pinPress('3')">3<span class="pin-key-sub">DEF</span></button>
-      <button class="pin-key" onclick="pinPress('4')">4<span class="pin-key-sub">GHI</span></button>
-      <button class="pin-key" onclick="pinPress('5')">5<span class="pin-key-sub">JKL</span></button>
-      <button class="pin-key" onclick="pinPress('6')">6<span class="pin-key-sub">MNO</span></button>
-      <button class="pin-key" onclick="pinPress('7')">7<span class="pin-key-sub">PQRS</span></button>
-      <button class="pin-key" onclick="pinPress('8')">8<span class="pin-key-sub">TUV</span></button>
-      <button class="pin-key" onclick="pinPress('9')">9<span class="pin-key-sub">WXYZ</span></button>
-      <button class="pin-key pin-key-empty" disabled></button>
-      <button class="pin-key" onclick="pinPress('0')">0</button>
-      <button class="pin-key pin-key-del" onclick="pinDel()">⌫</button>
-    </div>
-    <div class="auth-error-msg" id="auth-error-msg"></div>
+    <div class="auth-label">Senha de acesso</div>
+    <input class="auth-input" type="password" id="auth-input" placeholder="••••••" onkeydown="if(event.key==='Enter')checkAuth()" autofocus />
+    <button class="auth-btn" onclick="checkAuth()">Entrar</button>
+    <div class="auth-error" id="auth-error">Senha incorreta. Tente novamente.</div>
   </div>
 </div>
 
 <script>
   (function() {
-    const PIN = '000000';
+    const H = '61f9dc872774a4ba7e0034069aca7208febce8fae5bd55edf78bdc7a3286982e';
     const KEY = 'sw_auth';
-    let entered = '';
-
     if (sessionStorage.getItem(KEY) === '1') {
       document.getElementById('auth-overlay').style.display = 'none';
     }
-
-    function updateDots() {
-      for (let i = 0; i < 6; i++) {
-        document.getElementById('d' + i).classList.toggle('filled', i < entered.length);
-      }
+    async function hashStr(str) {
+      const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
     }
-
-    function shakeError() {
-      const dots = document.querySelectorAll('.pin-dot');
-      dots.forEach(d => { d.classList.remove('filled'); d.classList.add('error'); });
-      document.getElementById('auth-error-msg').textContent = 'PIN incorreto. Tente novamente.';
-      setTimeout(() => {
-        dots.forEach(d => d.classList.remove('error'));
-        document.getElementById('auth-error-msg').textContent = '';
-        entered = '';
-        updateDots();
-      }, 1200);
-    }
-
-    window.pinPress = function(n) {
-      if (entered.length >= 6) return;
-      entered += n;
-      updateDots();
-      if (entered.length === 6) {
-        setTimeout(() => {
-          if (entered === PIN) {
-            sessionStorage.setItem(KEY, '1');
-            document.getElementById('auth-overlay').style.display = 'none';
-          } else {
-            shakeError();
-          }
-        }, 120);
-      }
-    };
-
-    window.pinDel = function() {
-      if (entered.length > 0) {
-        entered = entered.slice(0, -1);
-        updateDots();
+    window.checkAuth = async function() {
+      const val = document.getElementById('auth-input').value;
+      const hashed = await hashStr(val);
+      if (hashed === H) {
+        sessionStorage.setItem(KEY, '1');
+        document.getElementById('auth-overlay').style.display = 'none';
+      } else {
+        const err = document.getElementById('auth-error');
+        err.classList.add('show');
+        document.getElementById('auth-input').value = '';
+        document.getElementById('auth-input').focus();
+        setTimeout(() => err.classList.remove('show'), 3000);
       }
     };
   })();
