@@ -1409,72 +1409,96 @@ function copiarDescricao(){
 
   // ===== ADMIN =====
   async function loadAdminPanel() {
-    const tbody=document.getElementById('admin-tbody');
-    tbody.innerHTML='<tr><td colspan="6"><div class="empty-state">Carregando usuários...</div></td></tr>';
+    const tbody = document.getElementById('admin-tbody');
+    tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state">Carregando usuários...</div></td></tr>';
 
-    // First verify admin status in DB
-    const {data:myProfile}=await sb.from('profiles').select('role').eq('id',currentUser.id).single();
-    if(!myProfile||myProfile.role!=='admin'){
-      // Try to set admin if email matches
-      const emailHash=await hashStr(currentUser.email.toLowerCase());
-      if(emailHash===ADMIN_H){
-        await sb.from('profiles').update({role:'admin'}).eq('id',currentUser.id);
-        // Reload after updating role
-        return setTimeout(loadAdminPanel, 300);
-      } else {
-        tbody.innerHTML='<tr><td colspan="6"><div class="empty-state">⛔ Acesso negado. Somente admins podem ver esta página.</div></td></tr>';
-        return;
-      }
+    // Ensure current user has admin role in DB
+    const { data: myProfile, error: myErr } = await sb
+      .from('profiles').select('role').eq('id', currentUser.id).single();
+
+    if (myErr || !myProfile) {
+      tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state" style="color:var(--red)">Erro ao verificar permissões.</div></td></tr>';
+      return;
     }
 
-    const {data:profiles,error}=await sb.from('profiles').select('*').order('created_at',{ascending:true});
-    if(error){
-      tbody.innerHTML=`<tr><td colspan="6"><div class="empty-state" style="color:var(--red)">
-        ❌ Erro ao carregar usuários<br>
-        <small style="color:var(--text-muted);display:block;margin-top:6px">${error.message}</small>
-        <small style="color:var(--text-muted);display:block;margin-top:4px">Code: ${error.code||'unknown'}</small>
+    // If not admin in DB yet, try to promote
+    if (myProfile.role !== 'admin') {
+      const emailHash = await hashStr(currentUser.email.toLowerCase());
+      if (emailHash === ADMIN_H) {
+        await sb.from('profiles').update({ role: 'admin' }).eq('id', currentUser.id);
+        setTimeout(loadAdminPanel, 400);
+        return;
+      }
+      tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state">⛔ Acesso negado.</div></td></tr>';
+      return;
+    }
+
+    // Fetch all profiles — RLS allows admin to see all via is_admin()
+    const { data: profiles, error } = await sb
+      .from('profiles')
+      .select('id, username, role, status, avatar, created_at')
+      .order('created_at', { ascending: true });
+
+    if (error) {
+      // Fallback: fetch own profile at minimum
+      tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state" style="color:var(--red)">
+        ❌ Erro RLS: ${error.message}<br>
+        <small style="color:var(--text-muted)">Rode o SQL de correção no Supabase e recarregue.</small>
       </div></td></tr>`;
       return;
     }
-    if(!profiles||profiles.length===0){
-      tbody.innerHTML='<tr><td colspan="6"><div class="empty-state">Nenhum usuário encontrado ainda.</div></td></tr>';
+
+    const total = profiles.length;
+    const admins = profiles.filter(p => p.role === 'admin').length;
+    const ativos = profiles.filter(p => p.status !== 'inactive').length;
+    const inativos = profiles.filter(p => p.status === 'inactive').length;
+
+    document.getElementById('admin-total').textContent = total;
+    document.getElementById('admin-admins').textContent = admins;
+    document.getElementById('admin-ativos').textContent = ativos;
+    document.getElementById('admin-inativos').textContent = inativos;
+
+    if (!profiles.length) {
+      tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state">Nenhum usuário encontrado.</div></td></tr>';
       return;
     }
-    const total=profiles.length;
-    const admins=profiles.filter(p=>p.role==='admin').length;
-    const ativos=profiles.filter(p=>p.status!=='inactive').length;
-    const inativos=profiles.filter(p=>p.status==='inactive').length;
-    document.getElementById('admin-total').textContent=total;
-    document.getElementById('admin-admins').textContent=admins;
-    document.getElementById('admin-ativos').textContent=ativos;
-    document.getElementById('admin-inativos').textContent=inativos;
-    if(!profiles.length){tbody.innerHTML='<tr><td colspan="6"><div class="empty-state">Nenhum usuário.</div></td></tr>';return;}
-    tbody.innerHTML=profiles.map(p=>{
-      const avKey=p.avatar||'av1';
+
+    tbody.innerHTML = profiles.map(p => {
+      const avKey = p.avatar || 'av1';
       let avHtml;
-      if(avKey.startsWith('http')){
-        avHtml=`<img src="${avKey}" style="width:32px;height:32px;border-radius:50%;object-fit:cover">`;
+      if (avKey.startsWith('http')) {
+        avHtml = `<img src="${avKey}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0">`;
       } else {
-        const [,emoji,color]=getAvatarData(avKey);
-        avHtml=`<div style="width:32px;height:32px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">${emoji}</div>`;
+        const [,emoji,color] = getAvatarData(avKey);
+        avHtml = `<div style="width:32px;height:32px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">${emoji}</div>`;
       }
-      const isMe=currentUser&&p.id===currentUser.id;
-      const roleClass=p.role==='admin'?'role-admin':'role-user';
-      const roleLabel=p.role==='admin'?'⭐ Admin':'Usuário';
-      const date=new Date(p.created_at).toLocaleDateString('pt-BR');
-      const statusColor=p.status==='inactive'?'var(--red)':'var(--green-400)';
-      const statusLabel=p.status==='inactive'?'● Inativo':'● Ativo';
+      const isMe = currentUser && p.id === currentUser.id;
+      const roleClass = p.role === 'admin' ? 'role-admin' : 'role-user';
+      const roleLabel = p.role === 'admin' ? '⭐ Admin' : 'Usuário';
+      const date = new Date(p.created_at).toLocaleDateString('pt-BR');
+      const statusColor = p.status === 'inactive' ? 'var(--red)' : 'var(--green-400)';
+      const statusLabel = p.status === 'inactive' ? '● Inativo' : '● Ativo';
+
       return `<tr>
-        <td><div style="display:flex;align-items:center;gap:8px">${avHtml}<span style="font-weight:500">${p.username||'—'}${isMe?' <span style="font-size:10px;color:var(--text-muted)">(você)</span>':''}</span></div></td>
+        <td><div style="display:flex;align-items:center;gap:8px">
+          ${avHtml}
+          <span style="font-weight:500">${p.username || '—'}${isMe ? ' <span style="font-size:10px;color:var(--text-muted)">(você)</span>' : ''}</span>
+        </div></td>
         <td style="color:var(--text-muted);font-size:12px">${p.id.slice(0,8)}...</td>
         <td><span class="role-badge ${roleClass}">${roleLabel}</span></td>
         <td style="font-size:12px;font-weight:500;color:${statusColor}">${statusLabel}</td>
         <td style="color:var(--text-muted);font-size:12px">${date}</td>
         <td><div style="display:flex;gap:6px;flex-wrap:wrap">
-          ${!isMe?`
-            <button class="btn btn-sm" onclick="toggleRole('${p.id}','${p.role}')" style="font-size:11px;padding:4px 10px">${p.role==='admin'?'→ Usuário':'→ Admin'}</button>
-            <button class="btn btn-sm" onclick="toggleStatus('${p.id}','${p.status}')" style="font-size:11px;padding:4px 10px;color:${p.status==='inactive'?'var(--green-400)':'var(--red)'}">${p.status==='inactive'?'Ativar':'Desativar'}</button>
-          `:'<span style="font-size:11px;color:var(--text-muted)">—</span>'}
+          ${!isMe ? `
+            <button class="btn btn-sm" onclick="toggleRole('${p.id}','${p.role}')"
+              style="font-size:11px;padding:4px 10px">
+              ${p.role === 'admin' ? '→ Usuário' : '→ Admin'}
+            </button>
+            <button class="btn btn-sm" onclick="toggleStatus('${p.id}','${p.status}')"
+              style="font-size:11px;padding:4px 10px;color:${p.status === 'inactive' ? 'var(--green-400)' : 'var(--red)'}">
+              ${p.status === 'inactive' ? 'Ativar' : 'Desativar'}
+            </button>
+          ` : '<span style="font-size:11px;color:var(--text-muted)">—</span>'}
         </div></td>
       </tr>`;
     }).join('');
