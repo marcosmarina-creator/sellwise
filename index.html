@@ -6,1130 +6,1454 @@
 <title>Sellwise — Painel do Vendedor</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  :root {
-    --bg-base:       #0a0f0c;
-    --bg-surface:    #111a14;
-    --bg-card:       #172118;
-    --bg-elevated:   #1e2e20;
-    --bg-input:      #111a14;
-    --green-500:     #22c55e;
-    --green-400:     #4ade80;
-    --green-300:     #86efac;
-    --green-600:     #16a34a;
-    --green-700:     #15803d;
-    --green-800:     #166534;
-    --green-dim:     rgba(34,197,94,0.08);
-    --green-glow:    rgba(34,197,94,0.15);
-    --border:        rgba(255,255,255,0.07);
-    --border-strong: rgba(255,255,255,0.12);
-    --border-green:  rgba(34,197,94,0.25);
-    --text-primary:  #e8f5ec;
-    --text-secondary:#8faa97;
-    --text-muted:    #506858;
-    --red:           #f87171;
-    --radius:        8px;
-    --radius-lg:     12px;
-  }
+:root {
+  --bg-base:       #0a0f0c;
+  --bg-surface:    #111a14;
+  --bg-card:       #172118;
+  --bg-elevated:   #1e2e20;
+  --bg-input:      #0d1610;
+  --green-500:     #22c55e;
+  --green-400:     #4ade80;
+  --green-300:     #86efac;
+  --green-600:     #16a34a;
+  --green-700:     #15803d;
+  --green-800:     #166534;
+  --green-dim:     rgba(34,197,94,0.08);
+  --green-glow:    rgba(34,197,94,0.15);
+  --border:        rgba(255,255,255,0.06);
+  --border-strong: rgba(255,255,255,0.11);
+  --border-green:  rgba(34,197,94,0.25);
+  --text-primary:  #e8f5ec;
+  --text-secondary:#8faa97;
+  --text-muted:    #4a6352;
+  --red:           #f87171;
+  --radius:        8px;
+  --radius-lg:     12px;
+}
 
-  html, body { height: 100%; }
-  body {
-    font-family: 'Geist', sans-serif;
-    background: var(--bg-base);
-    color: var(--text-primary);
-    font-size: 15px;
-  }
+html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--bg-base); color: var(--text-primary); font-size: 15px; }
 
-  /* ===== LAYOUT DESKTOP ===== */
-  .app-shell { display: flex; min-height: 100vh; }
+/* ===== AUTH ===== */
+#auth-container {
+  position: fixed; inset: 0; z-index: 9999;
+  background: var(--bg-base);
+  display: flex; align-items: center; justify-content: center;
+}
+.auth-card {
+  width: 340px; background: var(--bg-surface);
+  border: 1px solid var(--border-green);
+  border-radius: 18px; padding: 36px 32px 32px;
+  display: flex; flex-direction: column; align-items: center;
+  box-shadow: 0 0 40px rgba(34,197,94,0.06);
+}
+.auth-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 28px; }
+.auth-logo-icon { width: 34px; height: 34px; background: var(--green-700); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+.auth-logo-icon svg { width: 17px; height: 17px; fill: #fff; }
+.auth-logo-name { font-size: 20px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.5px; }
+.auth-logo-name span { color: var(--green-500); }
+.auth-screen { display: none; width: 100%; flex-direction: column; align-items: center; }
+.auth-screen.active { display: flex; }
+.auth-heading { font-size: 15px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; align-self: flex-start; }
+.auth-sub { font-size: 12px; color: var(--text-muted); margin-bottom: 20px; align-self: flex-start; }
+.auth-field { width: 100%; margin-bottom: 10px; }
+.auth-label { font-size: 11px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.07em; display: block; margin-bottom: 5px; }
+.auth-input {
+  width: 100%; font-family: 'Geist', sans-serif; font-size: 14px;
+  color: var(--text-primary); background: var(--bg-input);
+  border: 1px solid var(--border-strong); border-radius: var(--radius);
+  padding: 10px 13px; outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.auth-input:focus { border-color: var(--green-500); box-shadow: 0 0 0 3px var(--green-glow); }
+.auth-input::placeholder { color: var(--text-muted); }
+.auth-btn {
+  width: 100%; font-family: 'Geist', sans-serif; font-size: 14px; font-weight: 600;
+  padding: 11px; border-radius: var(--radius);
+  background: var(--green-700); border: 1px solid var(--green-600); color: #fff;
+  cursor: pointer; transition: background 0.15s; margin-top: 6px;
+}
+.auth-btn:hover { background: var(--green-800); }
+.auth-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.auth-link { font-size: 12px; color: var(--text-muted); margin-top: 16px; cursor: pointer; }
+.auth-link span { color: var(--green-500); text-decoration: underline; }
+.auth-error { font-size: 12px; color: var(--red); margin-top: 8px; min-height: 16px; text-align: center; }
+.auth-divider { width: 100%; display: flex; align-items: center; gap: 10px; margin: 14px 0; }
+.auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.auth-divider span { font-size: 11px; color: var(--text-muted); }
 
-  .sidebar {
-    width: 220px; min-height: 100vh;
-    background: var(--bg-surface);
-    border-right: 1px solid var(--border);
-    display: flex; flex-direction: column;
-    padding: 24px 0 20px;
-    flex-shrink: 0;
-    position: sticky; top: 0; height: 100vh;
-    overflow-y: auto;
-  }
-  .logo { padding: 0 20px 24px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
-  .logo-mark { display: flex; align-items: center; gap: 10px; }
-  .logo-icon { width: 32px; height: 32px; background: var(--green-600); border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .logo-icon svg { width: 16px; height: 16px; fill: #fff; }
-  .logo-name { font-family: 'Geist', sans-serif; font-size: 17px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.5px; }
-  .logo-name span { color: var(--green-400); }
-  .logo-sub { font-size: 11px; color: var(--text-muted); margin-top: 5px; padding-left: 42px; }
-  .nav-section { padding: 0 10px; flex: 1; }
-  .nav-label { font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; padding: 0 10px; margin-bottom: 4px; }
-  .nav-item {
-    display: flex; align-items: center; gap: 9px;
-    padding: 8px 10px; border-radius: 7px;
-    color: var(--text-secondary); cursor: pointer;
-    font-size: 13px; font-weight: 500;
-    margin-bottom: 1px; transition: all 0.15s;
-    border: 1px solid transparent; background: none; width: 100%; text-align: left;
-  }
-  .nav-item:hover { background: var(--bg-elevated); color: var(--text-primary); }
-  .nav-item.active { background: var(--green-dim); color: var(--green-400); border-color: var(--border-green); }
-  .nav-icon { font-size: 15px; flex-shrink: 0; }
-  .sidebar-footer { padding: 14px 20px 0; border-top: 1px solid var(--border); margin-top: 16px; }
-  .sidebar-badge { font-size: 11px; color: var(--text-muted); line-height: 1.6; }
-  .sidebar-badge strong { color: var(--green-500); font-weight: 500; }
+/* PIN screen */
+.pin-dots { display: flex; gap: 10px; margin: 16px 0 20px; }
+.pin-dot { width: 11px; height: 11px; border-radius: 50%; border: 1.5px solid var(--text-muted); background: transparent; transition: all 0.15s; }
+.pin-dot.filled { background: var(--green-500); border-color: var(--green-500); }
+.pin-dot.error { background: var(--red); border-color: var(--red); }
+.pin-keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 100%; }
+.pin-key {
+  font-family: 'Geist', sans-serif; font-size: 17px; font-weight: 500;
+  color: var(--text-primary); background: var(--bg-elevated);
+  border: 1px solid var(--border); border-radius: 10px; padding: 13px 8px;
+  cursor: pointer; transition: all 0.12s;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  line-height: 1; user-select: none; -webkit-tap-highlight-color: transparent;
+}
+.pin-key:active { background: var(--green-dim); border-color: var(--border-green); transform: scale(0.93); }
+.pin-key-sub { font-size: 7px; color: var(--text-muted); letter-spacing: 0.1em; margin-top: 2px; font-weight: 600; }
+.pin-key-empty { background: transparent !important; border-color: transparent !important; cursor: default; }
+.pin-key-empty:active { transform: none !important; }
+.pin-user-info { font-size: 13px; color: var(--text-secondary); margin-bottom: 4px; }
+.pin-user-name { font-size: 15px; font-weight: 600; color: var(--text-primary); }
 
-  /* BOTTOM NAV mobile — hidden on desktop */
-  .bottom-nav { display: none; }
+/* PIN setup */
+.pin-size-toggle { display: flex; gap: 8px; margin-bottom: 16px; }
+.pin-size-btn { flex: 1; padding: 8px; border-radius: var(--radius); border: 1px solid var(--border-strong); background: var(--bg-elevated); color: var(--text-secondary); font-family: 'Geist', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.15s; }
+.pin-size-btn.active { border-color: var(--border-green); color: var(--green-400); background: var(--green-dim); }
+.auth-skip { font-size: 12px; color: var(--text-muted); margin-top: 12px; cursor: pointer; text-decoration: underline; }
 
-  .main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+/* ===== APP LAYOUT ===== */
+#app { display: none; }
+#app.visible { display: flex; min-height: 100vh; }
 
-  .topbar {
-    background: var(--bg-surface); border-bottom: 1px solid var(--border);
-    padding: 14px 24px; display: flex; align-items: center; justify-content: space-between;
-    position: sticky; top: 0; z-index: 10; gap: 12px;
-  }
-  .topbar-info { min-width: 0; flex: 1; }
-  .topbar-title { font-family: 'Geist', sans-serif; font-size: 15px; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .topbar-sub { font-size: 12px; color: var(--text-muted); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .topbar-tag { font-size: 11px; font-weight: 600; padding: 4px 10px; background: var(--green-dim); color: var(--green-400); border: 1px solid var(--border-green); border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
+.sidebar {
+  width: 220px; min-height: 100vh; background: var(--bg-surface);
+  border-right: 1px solid var(--border); display: flex; flex-direction: column;
+  padding: 24px 0 20px; flex-shrink: 0; position: sticky; top: 0; height: 100vh; overflow-y: auto;
+}
+.logo { padding: 0 20px 24px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+.logo-mark { display: flex; align-items: center; gap: 10px; }
+.logo-icon { width: 32px; height: 32px; background: var(--green-700); border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.logo-icon svg { width: 16px; height: 16px; fill: #fff; }
+.logo-name { font-size: 17px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.5px; }
+.logo-name span { color: var(--green-500); }
+.logo-sub { font-size: 11px; color: var(--text-muted); margin-top: 5px; padding-left: 42px; }
+.nav-section { padding: 0 10px; flex: 1; }
+.nav-label { font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; padding: 0 10px; margin-bottom: 4px; }
+.nav-item {
+  display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: 7px;
+  color: var(--text-secondary); cursor: pointer; font-size: 13px; font-weight: 500;
+  margin-bottom: 1px; transition: all 0.15s; border: 1px solid transparent; background: none; width: 100%; text-align: left;
+}
+.nav-item:hover { background: var(--bg-elevated); color: var(--text-primary); }
+.nav-item.active { background: var(--green-dim); color: var(--green-400); border-color: var(--border-green); }
+.nav-icon { font-size: 15px; flex-shrink: 0; }
+.sidebar-footer { padding: 14px 20px 0; border-top: 1px solid var(--border); margin-top: 16px; }
+.sidebar-user { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.sidebar-avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--green-700); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; flex-shrink: 0; }
+.sidebar-user-info { min-width: 0; }
+.sidebar-username { font-size: 12px; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sidebar-role { font-size: 10px; color: var(--green-500); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+.sidebar-badge { font-size: 11px; color: var(--text-muted); line-height: 1.6; }
+.sidebar-badge strong { color: var(--green-500); font-weight: 500; }
+.btn-logout { width: 100%; font-family: 'Geist', sans-serif; font-size: 12px; color: var(--text-muted); background: none; border: 1px solid var(--border); border-radius: var(--radius); padding: 6px; cursor: pointer; transition: all 0.15s; margin-top: 8px; }
+.btn-logout:hover { border-color: var(--red); color: var(--red); }
+.bottom-nav { display: none; }
+.main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.topbar { background: var(--bg-surface); border-bottom: 1px solid var(--border); padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; gap: 12px; }
+.topbar-info { min-width: 0; flex: 1; }
+.topbar-title { font-size: 15px; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.topbar-sub { font-size: 12px; color: var(--text-muted); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.topbar-tag { font-size: 11px; font-weight: 600; padding: 4px 10px; background: var(--green-dim); color: var(--green-400); border: 1px solid var(--border-green); border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
+.content { padding: 20px 24px; flex: 1; }
+.panel { display: none; }
+.panel.active { display: block; }
+.card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px 20px; margin-bottom: 14px; }
+.card-title { font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 14px; display: flex; align-items: center; gap: 7px; }
+.card-title::before { content: ''; display: block; width: 3px; height: 11px; background: var(--green-500); border-radius: 2px; flex-shrink: 0; }
+.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 14px; }
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+.form-group.span2 { grid-column: span 2; }
+label { font-size: 11px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+input, select, textarea { font-family: 'Geist', sans-serif; font-size: 14px; color: var(--text-primary); background: var(--bg-input); border: 1px solid var(--border-strong); border-radius: var(--radius); padding: 10px 12px; outline: none; transition: border-color 0.15s, box-shadow 0.15s; width: 100%; }
+input:focus, select:focus, textarea:focus { border-color: var(--green-500); box-shadow: 0 0 0 3px var(--green-glow); }
+input::placeholder { color: var(--text-muted); }
+textarea { resize: vertical; min-height: 80px; }
+select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%234a6352' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 28px; }
+option, optgroup { background: var(--bg-surface); color: var(--text-primary); }
+.btn { font-family: 'Geist', sans-serif; font-size: 14px; font-weight: 500; padding: 11px 18px; border-radius: var(--radius); border: 1px solid var(--border-strong); background: var(--bg-elevated); color: var(--text-primary); cursor: pointer; transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px; }
+.btn:hover { background: var(--bg-input); border-color: var(--border-green); color: var(--green-400); }
+.btn-primary { background: var(--green-700); border-color: var(--green-600); color: #fff; }
+.btn-primary:hover { background: var(--green-800); border-color: var(--green-700); color: #fff; }
+.btn-full { width: 100%; justify-content: center; }
+.btn-sm { padding: 7px 13px; font-size: 13px; }
+.result-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
+.metric { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }
+.metric-label { font-size: 10px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+.metric-value { font-size: 18px; font-weight: 600; color: var(--text-primary); }
+.metric-value.positive { color: var(--green-400); }
+.metric-value.negative { color: var(--red); }
+.info-box { background: rgba(34,197,94,0.05); border: 1px solid var(--border-green); border-radius: var(--radius); padding: 9px 13px; font-size: 12px; color: var(--green-300); margin-bottom: 12px; display: none; gap: 7px; align-items: flex-start; line-height: 1.5; }
+.info-box.show { display: flex; }
+.table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 500px; }
+thead tr { border-bottom: 1px solid var(--border-strong); }
+th { padding: 9px 11px; text-align: left; font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.07em; white-space: nowrap; }
+td { padding: 11px 11px; border-bottom: 1px solid var(--border); color: var(--text-primary); vertical-align: middle; }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: var(--bg-elevated); }
+.badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+.badge-ok  { background: rgba(34,197,94,0.12); color: var(--green-400); border: 1px solid rgba(34,197,94,0.2); }
+.badge-low { background: rgba(251,191,36,0.1); color: #fbbf24; border: 1px solid rgba(251,191,36,0.2); }
+.badge-out { background: rgba(248,113,113,0.1); color: var(--red); border: 1px solid rgba(248,113,113,0.2); }
+.badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+.ai-output { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; margin-top: 14px; font-size: 13px; line-height: 1.75; color: var(--text-primary); white-space: pre-wrap; min-height: 60px; display: none; }
+.ai-actions { display: none; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+.ai-actions.show { display: flex; }
+.empty-state { text-align: center; padding: 32px 16px; color: var(--text-muted); font-size: 13px; }
+.empty-state svg { width: 32px; height: 32px; margin-bottom: 8px; opacity: 0.2; display: block; margin-left: auto; margin-right: auto; }
+.comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+.comp-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px; }
+.comp-card.winner { border-color: var(--border-green); background: rgba(34,197,94,0.03); }
+.comp-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; gap: 8px; flex-wrap: wrap; }
+.comp-plat { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+.comp-badge-win { font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 20px; background: rgba(34,197,94,0.12); color: var(--green-400); border: 1px solid rgba(34,197,94,0.25); white-space: nowrap; }
+.comp-badge-lose { font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 20px; background: var(--bg-elevated); color: var(--text-muted); border: 1px solid var(--border); white-space: nowrap; }
+.comp-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; padding: 7px 0; border-bottom: 1px solid var(--border); gap: 8px; }
+.comp-row:last-child { border-bottom: none; }
+.comp-row-label { color: var(--text-muted); flex-shrink: 0; }
+.comp-row-val { font-weight: 500; color: var(--text-primary); text-align: right; }
+.comp-row-val.red { color: var(--red); }
+.comp-row-val.green { color: var(--green-400); }
+.comp-lucro-row { display: flex; justify-content: space-between; align-items: baseline; padding: 12px 0 6px; border-top: 1px solid var(--border-strong); margin-top: 4px; gap: 8px; }
+.comp-lucro-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); }
+.comp-lucro-val { font-size: 22px; font-weight: 700; }
+.veredito-card { background: rgba(34,197,94,0.05); border: 1px solid var(--border-green); border-radius: var(--radius-lg); padding: 16px 18px; display: flex; align-items: center; gap: 14px; }
+.veredito-icon { font-size: 24px; flex-shrink: 0; }
+.veredito-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--green-500); margin-bottom: 3px; }
+.veredito-txt { font-size: 13px; font-weight: 500; color: var(--text-primary); line-height: 1.4; }
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; }
+.hidden { display: none !important; }
 
-  .content { padding: 20px 24px; flex: 1; }
-
-  /* PANELS */
-  .panel { display: none; }
-  .panel.active { display: block; }
-
-  /* CARDS */
-  .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px 20px; margin-bottom: 14px; }
-  .card-title { font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 14px; display: flex; align-items: center; gap: 7px; }
-  .card-title::before { content: ''; display: block; width: 3px; height: 11px; background: var(--green-500); border-radius: 2px; flex-shrink: 0; }
-
-  /* FORMS */
-  .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 14px; }
-  .form-group { display: flex; flex-direction: column; gap: 5px; }
-  .form-group.span2 { grid-column: span 2; }
-  label { font-size: 11px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
-  input, select, textarea {
-    font-family: 'Geist', sans-serif; font-size: 14px;
-    color: var(--text-primary); background: var(--bg-input);
-    border: 1px solid var(--border-strong); border-radius: var(--radius);
-    padding: 10px 12px; outline: none;
-    transition: border-color 0.15s, box-shadow 0.15s; width: 100%;
-  }
-  input:focus, select:focus, textarea:focus { border-color: var(--green-500); box-shadow: 0 0 0 3px var(--green-glow); }
-  input::placeholder { color: var(--text-muted); }
-  textarea { resize: vertical; min-height: 80px; }
-  select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23506858' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 28px; }
-  option, optgroup { background: var(--bg-surface); color: var(--text-primary); }
-
-  /* BUTTONS */
-  .btn { font-family: 'Geist', sans-serif; font-size: 14px; font-weight: 500; padding: 11px 18px; border-radius: var(--radius); border: 1px solid var(--border-strong); background: var(--bg-elevated); color: var(--text-primary); cursor: pointer; transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px; }
-  .btn:hover { background: var(--bg-input); border-color: var(--border-green); color: var(--green-400); }
-  .btn-primary { background: var(--green-700); border-color: var(--green-600); color: #fff; }
-  .btn-primary:hover { background: var(--green-800); border-color: var(--green-700); color: #fff; }
-  .btn-full { width: 100%; justify-content: center; }
-  .btn-sm { padding: 7px 13px; font-size: 13px; }
-
-  /* RESULTS */
-  .result-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
-  .metric { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }
-  .metric-label { font-size: 10px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
-  .metric-value { font-family: 'Geist', sans-serif; font-size: 18px; font-weight: 600; color: var(--text-primary); }
-  .metric-value.positive { color: var(--green-400); }
-  .metric-value.negative { color: var(--red); }
-
-  /* INFO BOX */
-  .info-box { background: rgba(34,197,94,0.06); border: 1px solid var(--border-green); border-radius: var(--radius); padding: 9px 13px; font-size: 12px; color: var(--green-300); margin-bottom: 12px; display: none; gap: 7px; align-items: flex-start; line-height: 1.5; }
-  .info-box.show { display: flex; }
-
-  /* TABLE */
-  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 500px; }
-  thead tr { border-bottom: 1px solid var(--border-strong); }
-  th { padding: 9px 11px; text-align: left; font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.07em; white-space: nowrap; }
-  td { padding: 11px 11px; border-bottom: 1px solid var(--border); color: var(--text-primary); vertical-align: middle; }
-  tbody tr:last-child td { border-bottom: none; }
-  tbody tr:hover td { background: var(--bg-elevated); }
-
-  /* BADGES */
-  .badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; white-space: nowrap; }
-  .badge-ok  { background: rgba(34,197,94,0.12); color: var(--green-400); border: 1px solid rgba(34,197,94,0.2); }
-  .badge-low { background: rgba(251,191,36,0.1);  color: #fbbf24; border: 1px solid rgba(251,191,36,0.2); }
-  .badge-out { background: rgba(248,113,113,0.1); color: var(--red); border: 1px solid rgba(248,113,113,0.2); }
-  .badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
-
-  /* AI OUTPUT */
-  .ai-output { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; margin-top: 14px; font-size: 13px; line-height: 1.75; color: var(--text-primary); white-space: pre-wrap; min-height: 60px; display: none; }
-  .ai-actions { display: none; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
-  .ai-actions.show { display: flex; }
-
-  .empty-state { text-align: center; padding: 32px 16px; color: var(--text-muted); font-size: 13px; }
-  .empty-state svg { width: 32px; height: 32px; margin-bottom: 8px; opacity: 0.2; display: block; margin-left: auto; margin-right: auto; }
-
-  /* COMPARADOR */
-  .comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
-  .comp-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px; }
-  .comp-card.winner { border-color: var(--border-green); background: rgba(34,197,94,0.04); }
-  .comp-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; gap: 8px; flex-wrap: wrap; }
-  .comp-plat { font-size: 14px; font-weight: 600; color: var(--text-primary); }
-  .comp-badge-win { font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 20px; background: rgba(34,197,94,0.12); color: var(--green-400); border: 1px solid rgba(34,197,94,0.25); white-space: nowrap; }
-  .comp-badge-lose { font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 20px; background: var(--bg-elevated); color: var(--text-muted); border: 1px solid var(--border); white-space: nowrap; }
-  .comp-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; padding: 7px 0; border-bottom: 1px solid var(--border); gap: 8px; }
-  .comp-row:last-child { border-bottom: none; }
-  .comp-row-label { color: var(--text-muted); flex-shrink: 0; }
-  .comp-row-val { font-weight: 500; color: var(--text-primary); text-align: right; }
-  .comp-row-val.red { color: var(--red); }
-  .comp-row-val.green { color: var(--green-400); }
-  .comp-lucro-row { display: flex; justify-content: space-between; align-items: baseline; padding: 12px 0 6px; border-top: 1px solid var(--border-strong); margin-top: 4px; gap: 8px; }
-  .comp-lucro-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); }
-  .comp-lucro-val { font-family: 'Geist', sans-serif; font-size: 22px; font-weight: 700; }
-  .veredito-card { background: rgba(34,197,94,0.06); border: 1px solid var(--border-green); border-radius: var(--radius-lg); padding: 16px 18px; display: flex; align-items: center; gap: 14px; }
-  .veredito-icon { font-size: 24px; flex-shrink: 0; }
-  .veredito-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--green-500); margin-bottom: 3px; }
-  .veredito-txt { font-size: 13px; font-weight: 500; color: var(--text-primary); line-height: 1.4; }
-
-  /* SCROLLBAR */
-  ::-webkit-scrollbar { width: 5px; height: 5px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; }
-  ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }
-  .hidden { display: none !important; }
-
-  /* ===== MOBILE ===== */
-  @media (max-width: 700px) {
-    .app-shell { flex-direction: column; }
-
-    /* Sidebar vira topbar compacta */
-    .sidebar {
-      width: 100%; min-height: unset; height: auto;
-      position: sticky; top: 0; z-index: 20;
-      flex-direction: row; align-items: center;
-      padding: 12px 16px; border-right: none;
-      border-bottom: 1px solid var(--border);
-      overflow: visible;
-    }
-    .logo { padding: 0; border-bottom: none; margin-bottom: 0; flex: 1; }
-    .logo-sub { display: none; }
-    .logo-name { font-size: 16px; }
-    .logo-icon { width: 28px; height: 28px; }
-    .logo-icon svg { width: 14px; height: 14px; }
-    .nav-section { display: none; }
-    .sidebar-footer { display: none; }
-
-    /* Bottom navigation bar */
-    .bottom-nav {
-      display: flex;
-      position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
-      background: var(--bg-surface);
-      border-top: 1px solid var(--border);
-      padding: 8px 4px calc(8px + env(safe-area-inset-bottom));
-    }
-    .bottom-nav-item {
-      flex: 1; display: flex; flex-direction: column;
-      align-items: center; gap: 3px;
-      padding: 6px 2px; border-radius: 8px;
-      border: none; background: none; cursor: pointer;
-      color: var(--text-muted); transition: all 0.15s;
-      font-family: 'Geist', sans-serif;
-    }
-    .bottom-nav-item.active { color: var(--green-400); }
-    .bottom-nav-item .bnav-icon { font-size: 20px; line-height: 1; }
-    .bottom-nav-item .bnav-label { font-size: 10px; font-weight: 500; white-space: nowrap; }
-
-    /* Topbar ajustado */
-    .topbar { padding: 10px 16px; }
-    .topbar-sub { display: none; }
-    .topbar-title { font-size: 14px; }
-    .topbar-tag { font-size: 10px; padding: 3px 8px; }
-
-    /* Content com espaço pra bottom nav */
-    .content { padding: 16px; padding-bottom: 90px; }
-
-    /* Cards */
-    .card { padding: 14px 16px; }
-
-    /* Forms — 1 coluna no mobile */
-    .form-grid { grid-template-columns: 1fr; gap: 10px; }
-    .form-group.span2 { grid-column: span 1; }
-
-    /* Inputs maiores pra touch */
-    input, select, textarea { font-size: 16px; padding: 12px 13px; }
-
-    /* Botões full width no mobile */
-    .btn { width: 100%; justify-content: center; font-size: 15px; padding: 13px 18px; }
-    .btn-sm { width: auto; font-size: 13px; padding: 8px 14px; }
-    .ai-actions .btn-sm { flex: 1; }
-
-    /* Results — 2 colunas no mobile */
-    .result-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
-    .metric { padding: 10px 12px; }
-    .metric-value { font-size: 16px; }
-
-    /* Comparador — stack vertical no mobile */
-    .comp-grid { grid-template-columns: 1fr; }
-    .comp-lucro-val { font-size: 20px; }
-
-    /* Table scroll hint */
-    .table-wrap::before {
-      content: 'Deslize para ver mais →';
-      display: block; font-size: 11px;
-      color: var(--text-muted); margin-bottom: 8px;
-    }
-  }
+@media (max-width: 700px) {
+  .auth-card { width: 92vw; padding: 28px 20px 24px; }
+  #app.visible { flex-direction: column; }
+  .sidebar { width: 100%; min-height: unset; height: auto; position: sticky; top: 0; z-index: 20; flex-direction: row; align-items: center; padding: 12px 16px; border-right: none; border-bottom: 1px solid var(--border); overflow: visible; }
+  .logo { padding: 0; border-bottom: none; margin-bottom: 0; flex: 1; }
+  .logo-sub { display: none; }
+  .logo-name { font-size: 16px; }
+  .logo-icon { width: 28px; height: 28px; }
+  .nav-section { display: none; }
+  .sidebar-footer { display: none; }
+  .bottom-nav { display: flex; position: fixed; bottom: 0; left: 0; right: 0; z-index: 100; background: var(--bg-surface); border-top: 1px solid var(--border); padding: 8px 4px calc(8px + env(safe-area-inset-bottom)); }
+  .bottom-nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px 2px; border-radius: 8px; border: none; background: none; cursor: pointer; color: var(--text-muted); transition: all 0.15s; font-family: 'Geist', sans-serif; }
+  .bottom-nav-item.active { color: var(--green-400); }
+  .bottom-nav-item .bnav-icon { font-size: 20px; line-height: 1; }
+  .bottom-nav-item .bnav-label { font-size: 10px; font-weight: 500; white-space: nowrap; }
+  .topbar { padding: 10px 16px; }
+  .topbar-sub { display: none; }
+  .topbar-title { font-size: 14px; }
+  .topbar-tag { font-size: 10px; padding: 3px 8px; }
+  .content { padding: 16px; padding-bottom: 90px; }
+  .card { padding: 14px 16px; }
+  .form-grid { grid-template-columns: 1fr; gap: 10px; }
+  .form-group.span2 { grid-column: span 1; }
+  input, select, textarea { font-size: 16px; padding: 12px 13px; }
+  .btn { width: 100%; justify-content: center; font-size: 15px; padding: 13px 18px; }
+  .btn-sm { width: auto; font-size: 13px; padding: 8px 14px; }
+  .result-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .metric { padding: 10px 12px; }
+  .metric-value { font-size: 16px; }
+  .comp-grid { grid-template-columns: 1fr; }
+  .comp-lucro-val { font-size: 20px; }
+  .table-wrap::before { content: 'Deslize para ver mais →'; display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 8px; }
+}
 </style>
 </head>
 <body>
-<style id="auth-style">
-  #auth-overlay {
-    position: fixed; inset: 0; z-index: 9999;
-    background: #0a0f0c;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .auth-box {
-    background: #111a14; border: 1px solid rgba(34,197,94,0.2);
-    border-radius: 16px; padding: 36px 32px;
-    width: 320px; display: flex; flex-direction: column; align-items: center;
-  }
-  .auth-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; }
-  .auth-logo-icon { width: 34px; height: 34px; background: #16a34a; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
-  .auth-logo-icon svg { width: 17px; height: 17px; fill: #fff; }
-  .auth-logo-name { font-family: 'Geist', sans-serif; font-size: 19px; font-weight: 700; color: #e8f5ec; letter-spacing: -0.4px; }
-  .auth-logo-name span { color: #4ade80; }
-  .auth-label { font-size: 11px; font-weight: 500; color: #506858; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; align-self: flex-start; }
-  .auth-input {
-    font-family: 'Geist', sans-serif; font-size: 15px;
-    color: #e8f5ec; background: #0a0f0c;
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 8px; padding: 10px 13px;
-    width: 100%; outline: none; margin-bottom: 12px;
-    transition: border-color 0.15s, box-shadow 0.15s;
-    letter-spacing: 0.15em;
-  }
-  .auth-input:focus { border-color: #22c55e; box-shadow: 0 0 0 3px rgba(34,197,94,0.12); }
-  .auth-btn {
-    font-family: 'Geist', sans-serif; font-size: 14px; font-weight: 600;
-    padding: 10px; width: 100%; border-radius: 8px;
-    background: #15803d; border: 1px solid #16a34a; color: #fff;
-    cursor: pointer; transition: background 0.15s; margin-bottom: 10px;
-  }
-  .auth-btn:hover { background: #166534; }
-  .auth-error { font-size: 12px; color: #f87171; display: none; text-align: center; }
-  .auth-error.show { display: block; }
-</style>
 
-<div id="auth-overlay">
-  <div class="auth-box">
+<!-- ===== AUTH ===== -->
+<div id="auth-container">
+  <div class="auth-card">
     <div class="auth-logo">
-      <div class="auth-logo-icon">
-        <svg viewBox="0 0 24 24"><path d="M3 3h18v4H3zM3 10h11v4H3zM3 17h14v4H3z"/></svg>
-      </div>
+      <div class="auth-logo-icon"><svg viewBox="0 0 24 24"><path d="M3 3h18v4H3zM3 10h11v4H3zM3 17h14v4H3z"/></svg></div>
       <span class="auth-logo-name">Sell<span>wise</span></span>
     </div>
-    <div class="auth-label">Senha de acesso</div>
-    <input class="auth-input" type="password" id="auth-input" placeholder="••••••" onkeydown="if(event.key==='Enter')checkAuth()" autofocus />
-    <button class="auth-btn" onclick="checkAuth()">Entrar</button>
-    <div class="auth-error" id="auth-error">Senha incorreta. Tente novamente.</div>
+
+    <!-- LOGIN -->
+    <div class="auth-screen active" id="screen-login">
+      <div class="auth-heading">Bem-vindo de volta</div>
+      <div class="auth-sub">Entre com seu email e senha</div>
+      <div class="auth-field">
+        <label class="auth-label">Email</label>
+        <input class="auth-input" type="email" id="login-email" placeholder="seu@email.com" />
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">Senha</label>
+        <input class="auth-input" type="password" id="login-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()" />
+      </div>
+      <div class="auth-error" id="login-error"></div>
+      <button class="auth-btn" id="login-btn" onclick="doLogin()">Entrar</button>
+      <div class="auth-link" onclick="showScreen('screen-register')">Não tem conta? <span>Criar conta</span></div>
+      <div class="auth-link" onclick="showScreen('screen-recover')" style="margin-top:4px">Esqueceu a senha? <span>Recuperar</span></div>
+    </div>
+
+    <!-- REGISTER -->
+    <div class="auth-screen" id="screen-register">
+      <div class="auth-heading">Criar conta</div>
+      <div class="auth-sub">Preencha seus dados para acessar o Sellwise</div>
+      <div class="auth-field">
+        <label class="auth-label">Username</label>
+        <input class="auth-input" type="text" id="reg-username" placeholder="seunome" />
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">Email</label>
+        <input class="auth-input" type="email" id="reg-email" placeholder="seu@email.com" />
+      </div>
+      <div class="auth-field">
+        <label class="auth-label">Senha</label>
+        <input class="auth-input" type="password" id="reg-pass" placeholder="Mín. 6 caracteres" onkeydown="if(event.key==='Enter')doRegister()" />
+      </div>
+      <div class="auth-error" id="reg-error"></div>
+      <button class="auth-btn" id="reg-btn" onclick="doRegister()">Criar conta</button>
+      <div class="auth-link" onclick="showScreen('screen-login')">Já tem conta? <span>Entrar</span></div>
+    </div>
+
+    <!-- RECUPERAR SENHA -->
+    <div class="auth-screen" id="screen-recover">
+      <div class="auth-heading">Recuperar senha</div>
+      <div class="auth-sub">Enviaremos um link para redefinir sua senha</div>
+      <div class="auth-field">
+        <label class="auth-label">Email cadastrado</label>
+        <input class="auth-input" type="email" id="rec-email" placeholder="seu@email.com" onkeydown="if(event.key==='Enter')enviarRecuperacao()" />
+      </div>
+      <div class="auth-error" id="rec-msg"></div>
+      <button class="auth-btn" id="rec-btn" onclick="enviarRecuperacao()">Enviar link de recuperação</button>
+      <div class="auth-link" onclick="showScreen('screen-login')">Voltar para o <span>login</span></div>
+    </div>
+
+    <!-- PIN LOGIN -->
+    <div class="auth-screen" id="screen-pin-login">
+      <div class="pin-user-info">Olá,</div>
+      <div class="pin-user-name" id="pin-login-name">—</div>
+      <div class="pin-dots" id="pin-login-dots"></div>
+      <div class="pin-keypad" id="pin-login-keypad"></div>
+      <div class="auth-error" id="pin-login-error"></div>
+      <div class="auth-link" style="margin-top:14px" onclick="showScreen('screen-login')">Usar email e senha</div>
+    </div>
+
+    <!-- PIN SETUP -->
+    <div class="auth-screen" id="screen-pin-setup">
+      <div class="auth-heading">Configurar PIN rápido</div>
+      <div class="auth-sub">Crie um PIN para entrar mais rápido</div>
+      <div class="pin-size-toggle">
+        <button class="pin-size-btn active" id="btn-pin4" onclick="setPinSize(4)">4 dígitos</button>
+        <button class="pin-size-btn" id="btn-pin6" onclick="setPinSize(6)">6 dígitos</button>
+      </div>
+      <div class="pin-dots" id="pin-setup-dots"></div>
+      <div class="pin-keypad" id="pin-setup-keypad"></div>
+      <div class="auth-error" id="pin-setup-error"></div>
+      <div class="auth-skip" onclick="skipPin()">Pular, entrar sem PIN</div>
+    </div>
+
   </div>
 </div>
 
-<script>
-  (function() {
-    const H = '61f9dc872774a4ba7e0034069aca7208febce8fae5bd55edf78bdc7a3286982e';
-    const KEY = 'sw_auth';
-    if (sessionStorage.getItem(KEY) === '1') {
-      document.getElementById('auth-overlay').style.display = 'none';
-    }
-    async function hashStr(str) {
-      const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
-      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
-    }
-    window.checkAuth = async function() {
-      const val = document.getElementById('auth-input').value;
-      const hashed = await hashStr(val);
-      if (hashed === H) {
-        sessionStorage.setItem(KEY, '1');
-        document.getElementById('auth-overlay').style.display = 'none';
-      } else {
-        const err = document.getElementById('auth-error');
-        err.classList.add('show');
-        document.getElementById('auth-input').value = '';
-        document.getElementById('auth-input').focus();
-        setTimeout(() => err.classList.remove('show'), 3000);
-      }
-    };
-  })();
-</script>
-
-
-<div class="app-shell">
-<!-- SIDEBAR -->
-<nav class="sidebar">
-  <div class="logo">
-    <div class="logo-mark">
-      <div class="logo-icon">
-        <svg viewBox="0 0 24 24"><path d="M3 3h18v4H3zM3 10h11v4H3zM3 17h14v4H3z"/></svg>
+<!-- ===== APP ===== -->
+<div id="app">
+  <nav class="sidebar">
+    <div class="logo">
+      <div class="logo-mark">
+        <div class="logo-icon"><svg viewBox="0 0 24 24" fill="white"><path d="M3 3h18v4H3zM3 10h11v4H3zM3 17h14v4H3z"/></svg></div>
+        <span class="logo-name">Sell<span>wise</span></span>
       </div>
-      <span class="logo-name">Sell<span>wise</span></span>
+      <div class="logo-sub">Painel do Vendedor</div>
     </div>
-    <div class="logo-sub">Painel do Vendedor</div>
-  </div>
-
-  <div class="nav-section">
-    <div class="nav-label">Ferramentas</div>
-    <button class="nav-item active" onclick="showPanel('preco', this)">
-      <span class="nav-icon">🧮</span> Precificação
-    </button>
-    <button class="nav-item" onclick="showPanel('estoque', this)">
-      <span class="nav-icon">📦</span> Estoque
-    </button>
-    <button class="nav-item" onclick="showPanel('lucro', this)">
-      <span class="nav-icon">📈</span> Lucratividade
-    </button>
-    <button class="nav-item" onclick="showPanel('descricao', this)">
-      <span class="nav-icon">✨</span> Descrição IA
-    </button>
-    <button class="nav-item" onclick="showPanel('comparador', this)">
-      <span class="nav-icon">⚖️</span> Comparador
-    </button>
-  </div>
-
-  <div class="sidebar-footer">
-    <div class="sidebar-badge">
-      Taxas atualizadas<br>
-      <strong>Março 2026</strong> · ML &amp; Shopee
+    <div class="nav-section">
+      <div class="nav-label">Ferramentas</div>
+      <button class="nav-item active" onclick="showPanel('preco',this)"><span class="nav-icon">🧮</span> Precificação</button>
+      <button class="nav-item" onclick="showPanel('estoque',this)"><span class="nav-icon">📦</span> Estoque</button>
+      <button class="nav-item" onclick="showPanel('lucro',this)"><span class="nav-icon">📈</span> Lucratividade</button>
+      <button class="nav-item" onclick="showPanel('descricao',this)"><span class="nav-icon">✨</span> Descrição IA</button>
+      <button class="nav-item" onclick="showPanel('comparador',this)"><span class="nav-icon">⚖️</span> Comparador</button>
     </div>
-  </div>
-</nav>
-
-<!-- MAIN -->
-<div class="main">
-  <div class="topbar">
-    <div>
-      <div class="topbar-title" id="topbar-title">Calculadora de Precificação</div>
-      <div class="topbar-sub" id="topbar-sub">Calcule o preço ideal com as taxas reais de 2026</div>
+    <div class="nav-section" style="margin-top:8px">
+      <div class="nav-label">Conta</div>
+      <button class="nav-item" onclick="showPanel('perfil',this)"><span class="nav-icon">👤</span> Meu Perfil</button>
+      <button class="nav-item admin-only" onclick="showPanel('admin',this)" id="nav-admin" style="display:none"><span class="nav-icon">⚙️</span> Admin</button>
     </div>
-    <div class="topbar-tag">⚡ Taxas 2026</div>
-  </div>
-
-  <div class="content">
-
-    <!-- PRECIFICAÇÃO -->
-    <div id="panel-preco" class="panel active">
-      <div class="card">
-        <div class="card-title">Dados do produto</div>
-        <div class="form-grid">
-          <div class="form-group">
-            <label>Custo do produto (R$)</label>
-            <input type="number" id="p-custo" placeholder="0,00" min="0" step="0.01" />
-          </div>
-          <div class="form-group">
-            <label>Frete estimado (R$)</label>
-            <input type="number" id="p-frete" placeholder="0,00" min="0" step="0.01" />
-          </div>
-          <div class="form-group">
-            <label>Margem desejada (%)</label>
-            <input type="number" id="p-margem" placeholder="20" min="0" max="99" />
-          </div>
-          <div class="form-group">
-            <label>Imposto / outros (%)</label>
-            <input type="number" id="p-imposto" placeholder="0" min="0" />
-          </div>
-        </div>
-        <div class="card-title" style="margin-top:8px">Plataforma</div>
-        <div class="form-grid">
-          <div class="form-group">
-            <label>Plataforma</label>
-            <select id="p-plat" onchange="onPlatPreco()">
-              <optgroup label="Mercado Livre — Clássico">
-                <option value="ml_10">ML Clássico · cat. baixa (10%)</option>
-                <option value="ml_12" selected>ML Clássico · cat. média (12%)</option>
-                <option value="ml_14">ML Clássico · cat. alta (14%)</option>
-              </optgroup>
-              <optgroup label="Mercado Livre — Premium">
-                <option value="ml_15">ML Premium · cat. baixa (15%)</option>
-                <option value="ml_17">ML Premium · cat. média (17%)</option>
-                <option value="ml_19">ML Premium · cat. alta (19%)</option>
-              </optgroup>
-              <optgroup label="Shopee 2026">
-                <option value="shopee">Shopee · faixa automática por preço</option>
-              </optgroup>
-              <option value="custom">Personalizado</option>
-            </select>
-          </div>
-          <div class="form-group" id="p-custom-wrap" style="display:none">
-            <label>Taxa personalizada (%)</label>
-            <input type="number" id="p-taxa-custom" placeholder="0" min="0" max="100" />
-          </div>
-          <div class="form-group">
-            <label>Tipo de vendedor</label>
-            <select id="p-vendedor">
-              <option value="cnpj">CNPJ / CPF baixo volume</option>
-              <option value="cpf">CPF alto volume (+450 pedidos/90d)</option>
-            </select>
-          </div>
-        </div>
-        <div class="info-box" id="p-info">
-          ℹ️ <span id="p-info-txt">A Shopee cobra por faixa de preço + taxa fixa por item. O cálculo usa a faixa estimada do preço sugerido.</span>
-        </div>
-        <button class="btn btn-primary" onclick="calcPreco()">🧮 Calcular preço</button>
-
-        <div class="result-grid" id="p-result" style="display:none">
-          <div class="metric"><div class="metric-label">Preço mínimo</div><div class="metric-value" id="p-min">—</div></div>
-          <div class="metric"><div class="metric-label">Preço sugerido</div><div class="metric-value positive" id="p-sug">—</div></div>
-          <div class="metric"><div class="metric-label">Taxa % plataforma</div><div class="metric-value" id="p-taxa-r">—</div></div>
-          <div class="metric" id="p-fixa-wrap"><div class="metric-label">Taxa fixa (item)</div><div class="metric-value" id="p-fixa-r">—</div></div>
-          <div class="metric"><div class="metric-label">Lucro líquido</div><div class="metric-value positive" id="p-lucro">—</div></div>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar" id="sb-avatar">M</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-username" id="sb-username">—</div>
+          <div class="sidebar-role" id="sb-role">user</div>
         </div>
       </div>
+      <div class="sidebar-badge">Taxas atualizadas<br><strong>Março 2026</strong> · ML &amp; Shopee</div>
+      <button class="btn-logout" onclick="doLogout()">Sair da conta</button>
     </div>
+  </nav>
 
-    <!-- ESTOQUE -->
-    <div id="panel-estoque" class="panel">
-      <div class="card">
-        <div class="card-title">Cadastrar produto</div>
-        <div class="form-grid">
-          <div class="form-group span2">
-            <label>Nome do produto</label>
-            <input type="text" id="e-nome" placeholder="Ex: Camiseta Básica Preta M" />
-          </div>
-          <div class="form-group">
-            <label>SKU / Código</label>
-            <input type="text" id="e-sku" placeholder="CAM-001" />
-          </div>
-          <div class="form-group">
-            <label>Quantidade em estoque</label>
-            <input type="number" id="e-qtd" placeholder="0" min="0" />
-          </div>
-          <div class="form-group">
-            <label>Estoque mínimo (alerta)</label>
-            <input type="number" id="e-min" placeholder="5" min="0" />
-          </div>
-          <div class="form-group">
-            <label>Custo unitário (R$)</label>
-            <input type="number" id="e-custo" placeholder="0,00" step="0.01" />
-          </div>
-        </div>
-        <button class="btn btn-primary" onclick="addProduto()">+ Adicionar produto</button>
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-info">
+        <div class="topbar-title" id="topbar-title">Calculadora de Precificação</div>
+        <div class="topbar-sub" id="topbar-sub">Calcule o preço ideal com as taxas reais de 2026</div>
       </div>
-
-      <div class="card">
-        <div class="card-title">Produtos cadastrados</div>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Produto</th><th>SKU</th><th>Qtd</th><th>Custo unit.</th><th>Total estoque</th><th>Status</th><th></th>
-              </tr>
-            </thead>
-            <tbody id="e-tbody">
-              <tr><td colspan="7">
-                <div class="empty-state">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zM16 3H8L6 7h12l-2-4z"/></svg>
-                  <div>Nenhum produto cadastrado ainda.</div>
-                </div>
-              </td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <div class="topbar-tag">⚡ Taxas 2026</div>
     </div>
+    <div class="content">
 
-    <!-- LUCRATIVIDADE -->
-    <div id="panel-lucro" class="panel">
-      <div class="card">
-        <div class="card-title">Dados da venda</div>
-        <div class="form-grid">
-          <div class="form-group">
-            <label>Preço de venda (R$)</label>
-            <input type="number" id="l-preco" placeholder="0,00" step="0.01" oninput="onPrecoLucro()" />
+      <!-- PRECIFICAÇÃO -->
+      <div id="panel-preco" class="panel active">
+        <div class="card">
+          <div class="card-title">Dados do produto</div>
+          <div class="form-grid">
+            <div class="form-group"><label>Custo do produto (R$)</label><input type="number" id="p-custo" placeholder="0,00" min="0" step="0.01" /></div>
+            <div class="form-group"><label>Frete estimado (R$)</label><input type="number" id="p-frete" placeholder="0,00" min="0" step="0.01" /></div>
+            <div class="form-group"><label>Margem desejada (%)</label><input type="number" id="p-margem" placeholder="20" min="0" max="99" /></div>
+            <div class="form-group"><label>Imposto / outros (%)</label><input type="number" id="p-imposto" placeholder="0" min="0" /></div>
           </div>
-          <div class="form-group">
-            <label>Custo do produto (R$)</label>
-            <input type="number" id="l-custo" placeholder="0,00" step="0.01" />
-          </div>
-          <div class="form-group">
-            <label>Frete pago (R$)</label>
-            <input type="number" id="l-frete" placeholder="0,00" step="0.01" />
-          </div>
-          <div class="form-group">
-            <label>Qtd vendida (simulação)</label>
-            <input type="number" id="l-qtd" placeholder="1" min="1" />
-          </div>
-        </div>
-        <div class="card-title" style="margin-top:8px">Plataforma &amp; taxas</div>
-        <div class="form-grid">
-          <div class="form-group">
-            <label>Plataforma</label>
-            <select id="l-plat" onchange="onPlatLucro()">
-              <optgroup label="Mercado Livre — Clássico">
-                <option value="ml_10">ML Clássico · cat. baixa (10%)</option>
-                <option value="ml_12" selected>ML Clássico · cat. média (12%)</option>
-                <option value="ml_14">ML Clássico · cat. alta (14%)</option>
-              </optgroup>
-              <optgroup label="Mercado Livre — Premium">
-                <option value="ml_15">ML Premium · cat. baixa (15%)</option>
-                <option value="ml_17">ML Premium · cat. média (17%)</option>
-                <option value="ml_19">ML Premium · cat. alta (19%)</option>
-              </optgroup>
-              <optgroup label="Shopee 2026">
-                <option value="shopee">Shopee · faixa automática por preço</option>
-              </optgroup>
-              <option value="custom">Personalizado</option>
-            </select>
-          </div>
-          <div class="form-group" id="l-custom-wrap" style="display:none">
-            <label>Taxa personalizada (%)</label>
-            <input type="number" id="l-taxa-custom" placeholder="0" />
-          </div>
-          <div class="form-group">
-            <label>Imposto / outros (%)</label>
-            <input type="number" id="l-imposto" placeholder="0" />
-          </div>
-          <div class="form-group">
-            <label>Tipo de vendedor</label>
-            <select id="l-vendedor">
-              <option value="cnpj">CNPJ / CPF baixo volume</option>
-              <option value="cpf">CPF alto volume (+450 pedidos/90d)</option>
-            </select>
-          </div>
-        </div>
-        <div class="info-box" id="l-info">
-          ℹ️ <span id="l-info-txt"></span>
-        </div>
-        <button class="btn btn-primary" onclick="calcLucro()">📈 Simular lucratividade</button>
-
-        <div class="result-grid" id="l-result" style="display:none">
-          <div class="metric"><div class="metric-label">Receita bruta</div><div class="metric-value" id="l-bruta">—</div></div>
-          <div class="metric"><div class="metric-label">Taxa plataforma</div><div class="metric-value negative" id="l-taxa-r">—</div></div>
-          <div class="metric"><div class="metric-label">Outros custos</div><div class="metric-value negative" id="l-outros">—</div></div>
-          <div class="metric"><div class="metric-label">Lucro líquido</div><div class="metric-value positive" id="l-liq">—</div></div>
-          <div class="metric"><div class="metric-label">Margem real</div><div class="metric-value" id="l-marg">—</div></div>
-          <div class="metric"><div class="metric-label">Lucro total (qtd)</div><div class="metric-value positive" id="l-total">—</div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- DESCRIÇÃO IA -->
-    <div id="panel-descricao" class="panel">
-      <div class="card">
-        <div class="card-title">Informações do produto</div>
-        <div class="form-grid">
-          <div class="form-group span2">
-            <label>Nome do produto</label>
-            <input type="text" id="d-nome" placeholder="Ex: Tênis Esportivo Masculino Running" />
-          </div>
-          <div class="form-group span2">
-            <label>Características e diferenciais</label>
-            <textarea id="d-carac" placeholder="Ex: solado antiderrapante, material respirável, tamanhos 38 ao 44, cores preto e branco, ideal para corrida e academia"></textarea>
-          </div>
-          <div class="form-group">
-            <label>Plataforma</label>
-            <select id="d-plat">
-              <option value="ambas">Mercado Livre e Shopee</option>
-              <option value="ml">Somente Mercado Livre</option>
-              <option value="shopee">Somente Shopee</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Tom da descrição</label>
-            <select id="d-tom">
-              <option value="profissional">Profissional e persuasivo</option>
-              <option value="descontraido">Descontraído e amigável</option>
-              <option value="tecnico">Técnico e detalhado</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Público-alvo</label>
-            <input type="text" id="d-publico" placeholder="Ex: homens de 20 a 40 anos" />
-          </div>
-        </div>
-        <button class="btn btn-primary" id="d-btn" onclick="gerarDescricao()">✨ Gerar com IA</button>
-        <div class="ai-output" id="d-output"></div>
-        <div class="ai-actions" id="d-actions">
-          <button class="btn btn-sm" id="d-copy" onclick="copiarDescricao()">📋 Copiar texto</button>
-          <button class="btn btn-sm" onclick="gerarDescricao()">🔄 Gerar novamente</button>
-        </div>
-      </div>
-    </div>
-
-
-    <!-- COMPARADOR ML vs SHOPEE -->
-    <div id="panel-comparador" class="panel">
-      <div class="card">
-        <div class="card-title">Dados do produto</div>
-        <div class="form-grid">
-          <div class="form-group">
-            <label>Preço de venda (R$)</label>
-            <input type="number" id="c-preco" placeholder="0,00" step="0.01" oninput="onPrecoComp()" />
-          </div>
-          <div class="form-group">
-            <label>Custo do produto (R$)</label>
-            <input type="number" id="c-custo" placeholder="0,00" step="0.01" />
-          </div>
-          <div class="form-group">
-            <label>Frete (R$)</label>
-            <input type="number" id="c-frete" placeholder="0,00" step="0.01" />
-          </div>
-          <div class="form-group">
-            <label>Imposto / outros (%)</label>
-            <input type="number" id="c-imposto" placeholder="0" />
-          </div>
-          <div class="form-group">
-            <label>Tipo de vendedor</label>
-            <select id="c-vendedor">
-              <option value="cnpj">CNPJ / CPF baixo volume</option>
-              <option value="cpf">CPF alto volume (+450 pedidos/90d)</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Categoria ML (comissão)</label>
-            <select id="c-ml-cat">
-              <optgroup label="Clássico">
-                <option value="10">Clássico · cat. baixa (10%)</option>
-                <option value="12" selected>Clássico · cat. média (12%)</option>
-                <option value="14">Clássico · cat. alta (14%)</option>
-              </optgroup>
-              <optgroup label="Premium">
-                <option value="15">Premium · cat. baixa (15%)</option>
-                <option value="17">Premium · cat. média (17%)</option>
-                <option value="19">Premium · cat. alta (19%)</option>
-              </optgroup>
-            </select>
-          </div>
-        </div>
-        <div class="info-box show" id="c-shopee-info" style="display:flex!important">
-          ℹ️ <span id="c-shopee-txt">Informe o preço para ver a faixa da Shopee.</span>
-        </div>
-        <button class="btn btn-primary" onclick="calcComparador()">⚖️ Comparar plataformas</button>
-      </div>
-
-      <div id="c-result" style="display:none">
-        <div class="comp-grid">
-          <div class="comp-card" id="c-ml-card">
-            <div class="comp-header">
-              <span class="comp-plat">Mercado Livre</span>
-              <span id="c-ml-badge" class="comp-badge-lose">—</span>
+          <div class="card-title" style="margin-top:8px">Plataforma</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Plataforma</label>
+              <select id="p-plat" onchange="onPlatPreco()">
+                <optgroup label="Mercado Livre — Clássico">
+                  <option value="ml_10">ML Clássico · cat. baixa (10%)</option>
+                  <option value="ml_12" selected>ML Clássico · cat. média (12%)</option>
+                  <option value="ml_14">ML Clássico · cat. alta (14%)</option>
+                </optgroup>
+                <optgroup label="Mercado Livre — Premium">
+                  <option value="ml_15">ML Premium · cat. baixa (15%)</option>
+                  <option value="ml_17">ML Premium · cat. média (17%)</option>
+                  <option value="ml_19">ML Premium · cat. alta (19%)</option>
+                </optgroup>
+                <optgroup label="Shopee 2026">
+                  <option value="shopee">Shopee · faixa automática por preço</option>
+                </optgroup>
+                <option value="custom">Personalizado</option>
+              </select>
             </div>
-            <div class="comp-row"><span class="comp-row-label">Comissão</span><span class="comp-row-val" id="c-ml-comissao">—</span></div>
-            <div class="comp-row"><span class="comp-row-label">Valor da taxa</span><span class="comp-row-val red" id="c-ml-taxa">—</span></div>
-            <div class="comp-row"><span class="comp-row-label">Taxa fixa por item</span><span class="comp-row-val" id="c-ml-fixa">—</span></div>
-            <div class="comp-row"><span class="comp-row-label">Outros custos</span><span class="comp-row-val red" id="c-ml-outros">—</span></div>
-            <div class="comp-row"><span class="comp-row-label">Repasse ao vendedor</span><span class="comp-row-val green" id="c-ml-repasse">—</span></div>
-            <div class="comp-row"><span class="comp-row-label">Margem real</span><span class="comp-row-val" id="c-ml-marg">—</span></div>
-            <div class="comp-lucro-row">
-              <span class="comp-lucro-label">Lucro líquido</span>
-              <span class="comp-lucro-val" id="c-ml-lucro">—</span>
+            <div class="form-group" id="p-custom-wrap" style="display:none"><label>Taxa personalizada (%)</label><input type="number" id="p-taxa-custom" placeholder="0" min="0" max="100" /></div>
+            <div class="form-group"><label>Tipo de vendedor</label><select id="p-vendedor"><option value="cnpj">CNPJ / CPF baixo volume</option><option value="cpf">CPF alto volume (+450/90d)</option></select></div>
+          </div>
+          <div class="info-box" id="p-info">ℹ️ <span>A Shopee cobra por faixa de preço + taxa fixa por item.</span></div>
+          <button class="btn btn-primary" onclick="calcPreco()">🧮 Calcular preço</button>
+          <div class="result-grid" id="p-result" style="display:none">
+            <div class="metric"><div class="metric-label">Preço mínimo</div><div class="metric-value" id="p-min">—</div></div>
+            <div class="metric"><div class="metric-label">Preço sugerido</div><div class="metric-value positive" id="p-sug">—</div></div>
+            <div class="metric"><div class="metric-label">Taxa plataforma</div><div class="metric-value" id="p-taxa-r">—</div></div>
+            <div class="metric" id="p-fixa-wrap"><div class="metric-label">Taxa fixa (item)</div><div class="metric-value" id="p-fixa-r">—</div></div>
+            <div class="metric"><div class="metric-label">Lucro líquido</div><div class="metric-value positive" id="p-lucro">—</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ESTOQUE -->
+      <div id="panel-estoque" class="panel">
+        <div class="card">
+          <div class="card-title">Cadastrar produto</div>
+          <div class="form-grid">
+            <div class="form-group span2"><label>Nome do produto</label><input type="text" id="e-nome" placeholder="Ex: Camiseta Básica Preta M" /></div>
+            <div class="form-group"><label>SKU / Código</label><input type="text" id="e-sku" placeholder="CAM-001" /></div>
+            <div class="form-group"><label>Quantidade em estoque</label><input type="number" id="e-qtd" placeholder="0" min="0" /></div>
+            <div class="form-group"><label>Estoque mínimo (alerta)</label><input type="number" id="e-min" placeholder="5" min="0" /></div>
+            <div class="form-group"><label>Custo unitário (R$)</label><input type="number" id="e-custo" placeholder="0,00" step="0.01" /></div>
+          </div>
+          <button class="btn btn-primary" onclick="addProduto()">+ Adicionar produto</button>
+        </div>
+        <div class="card">
+          <div class="card-title">Produtos cadastrados</div>
+          <div class="table-wrap">
+            <table><thead><tr><th>Produto</th><th>SKU</th><th>Qtd</th><th>Custo unit.</th><th>Total</th><th>Status</th><th></th></tr></thead>
+            <tbody id="e-tbody"><tr><td colspan="7"><div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zM16 3H8L6 7h12l-2-4z"/></svg><div>Nenhum produto cadastrado ainda.</div></div></td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- LUCRATIVIDADE -->
+      <div id="panel-lucro" class="panel">
+        <div class="card">
+          <div class="card-title">Dados da venda</div>
+          <div class="form-grid">
+            <div class="form-group"><label>Preço de venda (R$)</label><input type="number" id="l-preco" placeholder="0,00" step="0.01" oninput="onPrecoLucro()" /></div>
+            <div class="form-group"><label>Custo do produto (R$)</label><input type="number" id="l-custo" placeholder="0,00" step="0.01" /></div>
+            <div class="form-group"><label>Frete pago (R$)</label><input type="number" id="l-frete" placeholder="0,00" step="0.01" /></div>
+            <div class="form-group"><label>Qtd vendida (simulação)</label><input type="number" id="l-qtd" placeholder="1" min="1" /></div>
+          </div>
+          <div class="card-title" style="margin-top:8px">Plataforma &amp; taxas</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Plataforma</label>
+              <select id="l-plat" onchange="onPlatLucro()">
+                <optgroup label="Mercado Livre — Clássico">
+                  <option value="ml_10">ML Clássico · cat. baixa (10%)</option>
+                  <option value="ml_12" selected>ML Clássico · cat. média (12%)</option>
+                  <option value="ml_14">ML Clássico · cat. alta (14%)</option>
+                </optgroup>
+                <optgroup label="Mercado Livre — Premium">
+                  <option value="ml_15">ML Premium · cat. baixa (15%)</option>
+                  <option value="ml_17">ML Premium · cat. média (17%)</option>
+                  <option value="ml_19">ML Premium · cat. alta (19%)</option>
+                </optgroup>
+                <optgroup label="Shopee 2026">
+                  <option value="shopee">Shopee · faixa automática por preço</option>
+                </optgroup>
+                <option value="custom">Personalizado</option>
+              </select>
+            </div>
+            <div class="form-group" id="l-custom-wrap" style="display:none"><label>Taxa personalizada (%)</label><input type="number" id="l-taxa-custom" placeholder="0" /></div>
+            <div class="form-group"><label>Imposto / outros (%)</label><input type="number" id="l-imposto" placeholder="0" /></div>
+            <div class="form-group"><label>Tipo de vendedor</label><select id="l-vendedor"><option value="cnpj">CNPJ / CPF baixo volume</option><option value="cpf">CPF alto volume (+450/90d)</option></select></div>
+          </div>
+          <div class="info-box show" id="l-info"><span id="l-info-txt"></span></div>
+          <button class="btn btn-primary" onclick="calcLucro()">📈 Simular lucratividade</button>
+          <div class="result-grid" id="l-result" style="display:none">
+            <div class="metric"><div class="metric-label">Receita bruta</div><div class="metric-value" id="l-bruta">—</div></div>
+            <div class="metric"><div class="metric-label">Taxa plataforma</div><div class="metric-value negative" id="l-taxa-r">—</div></div>
+            <div class="metric"><div class="metric-label">Outros custos</div><div class="metric-value negative" id="l-outros">—</div></div>
+            <div class="metric"><div class="metric-label">Lucro líquido</div><div class="metric-value positive" id="l-liq">—</div></div>
+            <div class="metric"><div class="metric-label">Margem real</div><div class="metric-value" id="l-marg">—</div></div>
+            <div class="metric"><div class="metric-label">Lucro total (qtd)</div><div class="metric-value positive" id="l-total">—</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DESCRIÇÃO IA -->
+      <div id="panel-descricao" class="panel">
+        <div class="card">
+          <div class="card-title">Informações do produto</div>
+          <div class="form-grid">
+            <div class="form-group span2"><label>Nome do produto</label><input type="text" id="d-nome" placeholder="Ex: Tênis Esportivo Masculino Running" /></div>
+            <div class="form-group span2"><label>Características e diferenciais</label><textarea id="d-carac" placeholder="Ex: solado antiderrapante, material respirável, tamanhos 38 ao 44..."></textarea></div>
+            <div class="form-group"><label>Plataforma</label><select id="d-plat"><option value="ambas">Mercado Livre e Shopee</option><option value="ml">Somente Mercado Livre</option><option value="shopee">Somente Shopee</option></select></div>
+            <div class="form-group"><label>Tom</label><select id="d-tom"><option value="profissional">Profissional e persuasivo</option><option value="descontraido">Descontraído e amigável</option><option value="tecnico">Técnico e detalhado</option></select></div>
+            <div class="form-group"><label>Público-alvo</label><input type="text" id="d-publico" placeholder="Ex: homens de 20 a 40 anos" /></div>
+          </div>
+          <button class="btn btn-primary" id="d-btn" onclick="gerarDescricao()">✨ Gerar com IA</button>
+          <div class="ai-output" id="d-output"></div>
+          <div class="ai-actions" id="d-actions">
+            <button class="btn btn-sm" id="d-copy" onclick="copiarDescricao()">📋 Copiar texto</button>
+            <button class="btn btn-sm" onclick="gerarDescricao()">🔄 Gerar novamente</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- COMPARADOR -->
+      <div id="panel-comparador" class="panel">
+        <div class="card">
+          <div class="card-title">Dados do produto</div>
+          <div class="form-grid">
+            <div class="form-group"><label>Preço de venda (R$)</label><input type="number" id="c-preco" placeholder="0,00" step="0.01" oninput="onPrecoComp()" /></div>
+            <div class="form-group"><label>Custo do produto (R$)</label><input type="number" id="c-custo" placeholder="0,00" step="0.01" /></div>
+            <div class="form-group"><label>Frete (R$)</label><input type="number" id="c-frete" placeholder="0,00" step="0.01" /></div>
+            <div class="form-group"><label>Imposto / outros (%)</label><input type="number" id="c-imposto" placeholder="0" /></div>
+            <div class="form-group"><label>Tipo de vendedor</label><select id="c-vendedor"><option value="cnpj">CNPJ / CPF baixo volume</option><option value="cpf">CPF alto volume (+450/90d)</option></select></div>
+            <div class="form-group"><label>Categoria ML</label><select id="c-ml-cat"><optgroup label="Clássico"><option value="10">Clássico · cat. baixa (10%)</option><option value="12" selected>Clássico · cat. média (12%)</option><option value="14">Clássico · cat. alta (14%)</option></optgroup><optgroup label="Premium"><option value="15">Premium · cat. baixa (15%)</option><option value="17">Premium · cat. média (17%)</option><option value="19">Premium · cat. alta (19%)</option></optgroup></select></div>
+          </div>
+          <div class="info-box show" id="c-shopee-info">ℹ️ <span id="c-shopee-txt">Informe o preço para ver a faixa da Shopee.</span></div>
+          <button class="btn btn-primary" onclick="calcComparador()">⚖️ Comparar plataformas</button>
+        </div>
+        <div id="c-result" style="display:none">
+          <div class="comp-grid">
+            <div class="comp-card" id="c-ml-card">
+              <div class="comp-header"><span class="comp-plat">Mercado Livre</span><span id="c-ml-badge" class="comp-badge-lose">—</span></div>
+              <div class="comp-row"><span class="comp-row-label">Comissão</span><span class="comp-row-val" id="c-ml-comissao">—</span></div>
+              <div class="comp-row"><span class="comp-row-label">Valor da taxa</span><span class="comp-row-val red" id="c-ml-taxa">—</span></div>
+              <div class="comp-row"><span class="comp-row-label">Taxa fixa</span><span class="comp-row-val" id="c-ml-fixa">—</span></div>
+              <div class="comp-row"><span class="comp-row-label">Outros custos</span><span class="comp-row-val red" id="c-ml-outros">—</span></div>
+              <div class="comp-row"><span class="comp-row-label">Repasse</span><span class="comp-row-val green" id="c-ml-repasse">—</span></div>
+              <div class="comp-row"><span class="comp-row-label">Margem real</span><span class="comp-row-val" id="c-ml-marg">—</span></div>
+              <div class="comp-lucro-row"><span class="comp-lucro-label">Lucro líquido</span><span class="comp-lucro-val" id="c-ml-lucro">—</span></div>
+            </div>
+            <div class="comp-card" id="c-sh-card">
+              <div class="comp-header"><span class="comp-plat">Shopee</span><span id="c-sh-badge" class="comp-badge-lose">—</span></div>
+              <div class="comp-row"><span class="comp-row-label">Comissão</span><span class="comp-row-val" id="c-sh-comissao">—</span></div>
+              <div class="comp-row"><span class="comp-row-label">Valor da taxa</span><span class="comp-row-val red" id="c-sh-taxa">—</span></div>
+              <div class="comp-row"><span class="comp-row-label">Taxa fixa</span><span class="comp-row-val red" id="c-sh-fixa">—</span></div>
+              <div class="comp-row"><span class="comp-row-label">Outros custos</span><span class="comp-row-val red" id="c-sh-outros">—</span></div>
+              <div class="comp-row"><span class="comp-row-label">Repasse</span><span class="comp-row-val green" id="c-sh-repasse">—</span></div>
+              <div class="comp-row"><span class="comp-row-label">Margem real</span><span class="comp-row-val" id="c-sh-marg">—</span></div>
+              <div class="comp-lucro-row"><span class="comp-lucro-label">Lucro líquido</span><span class="comp-lucro-val" id="c-sh-lucro">—</span></div>
             </div>
           </div>
+          <div class="veredito-card"><span class="veredito-icon">🏆</span><div><div class="veredito-label">Melhor plataforma</div><div class="veredito-txt" id="c-veredito-txt">—</div></div></div>
+        </div>
+      </div>
 
-          <div class="comp-card" id="c-sh-card">
-            <div class="comp-header">
-              <span class="comp-plat">Shopee</span>
-              <span id="c-sh-badge" class="comp-badge-lose">—</span>
-            </div>
-            <div class="comp-row"><span class="comp-row-label">Comissão</span><span class="comp-row-val" id="c-sh-comissao">—</span></div>
-            <div class="comp-row"><span class="comp-row-label">Valor da taxa</span><span class="comp-row-val red" id="c-sh-taxa">—</span></div>
-            <div class="comp-row"><span class="comp-row-label">Taxa fixa por item</span><span class="comp-row-val red" id="c-sh-fixa">—</span></div>
-            <div class="comp-row"><span class="comp-row-label">Outros custos</span><span class="comp-row-val red" id="c-sh-outros">—</span></div>
-            <div class="comp-row"><span class="comp-row-label">Repasse ao vendedor</span><span class="comp-row-val green" id="c-sh-repasse">—</span></div>
-            <div class="comp-row"><span class="comp-row-label">Margem real</span><span class="comp-row-val" id="c-sh-marg">—</span></div>
-            <div class="comp-lucro-row">
-              <span class="comp-lucro-label">Lucro líquido</span>
-              <span class="comp-lucro-val" id="c-sh-lucro">—</span>
+
+      <!-- PERFIL -->
+      <div id="panel-perfil" class="panel">
+        <div class="card">
+          <div class="card-title">Avatar</div>
+          <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+
+            <!-- Avatar atual -->
+            <div id="profile-avatar-display" style="width:64px;height:64px;border-radius:50%;background:#15803d;display:flex;align-items:center;justify-content:center;font-size:30px;flex-shrink:0;border:2px solid rgba(34,197,94,0.4)">🐺</div>
+
+            <!-- Opções -->
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <div style="font-size:12px;color:var(--text-muted);font-weight:500;text-transform:uppercase;letter-spacing:0.06em">Escolher avatar</div>
+              <div style="display:flex;gap:10px;align-items:center">
+
+                <!-- Avatar 1 -->
+                <div id="avbtn_av1" onclick="selectAvatar('av1')"
+                  style="width:48px;height:48px;border-radius:50%;background:#7c3aed;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;border:2px solid transparent;transition:all 0.15s;flex-shrink:0"
+                  title="Lobo">🐺</div>
+
+                <!-- Avatar 2 -->
+                <div id="avbtn_av2" onclick="selectAvatar('av2')"
+                  style="width:48px;height:48px;border-radius:50%;background:#b45309;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;border:2px solid transparent;transition:all 0.15s;flex-shrink:0"
+                  title="Leão">🦁</div>
+
+                <!-- Avatar 3 -->
+                <div id="avbtn_av3" onclick="selectAvatar('av3')"
+                  style="width:48px;height:48px;border-radius:50%;background:#0e7490;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;border:2px solid transparent;transition:all 0.15s;flex-shrink:0"
+                  title="Águia">🦅</div>
+
+                <!-- Divisor -->
+                <div style="width:1px;height:36px;background:var(--border);flex-shrink:0"></div>
+
+                <!-- Upload foto -->
+                <input type="file" id="avatar-upload" accept="image/*" onchange="uploadAvatar(this)" style="display:none" />
+                <button class="btn btn-sm" onclick="document.getElementById('avatar-upload').click()"
+                  style="display:inline-flex;align-items:center;gap:6px;flex-shrink:0">
+                  📷 Enviar foto
+                </button>
+              </div>
             </div>
           </div>
         </div>
+        <div class="card">
+          <div class="card-title">Informações</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Username</label>
+              <input type="text" id="perfil-username" placeholder="Seu username" />
+            </div>
+            <div class="form-group">
+              <label>Email</label>
+              <input type="text" id="perfil-email" disabled style="opacity:0.5;cursor:not-allowed" />
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="salvarPerfil()">💾 Salvar alterações</button>
+          <div id="perfil-msg" style="font-size:12px;margin-top:10px;min-height:16px"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Segurança</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Nova senha</label>
+              <input type="password" id="perfil-newpass" placeholder="Mín. 6 caracteres" />
+            </div>
+            <div class="form-group">
+              <label>Confirmar senha</label>
+              <input type="password" id="perfil-confpass" placeholder="Repita a senha" />
+            </div>
+          </div>
+          <button class="btn" onclick="alterarSenha()">🔒 Alterar senha</button>
+          <div id="pass-msg" style="font-size:12px;margin-top:10px;min-height:16px"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">PIN de acesso rápido</div>
+          <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px">Configure ou redefina seu PIN para entrar mais rápido.</p>
+          <div class="pin-size-toggle" style="max-width:220px">
+            <button class="pin-size-btn active" id="pp-pin4" onclick="setPinSizePerfil(4)">4 dígitos</button>
+            <button class="pin-size-btn" id="pp-pin6" onclick="setPinSizePerfil(6)">6 dígitos</button>
+          </div>
+          <div class="pin-dots" id="pp-dots" style="margin:12px 0"></div>
+          <div class="pin-keypad" id="pp-keypad" style="max-width:220px"></div>
+          <div id="pp-msg" style="font-size:12px;margin-top:10px;min-height:16px"></div>
+        </div>
+      </div>
 
-        <div class="veredito-card">
-          <span class="veredito-icon">🏆</span>
-          <div>
-            <div class="veredito-label">Melhor plataforma para este produto</div>
-            <div class="veredito-txt" id="c-veredito-txt">—</div>
+      <!-- ADMIN -->
+      <div id="panel-admin" class="panel">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-bottom:16px">
+          <div class="admin-stat"><div class="admin-stat-val" id="admin-total">—</div><div class="admin-stat-label">Total de usuários</div></div>
+          <div class="admin-stat"><div class="admin-stat-val" id="admin-admins">—</div><div class="admin-stat-label">Admins</div></div>
+          <div class="admin-stat"><div class="admin-stat-val" id="admin-ativos">—</div><div class="admin-stat-label">Ativos</div></div>
+          <div class="admin-stat"><div class="admin-stat-val" id="admin-inativos">—</div><div class="admin-stat-label">Inativos</div></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Gerenciar contas</div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Usuário</th><th>Email</th><th>Função</th><th>Status</th><th>Cadastro</th><th>Ações</th></tr></thead>
+              <tbody id="admin-tbody"><tr><td colspan="6"><div class="empty-state">Carregando...</div></td></tr></tbody>
+            </table>
           </div>
         </div>
       </div>
+
     </div>
+  </div>
 
-  </div><!-- /content -->
-</div><!-- /main -->
-</div><!-- /app-shell -->
-
-<!-- BOTTOM NAV (mobile only) -->
-<nav class="bottom-nav" id="bottom-nav">
-  <button class="bottom-nav-item active" onclick="showPanel('preco', this)" data-panel="preco">
-    <span class="bnav-icon">🧮</span>
-    <span class="bnav-label">Preço</span>
-  </button>
-  <button class="bottom-nav-item" onclick="showPanel('estoque', this)" data-panel="estoque">
-    <span class="bnav-icon">📦</span>
-    <span class="bnav-label">Estoque</span>
-  </button>
-  <button class="bottom-nav-item" onclick="showPanel('lucro', this)" data-panel="lucro">
-    <span class="bnav-icon">📈</span>
-    <span class="bnav-label">Lucro</span>
-  </button>
-  <button class="bottom-nav-item" onclick="showPanel('descricao', this)" data-panel="descricao">
-    <span class="bnav-icon">✨</span>
-    <span class="bnav-label">IA</span>
-  </button>
-  <button class="bottom-nav-item" onclick="showPanel('comparador', this)" data-panel="comparador">
-    <span class="bnav-icon">⚖️</span>
-    <span class="bnav-label">Comparar</span>
-  </button>
-</nav>
+  <nav class="bottom-nav" id="bottom-nav">
+    <button class="bottom-nav-item active" onclick="showPanel('preco',this)" data-panel="preco"><span class="bnav-icon">🧮</span><span class="bnav-label">Preço</span></button>
+    <button class="bottom-nav-item" onclick="showPanel('estoque',this)" data-panel="estoque"><span class="bnav-icon">📦</span><span class="bnav-label">Estoque</span></button>
+    <button class="bottom-nav-item" onclick="showPanel('lucro',this)" data-panel="lucro"><span class="bnav-icon">📈</span><span class="bnav-label">Lucro</span></button>
+    <button class="bottom-nav-item" onclick="showPanel('descricao',this)" data-panel="descricao"><span class="bnav-icon">✨</span><span class="bnav-label">IA</span></button>
+    <button class="bottom-nav-item" onclick="showPanel('comparador',this)" data-panel="comparador"><span class="bnav-icon">⚖️</span><span class="bnav-label">Comparar</span></button>
+    <button class="bottom-nav-item" onclick="showPanel('perfil',this)" data-panel="perfil"><span class="bnav-icon">👤</span><span class="bnav-label">Perfil</span></button>
+  </nav>
+</div>
 
 <script>
-  let produtos = [];
+const SUPABASE_URL = 'https://hvogaewmntafzbaoywtc.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_9Ml38cIckwmUnjLB0DdGSQ_l4ZCFwr-';
+const ADMIN_H = 'd03411b7e84e579ac402dd01ef17f65528d3299c603657b643d03a864841bc92';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  const ML_RATES = { ml_10:10, ml_12:12, ml_14:14, ml_15:15, ml_17:17, ml_19:19 };
+let currentUser = null;
+let currentProfile = null;
+let pinSize = 4;
+let pinEntered = '';
 
-  const PANEL_META = {
-    preco:    { title: 'Calculadora de Precificação',   sub: 'Calcule o preço ideal com as taxas reais de 2026' },
-    estoque:  { title: 'Controle de Estoque',           sub: 'Cadastre e acompanhe seus produtos' },
-    lucro:    { title: 'Calculadora de Lucratividade',  sub: 'Simule seu lucro real por venda e por quantidade' },
-    descricao:  { title: 'Gerador de Descrição com IA',   sub: 'Crie textos de anúncio otimizados com inteligência artificial' },
-    comparador: { title: 'Comparador ML vs Shopee',        sub: 'Veja lado a lado qual plataforma é mais lucrativa para cada produto' }
-  };
-
-  function showPanel(id, btn) {
-    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.bottom-nav-item').forEach(b => b.classList.remove('active'));
-    document.getElementById('panel-' + id).classList.add('active');
-    if (btn) btn.classList.add('active');
-    document.querySelectorAll('[data-panel="' + id + '"]').forEach(b => b.classList.add('active'));
-    document.getElementById('topbar-title').textContent = PANEL_META[id].title;
-    document.getElementById('topbar-sub').textContent   = PANEL_META[id].sub;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  function fmt(v) {
-    return 'R$ ' + Number(v).toFixed(2).replace('.', ',');
-  }
-
-  function getShopeeFaixa(preco, altoCPF) {
-    let perc, fixa;
-    if (preco < 8)        { perc = 50; fixa = 0; }
-    else if (preco < 80)  { perc = 20; fixa = altoCPF ? 7  : 4;  }
-    else if (preco < 100) { perc = 14; fixa = altoCPF ? 19 : 16; }
-    else if (preco < 200) { perc = 14; fixa = altoCPF ? 23 : 20; }
-    else                  { perc = 14; fixa = altoCPF ? 29 : 26; }
-    return { perc, fixa };
-  }
-
-  function faixaLabel(preco) {
-    if (preco < 8)   return 'abaixo de R$ 8';
-    if (preco < 80)  return 'R$ 8 a R$ 79,99';
-    if (preco < 100) return 'R$ 80 a R$ 99,99';
-    if (preco < 200) return 'R$ 100 a R$ 199,99';
-    return 'R$ 200 ou mais';
-  }
-
-  /* ---- PRECIFICAÇÃO ---- */
-  function onPlatPreco() {
-    const v = document.getElementById('p-plat').value;
-    document.getElementById('p-custom-wrap').style.display = v === 'custom' ? 'flex' : 'none';
-    const info = document.getElementById('p-info');
-    info.classList.toggle('show', v === 'shopee');
-  }
-
-  function calcPreco() {
-    const custo   = parseFloat(document.getElementById('p-custo').value)  || 0;
-    const frete   = parseFloat(document.getElementById('p-frete').value)  || 0;
-    const margem  = parseFloat(document.getElementById('p-margem').value) || 20;
-    const imposto = parseFloat(document.getElementById('p-imposto').value)|| 0;
-    const plat    = document.getElementById('p-plat').value;
-    const altoCPF = document.getElementById('p-vendedor').value === 'cpf';
-    const custoBase = custo + frete;
-    let taxaPerc, taxaFixa = 0;
-
-    if (plat === 'custom') {
-      taxaPerc = parseFloat(document.getElementById('p-taxa-custom').value) || 0;
-    } else if (plat === 'shopee') {
-      const estimado = custoBase / (1 - (20 + imposto + margem) / 100);
-      const f = getShopeeFaixa(estimado, altoCPF);
-      taxaPerc = f.perc; taxaFixa = f.fixa;
+// ===== INIT =====
+async function init() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) {
+    await loadUserAndShow(session.user);
+  } else {
+    const pinUserId = localStorage.getItem('sw_pin_user');
+    if (pinUserId) {
+      const name = localStorage.getItem('sw_pin_name') || 'Usuário';
+      showPinLogin(name, pinUserId);
     } else {
-      taxaPerc = ML_RATES[plat];
+      showScreen('screen-login');
     }
+  }
+}
 
-    const deduc = taxaPerc + imposto;
-    const precoMin = (custoBase + taxaFixa) / (1 - deduc / 100);
-    const precoSug = (custoBase + taxaFixa) / (1 - (deduc + margem) / 100);
-    const taxaVal  = precoSug * taxaPerc / 100;
-    const impostV  = precoSug * imposto / 100;
-    const lucro    = precoSug - custoBase - taxaVal - impostV - taxaFixa;
+async function loadUserAndShow(user) {
+  currentUser = user;
+  const { data: profile } = await sb.from('profiles').select('*').eq('id', user.id).single();
+  currentProfile = profile;
 
-    document.getElementById('p-min').textContent    = fmt(precoMin);
-    document.getElementById('p-sug').textContent    = fmt(precoSug);
-    document.getElementById('p-taxa-r').textContent = fmt(taxaVal) + ' (' + taxaPerc + '%)';
+  // Check if admin by email hash
+  const emailHash = await hashStr(user.email.toLowerCase());
+  const isAdmin = emailHash === ADMIN_H || (profile && profile.role === 'admin');
 
-    const fixaWrap = document.getElementById('p-fixa-wrap');
-    if (taxaFixa > 0) {
-      fixaWrap.style.display = 'flex';
-      document.getElementById('p-fixa-r').textContent = fmt(taxaFixa) + ' /item';
-    } else {
-      fixaWrap.style.display = 'none';
-    }
-
-    const elLucro = document.getElementById('p-lucro');
-    elLucro.textContent = fmt(lucro);
-    elLucro.className = 'metric-value ' + (lucro >= 0 ? 'positive' : 'negative');
-    document.getElementById('p-result').style.display = 'grid';
+  if (isAdmin && profile && profile.role !== 'admin') {
+    await sb.from('profiles').update({ role: 'admin' }).eq('id', user.id);
+    if (currentProfile) currentProfile.role = 'admin';
   }
 
-  /* ---- ESTOQUE ---- */
-  function addProduto() {
-    const nome  = document.getElementById('e-nome').value.trim();
-    const sku   = document.getElementById('e-sku').value.trim();
-    const qtd   = parseInt(document.getElementById('e-qtd').value)    || 0;
-    const min   = parseInt(document.getElementById('e-min').value)    || 5;
-    const custo = parseFloat(document.getElementById('e-custo').value)|| 0;
-    if (!nome) { alert('Informe o nome do produto.'); return; }
-    produtos.push({ id: Date.now(), nome, sku, qtd, min, custo });
-    renderTabela();
-    ['e-nome','e-sku','e-qtd','e-min','e-custo'].forEach(id => document.getElementById(id).value = '');
-  }
+  const username = profile?.username || user.email.split('@')[0];
+  const role = isAdmin ? 'admin' : (profile?.role || 'user');
 
-  function renderTabela() {
-    const tbody = document.getElementById('e-tbody');
-    if (!produtos.length) {
-      tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zM16 3H8L6 7h12l-2-4z"/></svg>
-        <div>Nenhum produto cadastrado ainda.</div></div></td></tr>`;
+  document.getElementById('sb-username').textContent = username;
+  document.getElementById('sb-role').textContent = role === 'admin' ? '⭐ Admin' : 'Usuário';
+  document.getElementById('nav-admin').style.display = isAdmin ? 'flex' : 'none';
+  setTimeout(updateSidebarAvatar, 200);
+  document.getElementById('sb-avatar').textContent = username[0].toUpperCase();
+  if (isAdmin) document.getElementById('nav-admin').style.display = 'flex';
+  setTimeout(updateSidebarAvatar, 100);
+
+  document.getElementById('auth-container').style.display = 'none';
+  document.getElementById('app').classList.add('visible');
+
+  const hasPinStored = !!localStorage.getItem('sw_pin_' + user.id);
+  if (!hasPinStored) {
+    setTimeout(() => offerPinSetup(username, user.id), 500);
+  }
+}
+
+function offerPinSetup(username, userId) {
+  document.getElementById('app').classList.remove('visible');
+  document.getElementById('auth-container').style.display = 'flex';
+  pinEntered = '';
+  pinSize = 4;
+  renderPinDots('pin-setup-dots', pinSize);
+  renderPinKeypad('pin-setup-keypad', 'setup');
+  showScreen('screen-pin-setup');
+}
+
+// ===== AUTH ACTIONS =====
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass  = document.getElementById('login-pass').value;
+  const btn   = document.getElementById('login-btn');
+  const err   = document.getElementById('login-error');
+  err.textContent = '';
+  btn.disabled = true; btn.textContent = 'Entrando...';
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+  if (error) { err.textContent = 'Email ou senha incorretos.'; btn.disabled = false; btn.textContent = 'Entrar'; return; }
+  await loadUserAndShow(data.user);
+  btn.disabled = false; btn.textContent = 'Entrar';
+}
+
+async function doRegister() {
+  const username = document.getElementById('reg-username').value.trim();
+  const email    = document.getElementById('reg-email').value.trim();
+  const pass     = document.getElementById('reg-pass').value;
+  const btn      = document.getElementById('reg-btn');
+  const err      = document.getElementById('reg-error');
+  err.textContent = '';
+  if (!username) { err.textContent = 'Informe um username.'; return; }
+  if (!email) { err.textContent = 'Informe um email.'; return; }
+  if (pass.length < 6) { err.textContent = 'Senha deve ter no mínimo 6 caracteres.'; return; }
+  btn.disabled = true; btn.textContent = 'Criando conta...';
+  try {
+    const { data, error } = await sb.auth.signUp({
+      email,
+      password: pass,
+      options: { data: { username }, emailRedirectTo: window.location.href }
+    });
+    if (error) {
+      err.textContent = error.message;
+      btn.disabled = false; btn.textContent = 'Criar conta';
       return;
     }
-    tbody.innerHTML = produtos.map(p => {
-      let cls, label;
-      if (p.qtd === 0)        { cls = 'badge-out'; label = 'Sem estoque'; }
-      else if (p.qtd <= p.min){ cls = 'badge-low'; label = 'Estoque baixo'; }
-      else                    { cls = 'badge-ok';  label = 'Normal'; }
+    // Check if email confirmation is needed
+    if (data.user && data.user.identities && data.user.identities.length === 0) {
+      err.style.color = '#fbbf24';
+      err.textContent = 'Este email já está cadastrado. Tente fazer login.';
+      btn.disabled = false; btn.textContent = 'Criar conta';
+      return;
+    }
+    if (data.session) {
+      btn.disabled = false; btn.textContent = 'Criar conta';
+      await loadUserAndShow(data.user);
+    } else {
+      // Email confirmation required
+      err.style.color = 'var(--green-400)';
+      err.textContent = '✅ Conta criada! Verifique seu email para confirmar o cadastro, depois faça login.';
+      btn.disabled = false; btn.textContent = 'Criar conta';
+    }
+  } catch(e) {
+    err.textContent = 'Erro ao criar conta: ' + e.message;
+    btn.disabled = false; btn.textContent = 'Criar conta';
+  }
+}
+
+async function doLogout() {
+  await sb.auth.signOut();
+  currentUser = null; currentProfile = null;
+  document.getElementById('app').classList.remove('visible');
+  document.getElementById('auth-container').style.display = 'flex';
+  showScreen('screen-login');
+}
+
+// ===== PIN =====
+function showPinLogin(name, userId) {
+  document.getElementById('pin-login-name').textContent = name;
+  pinEntered = '';
+  renderPinDots('pin-login-dots', 4);
+  renderPinKeypad('pin-login-keypad', 'login');
+  showScreen('screen-pin-login');
+}
+
+function renderPinDots(containerId, size) {
+  const c = document.getElementById(containerId);
+  c.innerHTML = '';
+  for (let i = 0; i < size; i++) {
+    const d = document.createElement('div');
+    d.className = 'pin-dot';
+    d.id = containerId + '_d' + i;
+    c.appendChild(d);
+  }
+}
+
+function renderPinKeypad(containerId, mode) {
+  const c = document.getElementById(containerId);
+  c.innerHTML = '';
+  const keys = ['1','2','3','4','5','6','7','8','9','','0','⌫'];
+  const subs  = ['','ABC','DEF','GHI','JKL','MNO','PQRS','TUV','WXYZ','','',''];
+  keys.forEach((k, i) => {
+    const btn = document.createElement('button');
+    if (!k) { btn.className = 'pin-key pin-key-empty'; btn.disabled = true; }
+    else if (k === '⌫') { btn.className = 'pin-key'; btn.textContent = '⌫'; btn.onclick = () => pinDel(mode); }
+    else {
+      btn.className = 'pin-key';
+      btn.innerHTML = k + (subs[i] ? `<span class="pin-key-sub">${subs[i]}</span>` : '');
+      btn.onclick = () => pinPress(k, mode);
+    }
+    c.appendChild(btn);
+  });
+}
+
+function updatePinDots(prefix, size) {
+  for (let i = 0; i < size; i++) {
+    const d = document.getElementById(prefix + '_d' + i);
+    if (d) d.classList.toggle('filled', i < pinEntered.length);
+  }
+}
+
+async function pinPress(n, mode) {
+  const size = mode === 'setup' ? pinSize : getStoredPinSize();
+  if (pinEntered.length >= size) return;
+  pinEntered += n;
+  updatePinDots(mode === 'setup' ? 'pin-setup-dots' : 'pin-login-dots', size);
+  if (pinEntered.length === size) {
+    setTimeout(() => mode === 'setup' ? confirmPinSetup() : confirmPinLogin(), 120);
+  }
+}
+
+function pinDel(mode) {
+  if (pinEntered.length > 0) {
+    pinEntered = pinEntered.slice(0, -1);
+    const size = mode === 'setup' ? pinSize : getStoredPinSize();
+    updatePinDots(mode === 'setup' ? 'pin-setup-dots' : 'pin-login-dots', size);
+  }
+}
+
+function getStoredPinSize() {
+  const userId = localStorage.getItem('sw_pin_user');
+  const stored = localStorage.getItem('sw_pin_' + userId);
+  return stored ? parseInt(stored.split('|')[1] || '4') : 4;
+}
+
+async function confirmPinSetup() {
+  const h = await hashStr(pinEntered);
+  const userId = currentUser.id;
+  const name = currentProfile?.username || currentUser.email.split('@')[0];
+  localStorage.setItem('sw_pin_' + userId, h + '|' + pinSize);
+  localStorage.setItem('sw_pin_user', userId);
+  localStorage.setItem('sw_pin_name', name);
+  document.getElementById('auth-container').style.display = 'none';
+  document.getElementById('app').classList.add('visible');
+}
+
+async function confirmPinLogin() {
+  const userId = localStorage.getItem('sw_pin_user');
+  const stored = localStorage.getItem('sw_pin_' + userId);
+  if (!stored) { showScreen('screen-login'); return; }
+  const [storedHash] = stored.split('|');
+  const h = await hashStr(pinEntered);
+  if (h === storedHash) {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) {
+      await loadUserAndShow(session.user);
+    } else {
+      localStorage.removeItem('sw_pin_user');
+      localStorage.removeItem('sw_pin_name');
+      showScreen('screen-login');
+    }
+  } else {
+    const dots = document.querySelectorAll('#pin-login-dots .pin-dot');
+    dots.forEach(d => { d.classList.remove('filled'); d.classList.add('error'); });
+    document.getElementById('pin-login-error').textContent = 'PIN incorreto.';
+    setTimeout(() => {
+      dots.forEach(d => d.classList.remove('error'));
+      document.getElementById('pin-login-error').textContent = '';
+      pinEntered = '';
+      updatePinDots('pin-login-dots', getStoredPinSize());
+    }, 1200);
+  }
+}
+
+function setPinSize(n) {
+  pinSize = n; pinEntered = '';
+  document.getElementById('btn-pin4').classList.toggle('active', n === 4);
+  document.getElementById('btn-pin6').classList.toggle('active', n === 6);
+  renderPinDots('pin-setup-dots', n);
+  updatePinDots('pin-setup-dots', n);
+}
+
+function skipPin() {
+  document.getElementById('auth-container').style.display = 'none';
+  document.getElementById('app').classList.add('visible');
+}
+
+// ===== UTILS =====
+async function hashStr(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.auth-screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  pinEntered = '';
+}
+
+// ===== APP =====
+const PANEL_META = {
+  preco:     { title: 'Calculadora de Precificação',  sub: 'Calcule o preço ideal com as taxas reais de 2026' },
+  estoque:   { title: 'Controle de Estoque',          sub: 'Cadastre e acompanhe seus produtos' },
+  lucro:     { title: 'Calculadora de Lucratividade', sub: 'Simule seu lucro real por venda e por quantidade' },
+  descricao: { title: 'Gerador de Descrição com IA',  sub: 'Crie textos de anúncio otimizados com inteligência artificial' },
+  comparador:{ title: 'Comparador ML vs Shopee',      sub: 'Veja lado a lado qual plataforma é mais lucrativa' },
+  perfil:    { title: 'Meu Perfil',                       sub: 'Edite suas informações, avatar e PIN de acesso' },
+  admin:     { title: 'Painel Admin',                     sub: 'Gerencie usuários e permissões do Sellwise' }
+};
+
+function showPanel(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.bottom-nav-item').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  if (btn) btn.classList.add('active');
+  document.querySelectorAll('[data-panel="' + id + '"]').forEach(b => b.classList.add('active'));
+  document.getElementById('topbar-title').textContent = PANEL_META[id].title;
+  document.getElementById('topbar-sub').textContent   = PANEL_META[id].sub;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+const ML_RATES = { ml_10:10, ml_12:12, ml_14:14, ml_15:15, ml_17:17, ml_19:19 };
+
+function getShopeeFaixa(preco, altoCPF) {
+  let perc, fixa;
+  if (preco < 8)        { perc=50; fixa=0; }
+  else if (preco < 80)  { perc=20; fixa=altoCPF?7:4; }
+  else if (preco < 100) { perc=14; fixa=altoCPF?19:16; }
+  else if (preco < 200) { perc=14; fixa=altoCPF?23:20; }
+  else                  { perc=14; fixa=altoCPF?29:26; }
+  return { perc, fixa };
+}
+
+function faixaLabel(p) {
+  if (p<8) return 'abaixo de R$8';
+  if (p<80) return 'R$8–R$79,99';
+  if (p<100) return 'R$80–R$99,99';
+  if (p<200) return 'R$100–R$199,99';
+  return 'R$200+';
+}
+
+function fmt(v) { return 'R$ ' + Number(v).toFixed(2).replace('.',','); }
+
+let produtos = [];
+
+function onPlatPreco() {
+  const v = document.getElementById('p-plat').value;
+  document.getElementById('p-custom-wrap').style.display = v==='custom'?'flex':'none';
+  document.getElementById('p-info').classList.toggle('show', v==='shopee');
+}
+
+function calcPreco() {
+  const custo=parseFloat(document.getElementById('p-custo').value)||0;
+  const frete=parseFloat(document.getElementById('p-frete').value)||0;
+  const margem=parseFloat(document.getElementById('p-margem').value)||20;
+  const imposto=parseFloat(document.getElementById('p-imposto').value)||0;
+  const plat=document.getElementById('p-plat').value;
+  const altoCPF=document.getElementById('p-vendedor').value==='cpf';
+  const base=custo+frete;
+  let perc, fixa=0;
+  if (plat==='custom') perc=parseFloat(document.getElementById('p-taxa-custom').value)||0;
+  else if (plat==='shopee') { const f=getShopeeFaixa((base+fixa)/(1-(20+imposto+margem)/100),altoCPF); perc=f.perc; fixa=f.fixa; }
+  else perc=ML_RATES[plat];
+  const deduc=perc+imposto;
+  const min=(base+fixa)/(1-deduc/100);
+  const sug=(base+fixa)/(1-(deduc+margem)/100);
+  const taxaV=sug*perc/100;
+  const lucro=sug-base-taxaV-(sug*imposto/100)-fixa;
+  document.getElementById('p-min').textContent=fmt(min);
+  document.getElementById('p-sug').textContent=fmt(sug);
+  document.getElementById('p-taxa-r').textContent=fmt(taxaV)+' ('+perc+'%)';
+  const fw=document.getElementById('p-fixa-wrap');
+  if (fixa>0) { fw.style.display='flex'; document.getElementById('p-fixa-r').textContent=fmt(fixa)+'/item'; } else fw.style.display='none';
+  const el=document.getElementById('p-lucro');
+  el.textContent=fmt(lucro); el.className='metric-value '+(lucro>=0?'positive':'negative');
+  document.getElementById('p-result').style.display='grid';
+}
+
+function addProduto() {
+  const nome=document.getElementById('e-nome').value.trim();
+  if (!nome){alert('Informe o nome do produto.');return;}
+  produtos.push({id:Date.now(),nome,sku:document.getElementById('e-sku').value.trim(),qtd:parseInt(document.getElementById('e-qtd').value)||0,min:parseInt(document.getElementById('e-min').value)||5,custo:parseFloat(document.getElementById('e-custo').value)||0});
+  renderTabela();
+  ['e-nome','e-sku','e-qtd','e-min','e-custo'].forEach(id=>document.getElementById(id).value='');
+}
+
+function renderTabela() {
+  const tbody=document.getElementById('e-tbody');
+  if (!produtos.length){tbody.innerHTML='<tr><td colspan="7"><div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zM16 3H8L6 7h12l-2-4z"/></svg><div>Nenhum produto cadastrado ainda.</div></div></td></tr>';return;}
+  tbody.innerHTML=produtos.map(p=>{
+    let cls,label;
+    if(p.qtd===0){cls='badge-out';label='Sem estoque';}
+    else if(p.qtd<=p.min){cls='badge-low';label='Estoque baixo';}
+    else{cls='badge-ok';label='Normal';}
+    return `<tr><td><strong>${p.nome}</strong></td><td style="color:var(--text-muted)">${p.sku||'—'}</td><td><strong>${p.qtd}</strong></td><td>${fmt(p.custo)}</td><td>${fmt(p.custo*p.qtd)}</td><td><span class="badge ${cls}">${label}</span></td><td><button class="btn btn-sm" onclick="remover(${p.id})" style="color:var(--red);border-color:rgba(248,113,113,0.3)">🗑</button></td></tr>`;
+  }).join('');
+}
+
+function remover(id){produtos=produtos.filter(p=>p.id!==id);renderTabela();}
+
+function onPlatLucro(){
+  const v=document.getElementById('l-plat').value;
+  document.getElementById('l-custom-wrap').style.display=v==='custom'?'flex':'none';
+  if(v!=='shopee') document.getElementById('l-info').classList.remove('show');
+  else onPrecoLucro();
+}
+
+function onPrecoLucro(){
+  if(document.getElementById('l-plat').value!=='shopee')return;
+  const preco=parseFloat(document.getElementById('l-preco').value)||0;
+  const altoCPF=document.getElementById('l-vendedor').value==='cpf';
+  if(preco>0){
+    const f=getShopeeFaixa(preco,altoCPF);
+    document.getElementById('l-info-txt').textContent=`Shopee 2026 · Faixa ${faixaLabel(preco)}: ${f.perc}% + R$${f.fixa},00 fixo por item.`;
+    document.getElementById('l-info').classList.add('show');
+  }
+}
+
+function calcLucro(){
+  const preco=parseFloat(document.getElementById('l-preco').value)||0;
+  const custo=parseFloat(document.getElementById('l-custo').value)||0;
+  const frete=parseFloat(document.getElementById('l-frete').value)||0;
+  const imposto=parseFloat(document.getElementById('l-imposto').value)||0;
+  const qtd=parseInt(document.getElementById('l-qtd').value)||1;
+  const plat=document.getElementById('l-plat').value;
+  const altoCPF=document.getElementById('l-vendedor').value==='cpf';
+  let perc,fixa=0;
+  if(plat==='custom') perc=parseFloat(document.getElementById('l-taxa-custom').value)||0;
+  else if(plat==='shopee'){const f=getShopeeFaixa(preco,altoCPF);perc=f.perc;fixa=f.fixa;}
+  else perc=ML_RATES[plat];
+  const taxaV=preco*perc/100;
+  const impostoV=preco*imposto/100;
+  const platTotal=taxaV+fixa;
+  const outros=custo+frete+impostoV;
+  const lucro=preco-platTotal-outros;
+  const margem=preco>0?(lucro/preco*100):0;
+  document.getElementById('l-bruta').textContent=fmt(preco);
+  document.getElementById('l-taxa-r').textContent=fmt(platTotal)+' ('+perc+'%'+(fixa>0?'+R$'+fixa:'')+')';
+  document.getElementById('l-outros').textContent=fmt(outros);
+  const el=document.getElementById('l-liq');
+  el.textContent=fmt(lucro); el.className='metric-value '+(lucro>=0?'positive':'negative');
+  document.getElementById('l-marg').textContent=margem.toFixed(1)+'%';
+  document.getElementById('l-total').textContent=fmt(lucro*qtd);
+  document.getElementById('l-result').style.display='grid';
+}
+
+function onPrecoComp(){
+  const preco=parseFloat(document.getElementById('c-preco').value)||0;
+  const altoCPF=document.getElementById('c-vendedor').value==='cpf';
+  if(preco>0){const f=getShopeeFaixa(preco,altoCPF);document.getElementById('c-shopee-txt').textContent=`Shopee 2026 · Faixa ${faixaLabel(preco)}: ${f.perc}% + R$${f.fixa},00 fixo/item.`;}
+}
+
+function calcComparador(){
+  const preco=parseFloat(document.getElementById('c-preco').value)||0;
+  const custo=parseFloat(document.getElementById('c-custo').value)||0;
+  const frete=parseFloat(document.getElementById('c-frete').value)||0;
+  const imposto=parseFloat(document.getElementById('c-imposto').value)||0;
+  const altoCPF=document.getElementById('c-vendedor').value==='cpf';
+  const mlPerc=parseFloat(document.getElementById('c-ml-cat').value)||12;
+  if(!preco){alert('Informe o preço de venda.');return;}
+  const impostoV=preco*imposto/100;
+  const outros=custo+frete+impostoV;
+  const mlTaxa=preco*mlPerc/100;
+  const mlLucro=preco-mlTaxa-outros;
+  const mlMarg=preco>0?(mlLucro/preco*100):0;
+  const shF=getShopeeFaixa(preco,altoCPF);
+  const shTaxa=preco*shF.perc/100;
+  const shLucro=preco-shTaxa-shF.fixa-outros;
+  const shMarg=preco>0?(shLucro/preco*100):0;
+  document.getElementById('c-ml-comissao').textContent=mlPerc+'%';
+  document.getElementById('c-ml-taxa').textContent=fmt(mlTaxa);
+  document.getElementById('c-ml-fixa').textContent='—';
+  document.getElementById('c-ml-outros').textContent=fmt(outros);
+  document.getElementById('c-ml-repasse').textContent=fmt(preco-mlTaxa);
+  document.getElementById('c-ml-marg').textContent=mlMarg.toFixed(1)+'%';
+  document.getElementById('c-sh-comissao').textContent=shF.perc+'% · '+faixaLabel(preco);
+  document.getElementById('c-sh-taxa').textContent=fmt(shTaxa);
+  document.getElementById('c-sh-fixa').textContent=fmt(shF.fixa);
+  document.getElementById('c-sh-outros').textContent=fmt(outros);
+  document.getElementById('c-sh-repasse').textContent=fmt(preco-shTaxa-shF.fixa);
+  document.getElementById('c-sh-marg').textContent=shMarg.toFixed(1)+'%';
+  const mlWin=mlLucro>=shLucro;
+  const diff=Math.abs(mlLucro-shLucro);
+  const elML=document.getElementById('c-ml-lucro');
+  elML.textContent=fmt(mlLucro); elML.style.color=mlLucro>=0?'var(--green-400)':'var(--red)';
+  const elSH=document.getElementById('c-sh-lucro');
+  elSH.textContent=fmt(shLucro); elSH.style.color=shLucro>=0?'var(--green-400)':'var(--red)';
+  document.getElementById('c-ml-badge').textContent=mlWin?'✓ Mais lucrativo':'Menos lucrativo';
+  document.getElementById('c-ml-badge').className=mlWin?'comp-badge-win':'comp-badge-lose';
+  document.getElementById('c-ml-card').className='comp-card'+(mlWin?' winner':'');
+  document.getElementById('c-sh-badge').textContent=!mlWin?'✓ Mais lucrativo':'Menos lucrativo';
+  document.getElementById('c-sh-badge').className=!mlWin?'comp-badge-win':'comp-badge-lose';
+  document.getElementById('c-sh-card').className='comp-card'+(!mlWin?' winner':'');
+  document.getElementById('c-veredito-txt').textContent=(mlWin?'Mercado Livre':'Shopee')+' deixa '+fmt(diff)+' a mais de lucro por unidade.';
+  document.getElementById('c-result').style.display='block';
+}
+
+async function gerarDescricao(){
+  const nome=document.getElementById('d-nome').value.trim();
+  const carac=document.getElementById('d-carac').value.trim();
+  const plat=document.getElementById('d-plat').value;
+  const tom=document.getElementById('d-tom').value;
+  const publico=document.getElementById('d-publico').value.trim();
+  if(!nome){alert('Informe o nome do produto.');return;}
+  const btn=document.getElementById('d-btn');
+  const output=document.getElementById('d-output');
+  const actions=document.getElementById('d-actions');
+  btn.disabled=true; btn.textContent='⏳ Gerando...';
+  output.style.display='block'; output.textContent='Gerando descrição com IA, aguarde...';
+  actions.classList.remove('show');
+  const platMap={ambas:'Mercado Livre e Shopee',ml:'Mercado Livre',shopee:'Shopee'};
+  const tomMap={profissional:'profissional e persuasivo',descontraido:'descontraído e amigável',tecnico:'técnico e detalhado'};
+  const prompt=`Você é especialista em copywriting para e-commerce brasileiro. Crie uma descrição otimizada para ${platMap[plat]}.\nProduto: ${nome}\nCaracterísticas: ${carac||'não informadas'}\nPúblico-alvo: ${publico||'geral'}\nTom: ${tomMap[tom]}\nEstrutura: 1. Título SEO 2. Descrição (3 parágrafos) 3. Benefícios em tópicos 4. Call to action. Linguagem brasileira natural.`;
+  try {
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+    const data=await resp.json();
+    output.textContent=data.content?.map(b=>b.text||'').join('')||'Erro ao gerar.';
+    actions.classList.add('show');
+  } catch(e){output.textContent='Erro ao conectar com a IA.';}
+  btn.disabled=false; btn.textContent='✨ Gerar com IA';
+}
+
+function copiarDescricao(){
+  navigator.clipboard.writeText(document.getElementById('d-output').textContent).then(()=>{
+    const btn=document.getElementById('d-copy');
+    btn.textContent='✅ Copiado!';
+    setTimeout(()=>btn.textContent='📋 Copiar texto',2000);
+  });
+}
+
+  // ===== AVATARS & PROFILE =====
+  const AVATARS = [
+    ['av1','🐺','#7c3aed'],
+    ['av2','🦁','#b45309'],
+    ['av3','🦅','#0e7490']
+  ];
+  let selectedAvatar = 'av1';
+  let ppPinSize = 4;
+  let ppPinEntered = '';
+
+  function getAvatarData(key) {
+    return AVATARS.find(a => a[0] === key) || AVATARS[0];
+  }
+
+  function updateSidebarAvatar() {
+    if (!currentProfile) return;
+    const key = currentProfile.avatar || 'av1';
+    const el = document.getElementById('sb-avatar');
+    if (!el) return;
+    if (key.startsWith('http')) {
+      el.innerHTML = `<img src="${key}" style="width:28px;height:28px;border-radius:50%;object-fit:cover">`;
+      el.style.background = 'transparent';
+    } else {
+      const [,emoji,color] = getAvatarData(key);
+      el.textContent = emoji;
+      el.style.background = color;
+    }
+  }
+
+  function initAvatarGrid() {
+    // Avatars are now static HTML, just highlight the selected one
+    const cur = selectedAvatar || 'av1';
+    ['av1','av2','av3'].forEach(k => {
+      const b = document.getElementById('avbtn_' + k);
+      if (!b) return;
+      if (k === cur) {
+        b.style.borderColor = '#22c55e';
+        b.style.boxShadow = '0 0 0 3px rgba(34,197,94,0.25)';
+        b.style.transform = 'scale(1.08)';
+      } else {
+        b.style.borderColor = 'transparent';
+        b.style.boxShadow = 'none';
+        b.style.transform = 'scale(1)';
+      }
+    });
+  }
+
+  function selectAvatar(key) {
+    selectedAvatar = key;
+    // Reset all avatar buttons
+    ['av1','av2','av3'].forEach(k => {
+      const b = document.getElementById('avbtn_' + k);
+      if (b) { b.style.borderColor = 'transparent'; b.style.boxShadow = 'none'; b.style.transform = 'scale(1)'; }
+    });
+    // Highlight selected
+    const el = document.getElementById('avbtn_' + key);
+    if (el) { el.style.borderColor = '#22c55e'; el.style.boxShadow = '0 0 0 3px rgba(34,197,94,0.25)'; el.style.transform = 'scale(1.08)'; }
+    // Update display
+    const display = document.getElementById('profile-avatar-display');
+    if (display) {
+      const [,emoji,color] = getAvatarData(key);
+      display.textContent = emoji;
+      display.style.background = color;
+    }
+  }
+
+  async function uploadAvatar(input) {
+    if (!input.files[0] || !currentUser) return;
+    const file = input.files[0];
+    const ext = file.name.split('.').pop();
+    const path = `${currentUser.id}/avatar.${ext}`;
+    const msg = document.getElementById('perfil-msg');
+    msg.style.color = 'var(--text-muted)';
+    msg.textContent = 'Enviando foto...';
+    const { error } = await sb.storage.from('avatars').upload(path, file, { upsert: true });
+    if (error) { msg.style.color='var(--red)'; msg.textContent='Erro ao enviar foto.'; return; }
+    const { data: urlData } = sb.storage.from('avatars').getPublicUrl(path);
+    const url = urlData.publicUrl + '?t=' + Date.now();
+    await sb.from('profiles').update({ avatar: url }).eq('id', currentUser.id);
+    if (currentProfile) currentProfile.avatar = url;
+    selectedAvatar = url;
+    const display = document.getElementById('profile-avatar-display');
+    display.innerHTML = `<img src="${url}" style="width:72px;height:72px;border-radius:50%;object-fit:cover">`;
+    display.style.background = 'transparent';
+    updateSidebarAvatar();
+    msg.style.color='var(--green-400)'; msg.textContent='✅ Foto atualizada!';
+    setTimeout(()=>msg.textContent='', 3000);
+  }
+
+  async function salvarPerfil() {
+    const username = document.getElementById('perfil-username').value.trim();
+    const msg = document.getElementById('perfil-msg');
+    if (!username) { msg.style.color='var(--red)'; msg.textContent='Informe um username.'; return; }
+    const avatarVal = selectedAvatar;
+    const { error } = await sb.from('profiles').update({ username, avatar: avatarVal }).eq('id', currentUser.id);
+    if (error) { msg.style.color='var(--red)'; msg.textContent='Erro ao salvar: '+error.message; return; }
+    if (currentProfile) { currentProfile.username = username; currentProfile.avatar = avatarVal; }
+    document.getElementById('sb-username').textContent = username;
+    localStorage.setItem('sw_pin_name', username);
+    updateSidebarAvatar();
+    msg.style.color='var(--green-400)'; msg.textContent='✅ Perfil salvo!';
+    setTimeout(()=>msg.textContent='', 3000);
+  }
+
+  async function alterarSenha() {
+    const np = document.getElementById('perfil-newpass').value;
+    const cp = document.getElementById('perfil-confpass').value;
+    const msg = document.getElementById('pass-msg');
+    if (np.length < 6) { msg.style.color='var(--red)'; msg.textContent='Mínimo 6 caracteres.'; return; }
+    if (np !== cp) { msg.style.color='var(--red)'; msg.textContent='Senhas não coincidem.'; return; }
+    const { error } = await sb.auth.updateUser({ password: np });
+    if (error) { msg.style.color='var(--red)'; msg.textContent='Erro: '+error.message; return; }
+    msg.style.color='var(--green-400)'; msg.textContent='✅ Senha alterada!';
+    document.getElementById('perfil-newpass').value='';
+    document.getElementById('perfil-confpass').value='';
+    setTimeout(()=>msg.textContent='', 3000);
+  }
+
+  function setPinSizePerfil(n) {
+    ppPinSize=n; ppPinEntered='';
+    document.getElementById('pp-pin4').classList.toggle('active',n===4);
+    document.getElementById('pp-pin6').classList.toggle('active',n===6);
+    renderPinDots('pp-dots',n);
+    updatePinDots('pp-dots',n);
+  }
+
+  function initPerfilPin() {
+    ppPinSize=4; ppPinEntered='';
+    renderPinDots('pp-dots',4);
+    updatePinDots('pp-dots',4);
+    const kp = document.getElementById('pp-keypad');
+    if (!kp) return;
+    kp.innerHTML='';
+    const keys=['1','2','3','4','5','6','7','8','9','','0','⌫'];
+    keys.forEach(k=>{
+      const btn=document.createElement('button');
+      if(!k){btn.className='pin-key pin-key-empty';btn.disabled=true;}
+      else if(k==='⌫'){btn.className='pin-key';btn.textContent='⌫';btn.onclick=()=>{if(ppPinEntered.length>0){ppPinEntered=ppPinEntered.slice(0,-1);updatePinDots('pp-dots',ppPinSize);}};}
+      else{btn.className='pin-key';btn.textContent=k;btn.onclick=()=>ppKeyPress(k);}
+      kp.appendChild(btn);
+    });
+  }
+
+  async function ppKeyPress(n) {
+    if(ppPinEntered.length>=ppPinSize) return;
+    ppPinEntered+=n;
+    updatePinDots('pp-dots',ppPinSize);
+    if(ppPinEntered.length===ppPinSize){
+      setTimeout(async()=>{
+        const h=await hashStr(ppPinEntered);
+        localStorage.setItem('sw_pin_'+currentUser.id,h+'|'+ppPinSize);
+        localStorage.setItem('sw_pin_user',currentUser.id);
+        localStorage.setItem('sw_pin_name',currentProfile?.username||currentUser.email.split('@')[0]);
+        const msg=document.getElementById('pp-msg');
+        msg.style.color='var(--green-400)';
+        msg.textContent='✅ PIN de '+ppPinSize+' dígitos salvo!';
+        ppPinEntered='';
+        renderPinDots('pp-dots',ppPinSize);
+        updatePinDots('pp-dots',ppPinSize);
+        setTimeout(()=>msg.textContent='',3000);
+      },120);
+    }
+  }
+
+  function initPerfilPanel() {
+    if(!currentUser||!currentProfile) return;
+    selectedAvatar = currentProfile.avatar || 'av1';
+    document.getElementById('perfil-username').value = currentProfile.username || '';
+    document.getElementById('perfil-email').value = currentUser.email || '';
+    const display = document.getElementById('profile-avatar-display');
+    if (display) {
+      if (selectedAvatar && selectedAvatar.startsWith('http')) {
+        display.innerHTML = `<img src="${selectedAvatar}" style="width:64px;height:64px;border-radius:50%;object-fit:cover">`;
+        display.style.background = 'transparent';
+      } else {
+        const [,emoji,color] = getAvatarData(selectedAvatar);
+        display.textContent = emoji;
+        display.style.background = color;
+      }
+    }
+    initAvatarGrid();
+    initPerfilPin();
+  }
+
+  // ===== ADMIN =====
+  async function loadAdminPanel() {
+    const tbody=document.getElementById('admin-tbody');
+    tbody.innerHTML='<tr><td colspan="6"><div class="empty-state">Carregando...</div></td></tr>';
+    const {data:profiles,error}=await sb.from('profiles').select('*').order('created_at',{ascending:true});
+    if(error||!profiles){tbody.innerHTML='<tr><td colspan="6"><div class="empty-state">Erro ao carregar. Verifique as permissões.</div></td></tr>';return;}
+    const total=profiles.length;
+    const admins=profiles.filter(p=>p.role==='admin').length;
+    const ativos=profiles.filter(p=>p.status!=='inactive').length;
+    const inativos=profiles.filter(p=>p.status==='inactive').length;
+    document.getElementById('admin-total').textContent=total;
+    document.getElementById('admin-admins').textContent=admins;
+    document.getElementById('admin-ativos').textContent=ativos;
+    document.getElementById('admin-inativos').textContent=inativos;
+    if(!profiles.length){tbody.innerHTML='<tr><td colspan="6"><div class="empty-state">Nenhum usuário.</div></td></tr>';return;}
+    tbody.innerHTML=profiles.map(p=>{
+      const avKey=p.avatar||'av1';
+      let avHtml;
+      if(avKey.startsWith('http')){
+        avHtml=`<img src="${avKey}" style="width:32px;height:32px;border-radius:50%;object-fit:cover">`;
+      } else {
+        const [,emoji,color]=getAvatarData(avKey);
+        avHtml=`<div style="width:32px;height:32px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">${emoji}</div>`;
+      }
+      const isMe=currentUser&&p.id===currentUser.id;
+      const roleClass=p.role==='admin'?'role-admin':'role-user';
+      const roleLabel=p.role==='admin'?'⭐ Admin':'Usuário';
+      const date=new Date(p.created_at).toLocaleDateString('pt-BR');
+      const statusColor=p.status==='inactive'?'var(--red)':'var(--green-400)';
+      const statusLabel=p.status==='inactive'?'● Inativo':'● Ativo';
       return `<tr>
-        <td><strong>${p.nome}</strong></td>
-        <td style="color:#7a9a87">${p.sku || '—'}</td>
-        <td><strong>${p.qtd}</strong></td>
-        <td>${fmt(p.custo)}</td>
-        <td>${fmt(p.custo * p.qtd)}</td>
-        <td><span class="badge ${cls}">${label}</span></td>
-        <td><button class="btn btn-sm" onclick="remover(${p.id})" style="color:#c0392b;border-color:#fca5a5">🗑</button></td>
+        <td><div style="display:flex;align-items:center;gap:8px">${avHtml}<span style="font-weight:500">${p.username||'—'}${isMe?' <span style="font-size:10px;color:var(--text-muted)">(você)</span>':''}</span></div></td>
+        <td style="color:var(--text-muted);font-size:12px">${p.id.slice(0,8)}...</td>
+        <td><span class="role-badge ${roleClass}">${roleLabel}</span></td>
+        <td style="font-size:12px;font-weight:500;color:${statusColor}">${statusLabel}</td>
+        <td style="color:var(--text-muted);font-size:12px">${date}</td>
+        <td><div style="display:flex;gap:6px;flex-wrap:wrap">
+          ${!isMe?`
+            <button class="btn btn-sm" onclick="toggleRole('${p.id}','${p.role}')" style="font-size:11px;padding:4px 10px">${p.role==='admin'?'→ Usuário':'→ Admin'}</button>
+            <button class="btn btn-sm" onclick="toggleStatus('${p.id}','${p.status}')" style="font-size:11px;padding:4px 10px;color:${p.status==='inactive'?'var(--green-400)':'var(--red)'}">${p.status==='inactive'?'Ativar':'Desativar'}</button>
+          `:'<span style="font-size:11px;color:var(--text-muted)">—</span>'}
+        </div></td>
       </tr>`;
     }).join('');
   }
 
-  function remover(id) { produtos = produtos.filter(p => p.id !== id); renderTabela(); }
-
-  /* ---- LUCRATIVIDADE ---- */
-  function onPlatLucro() {
-    const v = document.getElementById('l-plat').value;
-    document.getElementById('l-custom-wrap').style.display = v === 'custom' ? 'flex' : 'none';
-    if (v !== 'shopee') document.getElementById('l-info').classList.remove('show');
-    else onPrecoLucro();
+  async function toggleRole(userId,currentRole){
+    const newRole=currentRole==='admin'?'user':'admin';
+    const {error}=await sb.from('profiles').update({role:newRole}).eq('id',userId);
+    if(!error) loadAdminPanel();
   }
 
-  function onPrecoLucro() {
-    const plat = document.getElementById('l-plat').value;
-    if (plat !== 'shopee') return;
-    const preco   = parseFloat(document.getElementById('l-preco').value) || 0;
-    const altoCPF = document.getElementById('l-vendedor').value === 'cpf';
-    if (preco > 0) {
-      const f = getShopeeFaixa(preco, altoCPF);
-      document.getElementById('l-info-txt').textContent =
-        `Shopee 2026 · Faixa ${faixaLabel(preco)}: ${f.perc}% + R$ ${f.fixa},00 fixo por item.`;
-      document.getElementById('l-info').classList.add('show');
-    }
+  async function toggleStatus(userId,currentStatus){
+    const newStatus=currentStatus==='inactive'?'active':'inactive';
+    const {error}=await sb.from('profiles').update({status:newStatus}).eq('id',userId);
+    if(!error) loadAdminPanel();
   }
 
-  function calcLucro() {
-    const preco   = parseFloat(document.getElementById('l-preco').value)   || 0;
-    const custo   = parseFloat(document.getElementById('l-custo').value)   || 0;
-    const frete   = parseFloat(document.getElementById('l-frete').value)   || 0;
-    const imposto = parseFloat(document.getElementById('l-imposto').value) || 0;
-    const qtd     = parseInt(document.getElementById('l-qtd').value)       || 1;
-    const plat    = document.getElementById('l-plat').value;
-    const altoCPF = document.getElementById('l-vendedor').value === 'cpf';
-
-    let taxaPerc, taxaFixa = 0;
-    if (plat === 'custom') {
-      taxaPerc = parseFloat(document.getElementById('l-taxa-custom').value) || 0;
-    } else if (plat === 'shopee') {
-      const f = getShopeeFaixa(preco, altoCPF);
-      taxaPerc = f.perc; taxaFixa = f.fixa;
-    } else {
-      taxaPerc = ML_RATES[plat];
-    }
-
-    const taxaVal   = preco * taxaPerc / 100;
-    const impostV   = preco * imposto  / 100;
-    const totalPlat = taxaVal + taxaFixa;
-    const outrosCust= custo + frete + impostV;
-    const lucroLiq  = preco - totalPlat - outrosCust;
-    const margem    = preco > 0 ? (lucroLiq / preco * 100) : 0;
-
-    document.getElementById('l-bruta').textContent  = fmt(preco);
-    document.getElementById('l-taxa-r').textContent = fmt(totalPlat) + ' (' + taxaPerc + '%' + (taxaFixa > 0 ? ' + R$' + taxaFixa : '') + ')';
-    document.getElementById('l-outros').textContent = fmt(outrosCust);
-    document.getElementById('l-marg').textContent   = margem.toFixed(1) + '%';
-    document.getElementById('l-total').textContent  = fmt(lucroLiq * qtd);
-
-    const el = document.getElementById('l-liq');
-    el.textContent = fmt(lucroLiq);
-    el.className   = 'metric-value ' + (lucroLiq >= 0 ? 'positive' : 'negative');
-    document.getElementById('l-result').style.display = 'grid';
+  // ===== RECUPERAR SENHA =====
+  async function enviarRecuperacao() {
+    const email=document.getElementById('rec-email').value.trim();
+    const msg=document.getElementById('rec-msg');
+    const btn=document.getElementById('rec-btn');
+    if(!email){msg.style.color='var(--red)';msg.textContent='Informe seu email.';return;}
+    btn.disabled=true; btn.textContent='Enviando...';
+    const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:window.location.href});
+    btn.disabled=false; btn.textContent='Enviar link';
+    if(error){msg.style.color='var(--red)';msg.textContent='Erro: '+error.message;return;}
+    msg.style.color='var(--green-400)';
+    msg.textContent='✅ Link enviado! Verifique seu email.';
   }
 
-  /* ---- DESCRIÇÃO IA ---- */
-  async function gerarDescricao() {
-    const nome    = document.getElementById('d-nome').value.trim();
-    const carac   = document.getElementById('d-carac').value.trim();
-    const plat    = document.getElementById('d-plat').value;
-    const tom     = document.getElementById('d-tom').value;
-    const publico = document.getElementById('d-publico').value.trim();
-    if (!nome) { alert('Informe o nome do produto.'); return; }
 
-    const btn     = document.getElementById('d-btn');
-    const output  = document.getElementById('d-output');
-    const actions = document.getElementById('d-actions');
-
-    btn.disabled       = true;
-    btn.textContent    = '⏳ Gerando...';
-    output.style.display = 'block';
-    output.textContent = 'Gerando descrição com IA, aguarde...';
-    actions.classList.remove('show');
-
-    const platMap = { ambas: 'Mercado Livre e Shopee', ml: 'Mercado Livre', shopee: 'Shopee' };
-    const tomMap  = { profissional: 'profissional e persuasivo', descontraido: 'descontraído e amigável', tecnico: 'técnico e detalhado' };
-
-    const prompt = `Você é especialista em copywriting para e-commerce brasileiro.
-Crie uma descrição de produto otimizada para ${platMap[plat]}.
-
-Produto: ${nome}
-Características: ${carac || 'não informadas'}
-Público-alvo: ${publico || 'público geral'}
-Tom: ${tomMap[tom]}
-
-Estrutura obrigatória:
-1. Título SEO otimizado
-2. Descrição atrativa (3 parágrafos curtos)
-3. Principais benefícios (lista com bullet points)
-4. Call to action
-
-Use linguagem brasileira natural e direta.`;
-
-    try {
-      const resp = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 1000,
-          messages: [{ role: 'user', content: prompt }]
-        })
-      });
-      const data = await resp.json();
-      const text = data.content?.map(b => b.text || '').join('') || 'Erro ao gerar descrição.';
-      output.textContent = text;
-      actions.classList.add('show');
-    } catch(e) {
-      output.textContent = 'Erro ao conectar com a IA. Verifique sua conexão e tente novamente.';
-    }
-
-    btn.disabled    = false;
-    btn.textContent = '✨ Gerar com IA';
-  }
-
-  function copiarDescricao() {
-    const text = document.getElementById('d-output').textContent;
-    navigator.clipboard.writeText(text).then(() => {
-      const btn = document.getElementById('d-copy');
-      btn.textContent = '✅ Copiado!';
-      setTimeout(() => btn.textContent = '📋 Copiar texto', 2000);
-    });
-  }
-
-  /* ---- COMPARADOR ---- */
-  function onPrecoComp() {
-    const preco = parseFloat(document.getElementById('c-preco').value) || 0;
-    const altoCPF = document.getElementById('c-vendedor').value === 'cpf';
-    if (preco > 0) {
-      const f = getShopeeFaixa(preco, altoCPF);
-      document.getElementById('c-shopee-txt').textContent =
-        'Shopee 2026 · Faixa ' + faixaLabel(preco) + ': ' + f.perc + '% + R$ ' + f.fixa + ',00 fixo por item.';
-    }
-  }
-
-  function calcComparador() {
-    const preco    = parseFloat(document.getElementById('c-preco').value)    || 0;
-    const custo    = parseFloat(document.getElementById('c-custo').value)    || 0;
-    const frete    = parseFloat(document.getElementById('c-frete').value)    || 0;
-    const imposto  = parseFloat(document.getElementById('c-imposto').value)  || 0;
-    const altoCPF  = document.getElementById('c-vendedor').value === 'cpf';
-    const mlPerc   = parseFloat(document.getElementById('c-ml-cat').value)   || 12;
-
-    if (!preco) { alert('Informe o preço de venda.'); return; }
-
-    const impostoVal = preco * imposto / 100;
-    const outrosCust = custo + frete + impostoVal;
-
-    // ML
-    const mlTaxaVal = preco * mlPerc / 100;
-    const mlLucro   = preco - mlTaxaVal - outrosCust;
-    const mlMargem  = preco > 0 ? (mlLucro / preco * 100) : 0;
-    const mlRepasse = preco - mlTaxaVal;
-
-    // Shopee
-    const shFaixa   = getShopeeFaixa(preco, altoCPF);
-    const shTaxaVal = preco * shFaixa.perc / 100;
-    const shFixa    = shFaixa.fixa;
-    const shLucro   = preco - shTaxaVal - shFixa - outrosCust;
-    const shMargem  = preco > 0 ? (shLucro / preco * 100) : 0;
-    const shRepasse = preco - shTaxaVal - shFixa;
-
-    // Preenche ML
-    document.getElementById('c-ml-comissao').textContent = mlPerc + '%';
-    document.getElementById('c-ml-taxa').textContent     = fmt(mlTaxaVal);
-    document.getElementById('c-ml-fixa').textContent     = '—';
-    document.getElementById('c-ml-outros').textContent   = fmt(outrosCust);
-    document.getElementById('c-ml-repasse').textContent  = fmt(mlRepasse);
-    document.getElementById('c-ml-marg').textContent     = mlMargem.toFixed(1) + '%';
-    const elML = document.getElementById('c-ml-lucro');
-    elML.textContent = fmt(mlLucro);
-    elML.style.color = mlLucro >= 0 ? 'var(--green-700)' : '#c0392b';
-
-    // Preenche Shopee
-    document.getElementById('c-sh-comissao').textContent = shFaixa.perc + '% · faixa ' + faixaLabel(preco);
-    document.getElementById('c-sh-taxa').textContent     = fmt(shTaxaVal);
-    document.getElementById('c-sh-fixa').textContent     = fmt(shFixa);
-    document.getElementById('c-sh-outros').textContent   = fmt(outrosCust);
-    document.getElementById('c-sh-repasse').textContent  = fmt(shRepasse);
-    document.getElementById('c-sh-marg').textContent     = shMargem.toFixed(1) + '%';
-    const elSH = document.getElementById('c-sh-lucro');
-    elSH.textContent = fmt(shLucro);
-    elSH.style.color = shLucro >= 0 ? 'var(--green-700)' : '#c0392b';
-
-    // Badges e veredito
-    const mlWin = mlLucro >= shLucro;
-    const diff  = Math.abs(mlLucro - shLucro);
-
-    const mlBadge = document.getElementById('c-ml-badge');
-    mlBadge.textContent = mlWin ? '✓ Mais lucrativo' : 'Menos lucrativo';
-    mlBadge.className = mlWin ? 'comp-badge-win' : 'comp-badge-lose';
-    document.getElementById('c-ml-card').className = 'comp-card' + (mlWin ? ' winner' : '');
-    document.getElementById('c-ml-lucro').style.color = mlLucro >= 0 ? 'var(--green-400)' : 'var(--red)';
-
-    const shBadge = document.getElementById('c-sh-badge');
-    shBadge.textContent = !mlWin ? '✓ Mais lucrativo' : 'Menos lucrativo';
-    shBadge.className = !mlWin ? 'comp-badge-win' : 'comp-badge-lose';
-    document.getElementById('c-sh-card').className = 'comp-card' + (!mlWin ? ' winner' : '');
-    document.getElementById('c-sh-lucro').style.color = shLucro >= 0 ? 'var(--green-400)' : 'var(--red)';
-
-    const winner = mlWin ? 'Mercado Livre' : 'Shopee';
-    document.getElementById('c-veredito-txt').textContent =
-      winner + ' deixa ' + fmt(diff) + ' a mais de lucro por unidade vendida neste produto.';
-
-    document.getElementById('c-result').style.display = 'block';
-  }
-
+init();
 </script>
 </body>
 </html>
