@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sellwise — Painel do Vendedor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-base:       #0a0f0c;
+    --bg-surface:    #111a14;
+    --bg-card:       #172118;
+    --bg-elevated:   #1e2e20;
+    --bg-input:      #111a14;
+    --green-500:     #22c55e;
+    --green-400:     #4ade80;
+    --green-300:     #86efac;
+    --green-600:     #16a34a;
+    --green-700:     #15803d;
+    --green-800:     #166534;
+    --green-dim:     rgba(34,197,94,0.08);
+    --green-glow:    rgba(34,197,94,0.15);
+    --border:        rgba(255,255,255,0.07);
+    --border-strong: rgba(255,255,255,0.12);
+    --border-green:  rgba(34,197,94,0.25);
+    --text-primary:  #e8f5ec;
+    --text-secondary:#8faa97;
+    --text-muted:    #506858;
+    --red:           #f87171;
+    --radius:        8px;
+    --radius-lg:     12px;
+  }
+
+  html, body { height: 100%; }
+  body {
+    font-family: 'Geist', sans-serif;
+    background: var(--bg-base);
+    color: var(--text-primary);
+    font-size: 15px;
+  }
+
+  /* ===== LAYOUT DESKTOP ===== */
+  .app-shell { display: flex; min-height: 100vh; }
+
+  .sidebar {
+    width: 220px; min-height: 100vh;
+    background: var(--bg-surface);
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    padding: 24px 0 20px;
+    flex-shrink: 0;
+    position: sticky; top: 0; height: 100vh;
+    overflow-y: auto;
+  }
+  .logo { padding: 0 20px 24px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+  .logo-mark { display: flex; align-items: center; gap: 10px; }
+  .logo-icon { width: 32px; height: 32px; background: var(--green-600); border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .logo-icon svg { width: 16px; height: 16px; fill: #fff; }
+  .logo-name { font-family: 'Geist', sans-serif; font-size: 17px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.5px; }
+  .logo-name span { color: var(--green-400); }
+  .logo-sub { font-size: 11px; color: var(--text-muted); margin-top: 5px; padding-left: 42px; }
+  .nav-section { padding: 0 10px; flex: 1; }
+  .nav-label { font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; padding: 0 10px; margin-bottom: 4px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 9px;
+    padding: 8px 10px; border-radius: 7px;
+    color: var(--text-secondary); cursor: pointer;
+    font-size: 13px; font-weight: 500;
+    margin-bottom: 1px; transition: all 0.15s;
+    border: 1px solid transparent; background: none; width: 100%; text-align: left;
+  }
+  .nav-item:hover { background: var(--bg-elevated); color: var(--text-primary); }
+  .nav-item.active { background: var(--green-dim); color: var(--green-400); border-color: var(--border-green); }
+  .nav-icon { font-size: 15px; flex-shrink: 0; }
+  .sidebar-footer { padding: 14px 20px 0; border-top: 1px solid var(--border); margin-top: 16px; }
+  .sidebar-badge { font-size: 11px; color: var(--text-muted); line-height: 1.6; }
+  .sidebar-badge strong { color: var(--green-500); font-weight: 500; }
+
+  /* BOTTOM NAV mobile — hidden on desktop */
+  .bottom-nav { display: none; }
+
+  .main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+
+  .topbar {
+    background: var(--bg-surface); border-bottom: 1px solid var(--border);
+    padding: 14px 24px; display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 10; gap: 12px;
+  }
+  .topbar-info { min-width: 0; flex: 1; }
+  .topbar-title { font-family: 'Geist', sans-serif; font-size: 15px; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .topbar-sub { font-size: 12px; color: var(--text-muted); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .topbar-tag { font-size: 11px; font-weight: 600; padding: 4px 10px; background: var(--green-dim); color: var(--green-400); border: 1px solid var(--border-green); border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
+
+  .content { padding: 20px 24px; flex: 1; }
+
+  /* PANELS */
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* CARDS */
+  .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px 20px; margin-bottom: 14px; }
+  .card-title { font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 14px; display: flex; align-items: center; gap: 7px; }
+  .card-title::before { content: ''; display: block; width: 3px; height: 11px; background: var(--green-500); border-radius: 2px; flex-shrink: 0; }
+
+  /* FORMS */
+  .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 14px; }
+  .form-group { display: flex; flex-direction: column; gap: 5px; }
+  .form-group.span2 { grid-column: span 2; }
+  label { font-size: 11px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  input, select, textarea {
+    font-family: 'Geist', sans-serif; font-size: 14px;
+    color: var(--text-primary); background: var(--bg-input);
+    border: 1px solid var(--border-strong); border-radius: var(--radius);
+    padding: 10px 12px; outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s; width: 100%;
+  }
+  input:focus, select:focus, textarea:focus { border-color: var(--green-500); box-shadow: 0 0 0 3px var(--green-glow); }
+  input::placeholder { color: var(--text-muted); }
+  textarea { resize: vertical; min-height: 80px; }
+  select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23506858' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 28px; }
+  option, optgroup { background: var(--bg-surface); color: var(--text-primary); }
+
+  /* BUTTONS */
+  .btn { font-family: 'Geist', sans-serif; font-size: 14px; font-weight: 500; padding: 11px 18px; border-radius: var(--radius); border: 1px solid var(--border-strong); background: var(--bg-elevated); color: var(--text-primary); cursor: pointer; transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px; }
+  .btn:hover { background: var(--bg-input); border-color: var(--border-green); color: var(--green-400); }
+  .btn-primary { background: var(--green-700); border-color: var(--green-600); color: #fff; }
+  .btn-primary:hover { background: var(--green-800); border-color: var(--green-700); color: #fff; }
+  .btn-full { width: 100%; justify-content: center; }
+  .btn-sm { padding: 7px 13px; font-size: 13px; }
+
+  /* RESULTS */
+  .result-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
+  .metric { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }
+  .metric-label { font-size: 10px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+  .metric-value { font-family: 'Geist', sans-serif; font-size: 18px; font-weight: 600; color: var(--text-primary); }
+  .metric-value.positive { color: var(--green-400); }
+  .metric-value.negative { color: var(--red); }
+
+  /* INFO BOX */
+  .info-box { background: rgba(34,197,94,0.06); border: 1px solid var(--border-green); border-radius: var(--radius); padding: 9px 13px; font-size: 12px; color: var(--green-300); margin-bottom: 12px; display: none; gap: 7px; align-items: flex-start; line-height: 1.5; }
+  .info-box.show { display: flex; }
+
+  /* TABLE */
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 500px; }
+  thead tr { border-bottom: 1px solid var(--border-strong); }
+  th { padding: 9px 11px; text-align: left; font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.07em; white-space: nowrap; }
+  td { padding: 11px 11px; border-bottom: 1px solid var(--border); color: var(--text-primary); vertical-align: middle; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: var(--bg-elevated); }
+
+  /* BADGES */
+  .badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+  .badge-ok  { background: rgba(34,197,94,0.12); color: var(--green-400); border: 1px solid rgba(34,197,94,0.2); }
+  .badge-low { background: rgba(251,191,36,0.1);  color: #fbbf24; border: 1px solid rgba(251,191,36,0.2); }
+  .badge-out { background: rgba(248,113,113,0.1); color: var(--red); border: 1px solid rgba(248,113,113,0.2); }
+  .badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+
+  /* AI OUTPUT */
+  .ai-output { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; margin-top: 14px; font-size: 13px; line-height: 1.75; color: var(--text-primary); white-space: pre-wrap; min-height: 60px; display: none; }
+  .ai-actions { display: none; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+  .ai-actions.show { display: flex; }
+
+  .empty-state { text-align: center; padding: 32px 16px; color: var(--text-muted); font-size: 13px; }
+  .empty-state svg { width: 32px; height: 32px; margin-bottom: 8px; opacity: 0.2; display: block; margin-left: auto; margin-right: auto; }
+
+  /* COMPARADOR */
+  .comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  .comp-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px; }
+  .comp-card.winner { border-color: var(--border-green); background: rgba(34,197,94,0.04); }
+  .comp-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; gap: 8px; flex-wrap: wrap; }
+  .comp-plat { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .comp-badge-win { font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 20px; background: rgba(34,197,94,0.12); color: var(--green-400); border: 1px solid rgba(34,197,94,0.25); white-space: nowrap; }
+  .comp-badge-lose { font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 20px; background: var(--bg-elevated); color: var(--text-muted); border: 1px solid var(--border); white-space: nowrap; }
+  .comp-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; padding: 7px 0; border-bottom: 1px solid var(--border); gap: 8px; }
+  .comp-row:last-child { border-bottom: none; }
+  .comp-row-label { color: var(--text-muted); flex-shrink: 0; }
+  .comp-row-val { font-weight: 500; color: var(--text-primary); text-align: right; }
+  .comp-row-val.red { color: var(--red); }
+  .comp-row-val.green { color: var(--green-400); }
+  .comp-lucro-row { display: flex; justify-content: space-between; align-items: baseline; padding: 12px 0 6px; border-top: 1px solid var(--border-strong); margin-top: 4px; gap: 8px; }
+  .comp-lucro-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); }
+  .comp-lucro-val { font-family: 'Geist', sans-serif; font-size: 22px; font-weight: 700; }
+  .veredito-card { background: rgba(34,197,94,0.06); border: 1px solid var(--border-green); border-radius: var(--radius-lg); padding: 16px 18px; display: flex; align-items: center; gap: 14px; }
+  .veredito-icon { font-size: 24px; flex-shrink: 0; }
+  .veredito-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--green-500); margin-bottom: 3px; }
+  .veredito-txt { font-size: 13px; font-weight: 500; color: var(--text-primary); line-height: 1.4; }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }
+  .hidden { display: none !important; }
+
+  /* ===== MOBILE ===== */
+  @media (max-width: 700px) {
+    .app-shell { flex-direction: column; }
+
+    /* Sidebar vira topbar compacta */
+    .sidebar {
+      width: 100%; min-height: unset; height: auto;
+      position: sticky; top: 0; z-index: 20;
+      flex-direction: row; align-items: center;
+      padding: 12px 16px; border-right: none;
+      border-bottom: 1px solid var(--border);
+      overflow: visible;
+    }
+    .logo { padding: 0; border-bottom: none; margin-bottom: 0; flex: 1; }
+    .logo-sub { display: none; }
+    .logo-name { font-size: 16px; }
+    .logo-icon { width: 28px; height: 28px; }
+    .logo-icon svg { width: 14px; height: 14px; }
+    .nav-section { display: none; }
+    .sidebar-footer { display: none; }
+
+    /* Bottom navigation bar */
+    .bottom-nav {
+      display: flex;
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+      background: var(--bg-surface);
+      border-top: 1px solid var(--border);
+      padding: 8px 4px calc(8px + env(safe-area-inset-bottom));
+    }
+    .bottom-nav-item {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; gap: 3px;
+      padding: 6px 2px; border-radius: 8px;
+      border: none; background: none; cursor: pointer;
+      color: var(--text-muted); transition: all 0.15s;
+      font-family: 'Geist', sans-serif;
+    }
+    .bottom-nav-item.active { color: var(--green-400); }
+    .bottom-nav-item .bnav-icon { font-size: 20px; line-height: 1; }
+    .bottom-nav-item .bnav-label { font-size: 10px; font-weight: 500; white-space: nowrap; }
+
+    /* Topbar ajustado */
+    .topbar { padding: 10px 16px; }
+    .topbar-sub { display: none; }
+    .topbar-title { font-size: 14px; }
+    .topbar-tag { font-size: 10px; padding: 3px 8px; }
+
+    /* Content com espaço pra bottom nav */
+    .content { padding: 16px; padding-bottom: 90px; }
+
+    /* Cards */
+    .card { padding: 14px 16px; }
+
+    /* Forms — 1 coluna no mobile */
+    .form-grid { grid-template-columns: 1fr; gap: 10px; }
+    .form-group.span2 { grid-column: span 1; }
+
+    /* Inputs maiores pra touch */
+    input, select, textarea { font-size: 16px; padding: 12px 13px; }
+
+    /* Botões full width no mobile */
+    .btn { width: 100%; justify-content: center; font-size: 15px; padding: 13px 18px; }
+    .btn-sm { width: auto; font-size: 13px; padding: 8px 14px; }
+    .ai-actions .btn-sm { flex: 1; }
+
+    /* Results — 2 colunas no mobile */
+    .result-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .metric { padding: 10px 12px; }
+    .metric-value { font-size: 16px; }
+
+    /* Comparador — stack vertical no mobile */
+    .comp-grid { grid-template-columns: 1fr; }
+    .comp-lucro-val { font-size: 20px; }
+
+    /* Table scroll hint */
+    .table-wrap::before {
+      content: 'Deslize para ver mais →';
+      display: block; font-size: 11px;
+      color: var(--text-muted); margin-bottom: 8px;
+    }
+  }
+</style>
+</head>
+<body>
+<style id="auth-style">
+  #auth-overlay {
+    position: fixed; inset: 0; z-index: 9999;
+    background: #0a0f0c;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .auth-box {
+    display: flex; flex-direction: column; align-items: center;
+    width: 240px; padding: 28px 20px 24px;
+    background: #111a14; border: 1px solid rgba(34,197,94,0.18);
+    border-radius: 16px;
+  }
+  .auth-logo { display: flex; align-items: center; gap: 8px; margin-bottom: 20px; }
+  .auth-logo-icon { width: 26px; height: 26px; background: #16a34a; border-radius: 6px; display: flex; align-items: center; justify-content: center; }
+  .auth-logo-icon svg { width: 13px; height: 13px; fill: #fff; }
+  .auth-logo-name { font-family: 'Geist', sans-serif; font-size: 16px; font-weight: 700; color: #e8f5ec; letter-spacing: -0.4px; }
+  .auth-logo-name span { color: #4ade80; }
+  .auth-hint { font-size: 11px; color: #506858; margin-bottom: 16px; font-family: 'Geist', sans-serif; }
+  .pin-dots { display: flex; gap: 10px; margin-bottom: 20px; }
+  .pin-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    border: 1.5px solid #506858; background: transparent;
+    transition: all 0.15s;
+  }
+  .pin-dot.filled { background: #22c55e; border-color: #22c55e; }
+  .pin-dot.error { background: #f87171; border-color: #f87171; }
+  .pin-keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; width: 100%; }
+  .pin-key {
+    font-family: 'Geist', sans-serif; font-size: 16px; font-weight: 500;
+    color: #e8f5ec; background: #1a2b1c;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 9px; padding: 11px 8px;
+    cursor: pointer; transition: all 0.12s;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    line-height: 1; user-select: none; -webkit-tap-highlight-color: transparent;
+  }
+  .pin-key:active { background: rgba(34,197,94,0.12); border-color: #22c55e55; transform: scale(0.93); }
+  .pin-key .pin-key-sub { font-size: 7px; color: #3d5445; letter-spacing: 0.1em; margin-top: 2px; font-weight: 600; }
+  .pin-key-empty { background: transparent !important; border-color: transparent !important; cursor: default; }
+  .pin-key-empty:active { transform: none !important; }
+  .pin-key-del { font-size: 17px; }
+  .auth-error-msg { font-size: 11px; color: #f87171; margin-top: 10px; font-family: 'Geist', sans-serif; min-height: 16px; }
+</style>
+
+<div id="auth-overlay">
+  <div class="auth-box">
+    <div class="auth-logo">
+      <div class="auth-logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M3 3h18v4H3zM3 10h11v4H3zM3 17h14v4H3z"/></svg>
+      </div>
+      <span class="auth-logo-name">Sell<span>wise</span></span>
+    </div>
+    <div class="auth-hint">Digite seu PIN de acesso</div>
+    <div class="pin-dots" id="pin-dots">
+      <div class="pin-dot" id="d0"></div>
+      <div class="pin-dot" id="d1"></div>
+      <div class="pin-dot" id="d2"></div>
+      <div class="pin-dot" id="d3"></div>
+      <div class="pin-dot" id="d4"></div>
+      <div class="pin-dot" id="d5"></div>
+    </div>
+    <div class="pin-keypad">
+      <button class="pin-key" onclick="pinPress('1')">1<span class="pin-key-sub"></span></button>
+      <button class="pin-key" onclick="pinPress('2')">2<span class="pin-key-sub">ABC</span></button>
+      <button class="pin-key" onclick="pinPress('3')">3<span class="pin-key-sub">DEF</span></button>
+      <button class="pin-key" onclick="pinPress('4')">4<span class="pin-key-sub">GHI</span></button>
+      <button class="pin-key" onclick="pinPress('5')">5<span class="pin-key-sub">JKL</span></button>
+      <button class="pin-key" onclick="pinPress('6')">6<span class="pin-key-sub">MNO</span></button>
+      <button class="pin-key" onclick="pinPress('7')">7<span class="pin-key-sub">PQRS</span></button>
+      <button class="pin-key" onclick="pinPress('8')">8<span class="pin-key-sub">TUV</span></button>
+      <button class="pin-key" onclick="pinPress('9')">9<span class="pin-key-sub">WXYZ</span></button>
+      <button class="pin-key pin-key-empty" disabled></button>
+      <button class="pin-key" onclick="pinPress('0')">0</button>
+      <button class="pin-key pin-key-del" onclick="pinDel()">⌫</button>
+    </div>
+    <div class="auth-error-msg" id="auth-error-msg"></div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    const PIN = '000000';
+    const KEY = 'sw_auth';
+    let entered = '';
+
+    if (sessionStorage.getItem(KEY) === '1') {
+      document.getElementById('auth-overlay').style.display = 'none';
+    }
+
+    function updateDots() {
+      for (let i = 0; i < 6; i++) {
+        document.getElementById('d' + i).classList.toggle('filled', i < entered.length);
+      }
+    }
+
+    function shakeError() {
+      const dots = document.querySelectorAll('.pin-dot');
+      dots.forEach(d => { d.classList.remove('filled'); d.classList.add('error'); });
+      document.getElementById('auth-error-msg').textContent = 'PIN incorreto. Tente novamente.';
+      setTimeout(() => {
+        dots.forEach(d => d.classList.remove('error'));
+        document.getElementById('auth-error-msg').textContent = '';
+        entered = '';
+        updateDots();
+      }, 1200);
+    }
+
+    window.pinPress = function(n) {
+      if (entered.length >= 6) return;
+      entered += n;
+      updateDots();
+      if (entered.length === 6) {
+        setTimeout(() => {
+          if (entered === PIN) {
+            sessionStorage.setItem(KEY, '1');
+            document.getElementById('auth-overlay').style.display = 'none';
+          } else {
+            shakeError();
+          }
+        }, 120);
+      }
+    };
+
+    window.pinDel = function() {
+      if (entered.length > 0) {
+        entered = entered.slice(0, -1);
+        updateDots();
+      }
+    };
+  })();
+</script>
+
+
+<div class="app-shell">
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="logo">
+    <div class="logo-mark">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M3 3h18v4H3zM3 10h11v4H3zM3 17h14v4H3z"/></svg>
+      </div>
+      <span class="logo-name">Sell<span>wise</span></span>
+    </div>
+    <div class="logo-sub">Painel do Vendedor</div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Ferramentas</div>
+    <button class="nav-item active" onclick="showPanel('preco', this)">
+      <span class="nav-icon">🧮</span> Precificação
+    </button>
+    <button class="nav-item" onclick="showPanel('estoque', this)">
+      <span class="nav-icon">📦</span> Estoque
+    </button>
+    <button class="nav-item" onclick="showPanel('lucro', this)">
+      <span class="nav-icon">📈</span> Lucratividade
+    </button>
+    <button class="nav-item" onclick="showPanel('descricao', this)">
+      <span class="nav-icon">✨</span> Descrição IA
+    </button>
+    <button class="nav-item" onclick="showPanel('comparador', this)">
+      <span class="nav-icon">⚖️</span> Comparador
+    </button>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="sidebar-badge">
+      Taxas atualizadas<br>
+      <strong>Março 2026</strong> · ML &amp; Shopee
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div>
+      <div class="topbar-title" id="topbar-title">Calculadora de Precificação</div>
+      <div class="topbar-sub" id="topbar-sub">Calcule o preço ideal com as taxas reais de 2026</div>
+    </div>
+    <div class="topbar-tag">⚡ Taxas 2026</div>
+  </div>
+
+  <div class="content">
+
+    <!-- PRECIFICAÇÃO -->
+    <div id="panel-preco" class="panel active">
+      <div class="card">
+        <div class="card-title">Dados do produto</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Custo do produto (R$)</label>
+            <input type="number" id="p-custo" placeholder="0,00" min="0" step="0.01" />
+          </div>
+          <div class="form-group">
+            <label>Frete estimado (R$)</label>
+            <input type="number" id="p-frete" placeholder="0,00" min="0" step="0.01" />
+          </div>
+          <div class="form-group">
+            <label>Margem desejada (%)</label>
+            <input type="number" id="p-margem" placeholder="20" min="0" max="99" />
+          </div>
+          <div class="form-group">
+            <label>Imposto / outros (%)</label>
+            <input type="number" id="p-imposto" placeholder="0" min="0" />
+          </div>
+        </div>
+        <div class="card-title" style="margin-top:8px">Plataforma</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Plataforma</label>
+            <select id="p-plat" onchange="onPlatPreco()">
+              <optgroup label="Mercado Livre — Clássico">
+                <option value="ml_10">ML Clássico · cat. baixa (10%)</option>
+                <option value="ml_12" selected>ML Clássico · cat. média (12%)</option>
+                <option value="ml_14">ML Clássico · cat. alta (14%)</option>
+              </optgroup>
+              <optgroup label="Mercado Livre — Premium">
+                <option value="ml_15">ML Premium · cat. baixa (15%)</option>
+                <option value="ml_17">ML Premium · cat. média (17%)</option>
+                <option value="ml_19">ML Premium · cat. alta (19%)</option>
+              </optgroup>
+              <optgroup label="Shopee 2026">
+                <option value="shopee">Shopee · faixa automática por preço</option>
+              </optgroup>
+              <option value="custom">Personalizado</option>
+            </select>
+          </div>
+          <div class="form-group" id="p-custom-wrap" style="display:none">
+            <label>Taxa personalizada (%)</label>
+            <input type="number" id="p-taxa-custom" placeholder="0" min="0" max="100" />
+          </div>
+          <div class="form-group">
+            <label>Tipo de vendedor</label>
+            <select id="p-vendedor">
+              <option value="cnpj">CNPJ / CPF baixo volume</option>
+              <option value="cpf">CPF alto volume (+450 pedidos/90d)</option>
+            </select>
+          </div>
+        </div>
+        <div class="info-box" id="p-info">
+          ℹ️ <span id="p-info-txt">A Shopee cobra por faixa de preço + taxa fixa por item. O cálculo usa a faixa estimada do preço sugerido.</span>
+        </div>
+        <button class="btn btn-primary" onclick="calcPreco()">🧮 Calcular preço</button>
+
+        <div class="result-grid" id="p-result" style="display:none">
+          <div class="metric"><div class="metric-label">Preço mínimo</div><div class="metric-value" id="p-min">—</div></div>
+          <div class="metric"><div class="metric-label">Preço sugerido</div><div class="metric-value positive" id="p-sug">—</div></div>
+          <div class="metric"><div class="metric-label">Taxa % plataforma</div><div class="metric-value" id="p-taxa-r">—</div></div>
+          <div class="metric" id="p-fixa-wrap"><div class="metric-label">Taxa fixa (item)</div><div class="metric-value" id="p-fixa-r">—</div></div>
+          <div class="metric"><div class="metric-label">Lucro líquido</div><div class="metric-value positive" id="p-lucro">—</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ESTOQUE -->
+    <div id="panel-estoque" class="panel">
+      <div class="card">
+        <div class="card-title">Cadastrar produto</div>
+        <div class="form-grid">
+          <div class="form-group span2">
+            <label>Nome do produto</label>
+            <input type="text" id="e-nome" placeholder="Ex: Camiseta Básica Preta M" />
+          </div>
+          <div class="form-group">
+            <label>SKU / Código</label>
+            <input type="text" id="e-sku" placeholder="CAM-001" />
+          </div>
+          <div class="form-group">
+            <label>Quantidade em estoque</label>
+            <input type="number" id="e-qtd" placeholder="0" min="0" />
+          </div>
+          <div class="form-group">
+            <label>Estoque mínimo (alerta)</label>
+            <input type="number" id="e-min" placeholder="5" min="0" />
+          </div>
+          <div class="form-group">
+            <label>Custo unitário (R$)</label>
+            <input type="number" id="e-custo" placeholder="0,00" step="0.01" />
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="addProduto()">+ Adicionar produto</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Produtos cadastrados</div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Produto</th><th>SKU</th><th>Qtd</th><th>Custo unit.</th><th>Total estoque</th><th>Status</th><th></th>
+              </tr>
+            </thead>
+            <tbody id="e-tbody">
+              <tr><td colspan="7">
+                <div class="empty-state">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zM16 3H8L6 7h12l-2-4z"/></svg>
+                  <div>Nenhum produto cadastrado ainda.</div>
+                </div>
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- LUCRATIVIDADE -->
+    <div id="panel-lucro" class="panel">
+      <div class="card">
+        <div class="card-title">Dados da venda</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Preço de venda (R$)</label>
+            <input type="number" id="l-preco" placeholder="0,00" step="0.01" oninput="onPrecoLucro()" />
+          </div>
+          <div class="form-group">
+            <label>Custo do produto (R$)</label>
+            <input type="number" id="l-custo" placeholder="0,00" step="0.01" />
+          </div>
+          <div class="form-group">
+            <label>Frete pago (R$)</label>
+            <input type="number" id="l-frete" placeholder="0,00" step="0.01" />
+          </div>
+          <div class="form-group">
+            <label>Qtd vendida (simulação)</label>
+            <input type="number" id="l-qtd" placeholder="1" min="1" />
+          </div>
+        </div>
+        <div class="card-title" style="margin-top:8px">Plataforma &amp; taxas</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Plataforma</label>
+            <select id="l-plat" onchange="onPlatLucro()">
+              <optgroup label="Mercado Livre — Clássico">
+                <option value="ml_10">ML Clássico · cat. baixa (10%)</option>
+                <option value="ml_12" selected>ML Clássico · cat. média (12%)</option>
+                <option value="ml_14">ML Clássico · cat. alta (14%)</option>
+              </optgroup>
+              <optgroup label="Mercado Livre — Premium">
+                <option value="ml_15">ML Premium · cat. baixa (15%)</option>
+                <option value="ml_17">ML Premium · cat. média (17%)</option>
+                <option value="ml_19">ML Premium · cat. alta (19%)</option>
+              </optgroup>
+              <optgroup label="Shopee 2026">
+                <option value="shopee">Shopee · faixa automática por preço</option>
+              </optgroup>
+              <option value="custom">Personalizado</option>
+            </select>
+          </div>
+          <div class="form-group" id="l-custom-wrap" style="display:none">
+            <label>Taxa personalizada (%)</label>
+            <input type="number" id="l-taxa-custom" placeholder="0" />
+          </div>
+          <div class="form-group">
+            <label>Imposto / outros (%)</label>
+            <input type="number" id="l-imposto" placeholder="0" />
+          </div>
+          <div class="form-group">
+            <label>Tipo de vendedor</label>
+            <select id="l-vendedor">
+              <option value="cnpj">CNPJ / CPF baixo volume</option>
+              <option value="cpf">CPF alto volume (+450 pedidos/90d)</option>
+            </select>
+          </div>
+        </div>
+        <div class="info-box" id="l-info">
+          ℹ️ <span id="l-info-txt"></span>
+        </div>
+        <button class="btn btn-primary" onclick="calcLucro()">📈 Simular lucratividade</button>
+
+        <div class="result-grid" id="l-result" style="display:none">
+          <div class="metric"><div class="metric-label">Receita bruta</div><div class="metric-value" id="l-bruta">—</div></div>
+          <div class="metric"><div class="metric-label">Taxa plataforma</div><div class="metric-value negative" id="l-taxa-r">—</div></div>
+          <div class="metric"><div class="metric-label">Outros custos</div><div class="metric-value negative" id="l-outros">—</div></div>
+          <div class="metric"><div class="metric-label">Lucro líquido</div><div class="metric-value positive" id="l-liq">—</div></div>
+          <div class="metric"><div class="metric-label">Margem real</div><div class="metric-value" id="l-marg">—</div></div>
+          <div class="metric"><div class="metric-label">Lucro total (qtd)</div><div class="metric-value positive" id="l-total">—</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DESCRIÇÃO IA -->
+    <div id="panel-descricao" class="panel">
+      <div class="card">
+        <div class="card-title">Informações do produto</div>
+        <div class="form-grid">
+          <div class="form-group span2">
+            <label>Nome do produto</label>
+            <input type="text" id="d-nome" placeholder="Ex: Tênis Esportivo Masculino Running" />
+          </div>
+          <div class="form-group span2">
+            <label>Características e diferenciais</label>
+            <textarea id="d-carac" placeholder="Ex: solado antiderrapante, material respirável, tamanhos 38 ao 44, cores preto e branco, ideal para corrida e academia"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Plataforma</label>
+            <select id="d-plat">
+              <option value="ambas">Mercado Livre e Shopee</option>
+              <option value="ml">Somente Mercado Livre</option>
+              <option value="shopee">Somente Shopee</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Tom da descrição</label>
+            <select id="d-tom">
+              <option value="profissional">Profissional e persuasivo</option>
+              <option value="descontraido">Descontraído e amigável</option>
+              <option value="tecnico">Técnico e detalhado</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Público-alvo</label>
+            <input type="text" id="d-publico" placeholder="Ex: homens de 20 a 40 anos" />
+          </div>
+        </div>
+        <button class="btn btn-primary" id="d-btn" onclick="gerarDescricao()">✨ Gerar com IA</button>
+        <div class="ai-output" id="d-output"></div>
+        <div class="ai-actions" id="d-actions">
+          <button class="btn btn-sm" id="d-copy" onclick="copiarDescricao()">📋 Copiar texto</button>
+          <button class="btn btn-sm" onclick="gerarDescricao()">🔄 Gerar novamente</button>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- COMPARADOR ML vs SHOPEE -->
+    <div id="panel-comparador" class="panel">
+      <div class="card">
+        <div class="card-title">Dados do produto</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Preço de venda (R$)</label>
+            <input type="number" id="c-preco" placeholder="0,00" step="0.01" oninput="onPrecoComp()" />
+          </div>
+          <div class="form-group">
+            <label>Custo do produto (R$)</label>
+            <input type="number" id="c-custo" placeholder="0,00" step="0.01" />
+          </div>
+          <div class="form-group">
+            <label>Frete (R$)</label>
+            <input type="number" id="c-frete" placeholder="0,00" step="0.01" />
+          </div>
+          <div class="form-group">
+            <label>Imposto / outros (%)</label>
+            <input type="number" id="c-imposto" placeholder="0" />
+          </div>
+          <div class="form-group">
+            <label>Tipo de vendedor</label>
+            <select id="c-vendedor">
+              <option value="cnpj">CNPJ / CPF baixo volume</option>
+              <option value="cpf">CPF alto volume (+450 pedidos/90d)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Categoria ML (comissão)</label>
+            <select id="c-ml-cat">
+              <optgroup label="Clássico">
+                <option value="10">Clássico · cat. baixa (10%)</option>
+                <option value="12" selected>Clássico · cat. média (12%)</option>
+                <option value="14">Clássico · cat. alta (14%)</option>
+              </optgroup>
+              <optgroup label="Premium">
+                <option value="15">Premium · cat. baixa (15%)</option>
+                <option value="17">Premium · cat. média (17%)</option>
+                <option value="19">Premium · cat. alta (19%)</option>
+              </optgroup>
+            </select>
+          </div>
+        </div>
+        <div class="info-box show" id="c-shopee-info" style="display:flex!important">
+          ℹ️ <span id="c-shopee-txt">Informe o preço para ver a faixa da Shopee.</span>
+        </div>
+        <button class="btn btn-primary" onclick="calcComparador()">⚖️ Comparar plataformas</button>
+      </div>
+
+      <div id="c-result" style="display:none">
+        <div class="comp-grid">
+          <div class="comp-card" id="c-ml-card">
+            <div class="comp-header">
+              <span class="comp-plat">Mercado Livre</span>
+              <span id="c-ml-badge" class="comp-badge-lose">—</span>
+            </div>
+            <div class="comp-row"><span class="comp-row-label">Comissão</span><span class="comp-row-val" id="c-ml-comissao">—</span></div>
+            <div class="comp-row"><span class="comp-row-label">Valor da taxa</span><span class="comp-row-val red" id="c-ml-taxa">—</span></div>
+            <div class="comp-row"><span class="comp-row-label">Taxa fixa por item</span><span class="comp-row-val" id="c-ml-fixa">—</span></div>
+            <div class="comp-row"><span class="comp-row-label">Outros custos</span><span class="comp-row-val red" id="c-ml-outros">—</span></div>
+            <div class="comp-row"><span class="comp-row-label">Repasse ao vendedor</span><span class="comp-row-val green" id="c-ml-repasse">—</span></div>
+            <div class="comp-row"><span class="comp-row-label">Margem real</span><span class="comp-row-val" id="c-ml-marg">—</span></div>
+            <div class="comp-lucro-row">
+              <span class="comp-lucro-label">Lucro líquido</span>
+              <span class="comp-lucro-val" id="c-ml-lucro">—</span>
+            </div>
+          </div>
+
+          <div class="comp-card" id="c-sh-card">
+            <div class="comp-header">
+              <span class="comp-plat">Shopee</span>
+              <span id="c-sh-badge" class="comp-badge-lose">—</span>
+            </div>
+            <div class="comp-row"><span class="comp-row-label">Comissão</span><span class="comp-row-val" id="c-sh-comissao">—</span></div>
+            <div class="comp-row"><span class="comp-row-label">Valor da taxa</span><span class="comp-row-val red" id="c-sh-taxa">—</span></div>
+            <div class="comp-row"><span class="comp-row-label">Taxa fixa por item</span><span class="comp-row-val red" id="c-sh-fixa">—</span></div>
+            <div class="comp-row"><span class="comp-row-label">Outros custos</span><span class="comp-row-val red" id="c-sh-outros">—</span></div>
+            <div class="comp-row"><span class="comp-row-label">Repasse ao vendedor</span><span class="comp-row-val green" id="c-sh-repasse">—</span></div>
+            <div class="comp-row"><span class="comp-row-label">Margem real</span><span class="comp-row-val" id="c-sh-marg">—</span></div>
+            <div class="comp-lucro-row">
+              <span class="comp-lucro-label">Lucro líquido</span>
+              <span class="comp-lucro-val" id="c-sh-lucro">—</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="veredito-card">
+          <span class="veredito-icon">🏆</span>
+          <div>
+            <div class="veredito-label">Melhor plataforma para este produto</div>
+            <div class="veredito-txt" id="c-veredito-txt">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+</div><!-- /app-shell -->
+
+<!-- BOTTOM NAV (mobile only) -->
+<nav class="bottom-nav" id="bottom-nav">
+  <button class="bottom-nav-item active" onclick="showPanel('preco', this)" data-panel="preco">
+    <span class="bnav-icon">🧮</span>
+    <span class="bnav-label">Preço</span>
+  </button>
+  <button class="bottom-nav-item" onclick="showPanel('estoque', this)" data-panel="estoque">
+    <span class="bnav-icon">📦</span>
+    <span class="bnav-label">Estoque</span>
+  </button>
+  <button class="bottom-nav-item" onclick="showPanel('lucro', this)" data-panel="lucro">
+    <span class="bnav-icon">📈</span>
+    <span class="bnav-label">Lucro</span>
+  </button>
+  <button class="bottom-nav-item" onclick="showPanel('descricao', this)" data-panel="descricao">
+    <span class="bnav-icon">✨</span>
+    <span class="bnav-label">IA</span>
+  </button>
+  <button class="bottom-nav-item" onclick="showPanel('comparador', this)" data-panel="comparador">
+    <span class="bnav-icon">⚖️</span>
+    <span class="bnav-label">Comparar</span>
+  </button>
+</nav>
+
+<script>
+  let produtos = [];
+
+  const ML_RATES = { ml_10:10, ml_12:12, ml_14:14, ml_15:15, ml_17:17, ml_19:19 };
+
+  const PANEL_META = {
+    preco:    { title: 'Calculadora de Precificação',   sub: 'Calcule o preço ideal com as taxas reais de 2026' },
+    estoque:  { title: 'Controle de Estoque',           sub: 'Cadastre e acompanhe seus produtos' },
+    lucro:    { title: 'Calculadora de Lucratividade',  sub: 'Simule seu lucro real por venda e por quantidade' },
+    descricao:  { title: 'Gerador de Descrição com IA',   sub: 'Crie textos de anúncio otimizados com inteligência artificial' },
+    comparador: { title: 'Comparador ML vs Shopee',        sub: 'Veja lado a lado qual plataforma é mais lucrativa para cada produto' }
+  };
+
+  function showPanel(id, btn) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.bottom-nav-item').forEach(b => b.classList.remove('active'));
+    document.getElementById('panel-' + id).classList.add('active');
+    if (btn) btn.classList.add('active');
+    document.querySelectorAll('[data-panel="' + id + '"]').forEach(b => b.classList.add('active'));
+    document.getElementById('topbar-title').textContent = PANEL_META[id].title;
+    document.getElementById('topbar-sub').textContent   = PANEL_META[id].sub;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function fmt(v) {
+    return 'R$ ' + Number(v).toFixed(2).replace('.', ',');
+  }
+
+  function getShopeeFaixa(preco, altoCPF) {
+    let perc, fixa;
+    if (preco < 8)        { perc = 50; fixa = 0; }
+    else if (preco < 80)  { perc = 20; fixa = altoCPF ? 7  : 4;  }
+    else if (preco < 100) { perc = 14; fixa = altoCPF ? 19 : 16; }
+    else if (preco < 200) { perc = 14; fixa = altoCPF ? 23 : 20; }
+    else                  { perc = 14; fixa = altoCPF ? 29 : 26; }
+    return { perc, fixa };
+  }
+
+  function faixaLabel(preco) {
+    if (preco < 8)   return 'abaixo de R$ 8';
+    if (preco < 80)  return 'R$ 8 a R$ 79,99';
+    if (preco < 100) return 'R$ 80 a R$ 99,99';
+    if (preco < 200) return 'R$ 100 a R$ 199,99';
+    return 'R$ 200 ou mais';
+  }
+
+  /* ---- PRECIFICAÇÃO ---- */
+  function onPlatPreco() {
+    const v = document.getElementById('p-plat').value;
+    document.getElementById('p-custom-wrap').style.display = v === 'custom' ? 'flex' : 'none';
+    const info = document.getElementById('p-info');
+    info.classList.toggle('show', v === 'shopee');
+  }
+
+  function calcPreco() {
+    const custo   = parseFloat(document.getElementById('p-custo').value)  || 0;
+    const frete   = parseFloat(document.getElementById('p-frete').value)  || 0;
+    const margem  = parseFloat(document.getElementById('p-margem').value) || 20;
+    const imposto = parseFloat(document.getElementById('p-imposto').value)|| 0;
+    const plat    = document.getElementById('p-plat').value;
+    const altoCPF = document.getElementById('p-vendedor').value === 'cpf';
+    const custoBase = custo + frete;
+    let taxaPerc, taxaFixa = 0;
+
+    if (plat === 'custom') {
+      taxaPerc = parseFloat(document.getElementById('p-taxa-custom').value) || 0;
+    } else if (plat === 'shopee') {
+      const estimado = custoBase / (1 - (20 + imposto + margem) / 100);
+      const f = getShopeeFaixa(estimado, altoCPF);
+      taxaPerc = f.perc; taxaFixa = f.fixa;
+    } else {
+      taxaPerc = ML_RATES[plat];
+    }
+
+    const deduc = taxaPerc + imposto;
+    const precoMin = (custoBase + taxaFixa) / (1 - deduc / 100);
+    const precoSug = (custoBase + taxaFixa) / (1 - (deduc + margem) / 100);
+    const taxaVal  = precoSug * taxaPerc / 100;
+    const impostV  = precoSug * imposto / 100;
+    const lucro    = precoSug - custoBase - taxaVal - impostV - taxaFixa;
+
+    document.getElementById('p-min').textContent    = fmt(precoMin);
+    document.getElementById('p-sug').textContent    = fmt(precoSug);
+    document.getElementById('p-taxa-r').textContent = fmt(taxaVal) + ' (' + taxaPerc + '%)';
+
+    const fixaWrap = document.getElementById('p-fixa-wrap');
+    if (taxaFixa > 0) {
+      fixaWrap.style.display = 'flex';
+      document.getElementById('p-fixa-r').textContent = fmt(taxaFixa) + ' /item';
+    } else {
+      fixaWrap.style.display = 'none';
+    }
+
+    const elLucro = document.getElementById('p-lucro');
+    elLucro.textContent = fmt(lucro);
+    elLucro.className = 'metric-value ' + (lucro >= 0 ? 'positive' : 'negative');
+    document.getElementById('p-result').style.display = 'grid';
+  }
+
+  /* ---- ESTOQUE ---- */
+  function addProduto() {
+    const nome  = document.getElementById('e-nome').value.trim();
+    const sku   = document.getElementById('e-sku').value.trim();
+    const qtd   = parseInt(document.getElementById('e-qtd').value)    || 0;
+    const min   = parseInt(document.getElementById('e-min').value)    || 5;
+    const custo = parseFloat(document.getElementById('e-custo').value)|| 0;
+    if (!nome) { alert('Informe o nome do produto.'); return; }
+    produtos.push({ id: Date.now(), nome, sku, qtd, min, custo });
+    renderTabela();
+    ['e-nome','e-sku','e-qtd','e-min','e-custo'].forEach(id => document.getElementById(id).value = '');
+  }
+
+  function renderTabela() {
+    const tbody = document.getElementById('e-tbody');
+    if (!produtos.length) {
+      tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zM16 3H8L6 7h12l-2-4z"/></svg>
+        <div>Nenhum produto cadastrado ainda.</div></div></td></tr>`;
+      return;
+    }
+    tbody.innerHTML = produtos.map(p => {
+      let cls, label;
+      if (p.qtd === 0)        { cls = 'badge-out'; label = 'Sem estoque'; }
+      else if (p.qtd <= p.min){ cls = 'badge-low'; label = 'Estoque baixo'; }
+      else                    { cls = 'badge-ok';  label = 'Normal'; }
+      return `<tr>
+        <td><strong>${p.nome}</strong></td>
+        <td style="color:#7a9a87">${p.sku || '—'}</td>
+        <td><strong>${p.qtd}</strong></td>
+        <td>${fmt(p.custo)}</td>
+        <td>${fmt(p.custo * p.qtd)}</td>
+        <td><span class="badge ${cls}">${label}</span></td>
+        <td><button class="btn btn-sm" onclick="remover(${p.id})" style="color:#c0392b;border-color:#fca5a5">🗑</button></td>
+      </tr>`;
+    }).join('');
+  }
+
+  function remover(id) { produtos = produtos.filter(p => p.id !== id); renderTabela(); }
+
+  /* ---- LUCRATIVIDADE ---- */
+  function onPlatLucro() {
+    const v = document.getElementById('l-plat').value;
+    document.getElementById('l-custom-wrap').style.display = v === 'custom' ? 'flex' : 'none';
+    if (v !== 'shopee') document.getElementById('l-info').classList.remove('show');
+    else onPrecoLucro();
+  }
+
+  function onPrecoLucro() {
+    const plat = document.getElementById('l-plat').value;
+    if (plat !== 'shopee') return;
+    const preco   = parseFloat(document.getElementById('l-preco').value) || 0;
+    const altoCPF = document.getElementById('l-vendedor').value === 'cpf';
+    if (preco > 0) {
+      const f = getShopeeFaixa(preco, altoCPF);
+      document.getElementById('l-info-txt').textContent =
+        `Shopee 2026 · Faixa ${faixaLabel(preco)}: ${f.perc}% + R$ ${f.fixa},00 fixo por item.`;
+      document.getElementById('l-info').classList.add('show');
+    }
+  }
+
+  function calcLucro() {
+    const preco   = parseFloat(document.getElementById('l-preco').value)   || 0;
+    const custo   = parseFloat(document.getElementById('l-custo').value)   || 0;
+    const frete   = parseFloat(document.getElementById('l-frete').value)   || 0;
+    const imposto = parseFloat(document.getElementById('l-imposto').value) || 0;
+    const qtd     = parseInt(document.getElementById('l-qtd').value)       || 1;
+    const plat    = document.getElementById('l-plat').value;
+    const altoCPF = document.getElementById('l-vendedor').value === 'cpf';
+
+    let taxaPerc, taxaFixa = 0;
+    if (plat === 'custom') {
+      taxaPerc = parseFloat(document.getElementById('l-taxa-custom').value) || 0;
+    } else if (plat === 'shopee') {
+      const f = getShopeeFaixa(preco, altoCPF);
+      taxaPerc = f.perc; taxaFixa = f.fixa;
+    } else {
+      taxaPerc = ML_RATES[plat];
+    }
+
+    const taxaVal   = preco * taxaPerc / 100;
+    const impostV   = preco * imposto  / 100;
+    const totalPlat = taxaVal + taxaFixa;
+    const outrosCust= custo + frete + impostV;
+    const lucroLiq  = preco - totalPlat - outrosCust;
+    const margem    = preco > 0 ? (lucroLiq / preco * 100) : 0;
+
+    document.getElementById('l-bruta').textContent  = fmt(preco);
+    document.getElementById('l-taxa-r').textContent = fmt(totalPlat) + ' (' + taxaPerc + '%' + (taxaFixa > 0 ? ' + R$' + taxaFixa : '') + ')';
+    document.getElementById('l-outros').textContent = fmt(outrosCust);
+    document.getElementById('l-marg').textContent   = margem.toFixed(1) + '%';
+    document.getElementById('l-total').textContent  = fmt(lucroLiq * qtd);
+
+    const el = document.getElementById('l-liq');
+    el.textContent = fmt(lucroLiq);
+    el.className   = 'metric-value ' + (lucroLiq >= 0 ? 'positive' : 'negative');
+    document.getElementById('l-result').style.display = 'grid';
+  }
+
+  /* ---- DESCRIÇÃO IA ---- */
+  async function gerarDescricao() {
+    const nome    = document.getElementById('d-nome').value.trim();
+    const carac   = document.getElementById('d-carac').value.trim();
+    const plat    = document.getElementById('d-plat').value;
+    const tom     = document.getElementById('d-tom').value;
+    const publico = document.getElementById('d-publico').value.trim();
+    if (!nome) { alert('Informe o nome do produto.'); return; }
+
+    const btn     = document.getElementById('d-btn');
+    const output  = document.getElementById('d-output');
+    const actions = document.getElementById('d-actions');
+
+    btn.disabled       = true;
+    btn.textContent    = '⏳ Gerando...';
+    output.style.display = 'block';
+    output.textContent = 'Gerando descrição com IA, aguarde...';
+    actions.classList.remove('show');
+
+    const platMap = { ambas: 'Mercado Livre e Shopee', ml: 'Mercado Livre', shopee: 'Shopee' };
+    const tomMap  = { profissional: 'profissional e persuasivo', descontraido: 'descontraído e amigável', tecnico: 'técnico e detalhado' };
+
+    const prompt = `Você é especialista em copywriting para e-commerce brasileiro.
+Crie uma descrição de produto otimizada para ${platMap[plat]}.
+
+Produto: ${nome}
+Características: ${carac || 'não informadas'}
+Público-alvo: ${publico || 'público geral'}
+Tom: ${tomMap[tom]}
+
+Estrutura obrigatória:
+1. Título SEO otimizado
+2. Descrição atrativa (3 parágrafos curtos)
+3. Principais benefícios (lista com bullet points)
+4. Call to action
+
+Use linguagem brasileira natural e direta.`;
+
+    try {
+      const resp = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 1000,
+          messages: [{ role: 'user', content: prompt }]
+        })
+      });
+      const data = await resp.json();
+      const text = data.content?.map(b => b.text || '').join('') || 'Erro ao gerar descrição.';
+      output.textContent = text;
+      actions.classList.add('show');
+    } catch(e) {
+      output.textContent = 'Erro ao conectar com a IA. Verifique sua conexão e tente novamente.';
+    }
+
+    btn.disabled    = false;
+    btn.textContent = '✨ Gerar com IA';
+  }
+
+  function copiarDescricao() {
+    const text = document.getElementById('d-output').textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.getElementById('d-copy');
+      btn.textContent = '✅ Copiado!';
+      setTimeout(() => btn.textContent = '📋 Copiar texto', 2000);
+    });
+  }
+
+  /* ---- COMPARADOR ---- */
+  function onPrecoComp() {
+    const preco = parseFloat(document.getElementById('c-preco').value) || 0;
+    const altoCPF = document.getElementById('c-vendedor').value === 'cpf';
+    if (preco > 0) {
+      const f = getShopeeFaixa(preco, altoCPF);
+      document.getElementById('c-shopee-txt').textContent =
+        'Shopee 2026 · Faixa ' + faixaLabel(preco) + ': ' + f.perc + '% + R$ ' + f.fixa + ',00 fixo por item.';
+    }
+  }
+
+  function calcComparador() {
+    const preco    = parseFloat(document.getElementById('c-preco').value)    || 0;
+    const custo    = parseFloat(document.getElementById('c-custo').value)    || 0;
+    const frete    = parseFloat(document.getElementById('c-frete').value)    || 0;
+    const imposto  = parseFloat(document.getElementById('c-imposto').value)  || 0;
+    const altoCPF  = document.getElementById('c-vendedor').value === 'cpf';
+    const mlPerc   = parseFloat(document.getElementById('c-ml-cat').value)   || 12;
+
+    if (!preco) { alert('Informe o preço de venda.'); return; }
+
+    const impostoVal = preco * imposto / 100;
+    const outrosCust = custo + frete + impostoVal;
+
+    // ML
+    const mlTaxaVal = preco * mlPerc / 100;
+    const mlLucro   = preco - mlTaxaVal - outrosCust;
+    const mlMargem  = preco > 0 ? (mlLucro / preco * 100) : 0;
+    const mlRepasse = preco - mlTaxaVal;
+
+    // Shopee
+    const shFaixa   = getShopeeFaixa(preco, altoCPF);
+    const shTaxaVal = preco * shFaixa.perc / 100;
+    const shFixa    = shFaixa.fixa;
+    const shLucro   = preco - shTaxaVal - shFixa - outrosCust;
+    const shMargem  = preco > 0 ? (shLucro / preco * 100) : 0;
+    const shRepasse = preco - shTaxaVal - shFixa;
+
+    // Preenche ML
+    document.getElementById('c-ml-comissao').textContent = mlPerc + '%';
+    document.getElementById('c-ml-taxa').textContent     = fmt(mlTaxaVal);
+    document.getElementById('c-ml-fixa').textContent     = '—';
+    document.getElementById('c-ml-outros').textContent   = fmt(outrosCust);
+    document.getElementById('c-ml-repasse').textContent  = fmt(mlRepasse);
+    document.getElementById('c-ml-marg').textContent     = mlMargem.toFixed(1) + '%';
+    const elML = document.getElementById('c-ml-lucro');
+    elML.textContent = fmt(mlLucro);
+    elML.style.color = mlLucro >= 0 ? 'var(--green-700)' : '#c0392b';
+
+    // Preenche Shopee
+    document.getElementById('c-sh-comissao').textContent = shFaixa.perc + '% · faixa ' + faixaLabel(preco);
+    document.getElementById('c-sh-taxa').textContent     = fmt(shTaxaVal);
+    document.getElementById('c-sh-fixa').textContent     = fmt(shFixa);
+    document.getElementById('c-sh-outros').textContent   = fmt(outrosCust);
+    document.getElementById('c-sh-repasse').textContent  = fmt(shRepasse);
+    document.getElementById('c-sh-marg').textContent     = shMargem.toFixed(1) + '%';
+    const elSH = document.getElementById('c-sh-lucro');
+    elSH.textContent = fmt(shLucro);
+    elSH.style.color = shLucro >= 0 ? 'var(--green-700)' : '#c0392b';
+
+    // Badges e veredito
+    const mlWin = mlLucro >= shLucro;
+    const diff  = Math.abs(mlLucro - shLucro);
+
+    const mlBadge = document.getElementById('c-ml-badge');
+    mlBadge.textContent = mlWin ? '✓ Mais lucrativo' : 'Menos lucrativo';
+    mlBadge.className = mlWin ? 'comp-badge-win' : 'comp-badge-lose';
+    document.getElementById('c-ml-card').className = 'comp-card' + (mlWin ? ' winner' : '');
+    document.getElementById('c-ml-lucro').style.color = mlLucro >= 0 ? 'var(--green-400)' : 'var(--red)';
+
+    const shBadge = document.getElementById('c-sh-badge');
+    shBadge.textContent = !mlWin ? '✓ Mais lucrativo' : 'Menos lucrativo';
+    shBadge.className = !mlWin ? 'comp-badge-win' : 'comp-badge-lose';
+    document.getElementById('c-sh-card').className = 'comp-card' + (!mlWin ? ' winner' : '');
+    document.getElementById('c-sh-lucro').style.color = shLucro >= 0 ? 'var(--green-400)' : 'var(--red)';
+
+    const winner = mlWin ? 'Mercado Livre' : 'Shopee';
+    document.getElementById('c-veredito-txt').textContent =
+      winner + ' deixa ' + fmt(diff) + ' a mais de lucro por unidade vendida neste produto.';
+
+    document.getElementById('c-result').style.display = 'block';
+  }
+
+</script>
+</body>
+</html>
