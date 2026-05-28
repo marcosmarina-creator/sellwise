@@ -711,7 +711,16 @@ async function init() {
 
 async function loadUserAndShow(user) {
   currentUser = user;
-  const { data: profile } = await sb.from('profiles').select('*').eq('id', user.id).single();
+  let { data: profile } = await sb.from('profiles').select('*').eq('id', user.id).single();
+  
+  // If no profile exists (trigger may have failed), create one
+  if (!profile) {
+    const username = user.user_metadata?.username || user.email.split('@')[0];
+    const { data: newProfile } = await sb.from('profiles')
+      .insert({ id: user.id, username, role: 'user', status: 'active' })
+      .select().single();
+    profile = newProfile;
+  }
   currentProfile = profile;
 
   // Check if admin by email hash
@@ -977,6 +986,8 @@ function showPanel(id, btn) {
   document.getElementById('topbar-title').textContent = PANEL_META[id].title;
   document.getElementById('topbar-sub').textContent   = PANEL_META[id].sub;
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (id === 'admin') setTimeout(loadAdminPanel, 50);
+  if (id === 'perfil') setTimeout(initPerfilPanel, 50);
 }
 
 const ML_RATES = { ml_10:10, ml_12:12, ml_14:14, ml_15:15, ml_17:17, ml_19:19 };
@@ -1408,6 +1419,8 @@ function copiarDescricao(){
       const emailHash=await hashStr(currentUser.email.toLowerCase());
       if(emailHash===ADMIN_H){
         await sb.from('profiles').update({role:'admin'}).eq('id',currentUser.id);
+        // Reload after updating role
+        return setTimeout(loadAdminPanel, 300);
       } else {
         tbody.innerHTML='<tr><td colspan="6"><div class="empty-state">⛔ Acesso negado. Somente admins podem ver esta página.</div></td></tr>';
         return;
@@ -1416,11 +1429,15 @@ function copiarDescricao(){
 
     const {data:profiles,error}=await sb.from('profiles').select('*').order('created_at',{ascending:true});
     if(error){
-      tbody.innerHTML=`<tr><td colspan="6"><div class="empty-state">❌ Erro: ${error.message}<br><small style="color:var(--text-muted)">Verifique as permissões RLS no Supabase.</small></div></td></tr>`;
+      tbody.innerHTML=`<tr><td colspan="6"><div class="empty-state" style="color:var(--red)">
+        ❌ Erro ao carregar usuários<br>
+        <small style="color:var(--text-muted);display:block;margin-top:6px">${error.message}</small>
+        <small style="color:var(--text-muted);display:block;margin-top:4px">Code: ${error.code||'unknown'}</small>
+      </div></td></tr>`;
       return;
     }
     if(!profiles||profiles.length===0){
-      tbody.innerHTML='<tr><td colspan="6"><div class="empty-state">Nenhum usuário encontrado.</div></td></tr>';
+      tbody.innerHTML='<tr><td colspan="6"><div class="empty-state">Nenhum usuário encontrado ainda.</div></td></tr>';
       return;
     }
     const total=profiles.length;
