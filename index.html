@@ -661,7 +661,7 @@ tbody tr:hover td { background: var(--bg-elevated); }
           <div class="card-title">Gerenciar contas</div>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>Usuário</th><th>Email</th><th>Função</th><th>Status</th><th>Cadastro</th><th>Ações</th></tr></thead>
+              <thead><tr><th>Usuário</th><th>ID</th><th>Função</th><th>Status</th><th>Cadastro</th><th>Ações</th></tr></thead>
               <tbody id="admin-tbody"><tr><td colspan="6"><div class="empty-state">Carregando...</div></td></tr></tbody>
             </table>
           </div>
@@ -1399,9 +1399,30 @@ function copiarDescricao(){
   // ===== ADMIN =====
   async function loadAdminPanel() {
     const tbody=document.getElementById('admin-tbody');
-    tbody.innerHTML='<tr><td colspan="6"><div class="empty-state">Carregando...</div></td></tr>';
+    tbody.innerHTML='<tr><td colspan="6"><div class="empty-state">Carregando usuários...</div></td></tr>';
+
+    // First verify admin status in DB
+    const {data:myProfile}=await sb.from('profiles').select('role').eq('id',currentUser.id).single();
+    if(!myProfile||myProfile.role!=='admin'){
+      // Try to set admin if email matches
+      const emailHash=await hashStr(currentUser.email.toLowerCase());
+      if(emailHash===ADMIN_H){
+        await sb.from('profiles').update({role:'admin'}).eq('id',currentUser.id);
+      } else {
+        tbody.innerHTML='<tr><td colspan="6"><div class="empty-state">⛔ Acesso negado. Somente admins podem ver esta página.</div></td></tr>';
+        return;
+      }
+    }
+
     const {data:profiles,error}=await sb.from('profiles').select('*').order('created_at',{ascending:true});
-    if(error||!profiles){tbody.innerHTML='<tr><td colspan="6"><div class="empty-state">Erro ao carregar. Verifique as permissões.</div></td></tr>';return;}
+    if(error){
+      tbody.innerHTML=`<tr><td colspan="6"><div class="empty-state">❌ Erro: ${error.message}<br><small style="color:var(--text-muted)">Verifique as permissões RLS no Supabase.</small></div></td></tr>`;
+      return;
+    }
+    if(!profiles||profiles.length===0){
+      tbody.innerHTML='<tr><td colspan="6"><div class="empty-state">Nenhum usuário encontrado.</div></td></tr>';
+      return;
+    }
     const total=profiles.length;
     const admins=profiles.filter(p=>p.role==='admin').length;
     const ativos=profiles.filter(p=>p.status!=='inactive').length;
