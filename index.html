@@ -3135,65 +3135,92 @@ ${details}`;
 
 
   function calcComparador(){
-    const preco=parseFloat(document.getElementById('c-preco').value)||0;
-    const custo=parseFloat(document.getElementById('c-custo').value)||0;
-    const frete=parseFloat(document.getElementById('c-frete').value)||0;
-    if(!preco){alert('Informe o preço de venda.');return;}
-    const base=custo+frete;
+    const preco   = parseFloat(document.getElementById('c-preco').value)||0;
+    const custo   = parseFloat(document.getElementById('c-custo').value)||0;
+    const frete   = parseFloat(document.getElementById('c-frete').value)||0;
+    const imposto = parseFloat(document.getElementById('c-imposto').value)||0;
+    const vendedor= document.getElementById('c-vendedor').value; // 'cnpj' or 'cpf'
+    const mlCat   = parseFloat(document.getElementById('c-ml-cat').value)||12;
 
-    // ML Clássico rates
-    const mlTax=parseFloat(document.getElementById('c-ml-taxa').value)||12;
-    const mlLucro=preco-base-(preco*mlTax/100);
-    const mlMarg=preco>0?(mlLucro/preco*100):0;
+    if(!preco){ alert('Informe o preço de venda.'); return; }
 
-    // Shopee rates (auto)
-    let shTax=0,shFix=0;
-    if(preco<8){shTax=50;}
-    else if(preco<80){shTax=20;shFix=4;}
-    else if(preco<100){shTax=14;shFix=16;}
-    else if(preco<200){shTax=14;shFix=20;}
-    else{shTax=14;shFix=26;}
-    const shLucro=preco-base-(preco*shTax/100)-shFix;
-    const shMarg=preco>0?(shLucro/preco*100):0;
-    const mlWin=mlLucro>=shLucro;
+    const base = custo + frete + (preco * imposto / 100);
 
-    // Update ML card
-    document.getElementById('c-ml-card').className='comp-card'+(mlWin?' winner':'');
-    document.getElementById('c-ml-badge').className='comp-badge-'+(mlWin?'win':'lose');
-    document.getElementById('c-ml-badge').textContent=mlWin?'✓ Melhor':'';
-    document.getElementById('c-ml-taxa-r').textContent=mlTax+'%';
-    document.getElementById('c-ml-preco').textContent=fmt(preco);
-    document.getElementById('c-ml-base').textContent=fmt(base);
-    document.getElementById('c-ml-taxa-v').textContent=fmt(preco*mlTax/100);
-    document.getElementById('c-ml-lucro').textContent=fmt(mlLucro);
-    document.getElementById('c-ml-lucro').className='comp-lucro-val '+(mlLucro>=0?'positive':'negative');
-    document.getElementById('c-ml-marg').textContent=mlMarg.toFixed(1)+'%';
+    // ── MERCADO LIVRE ──
+    const mlTaxVal = preco * mlCat / 100;
+    const mlLucro  = preco - base - mlTaxVal;
+    const mlMarg   = preco > 0 ? (mlLucro / preco * 100) : 0;
 
-    // Update Shopee card
-    document.getElementById('c-sh-card').className='comp-card'+(!mlWin?' winner':'');
-    document.getElementById('c-sh-badge').className='comp-badge-'+(!mlWin?'win':'lose');
-    document.getElementById('c-sh-badge').textContent=!mlWin?'✓ Melhor':'';
-    document.getElementById('c-sh-taxa-r').textContent=shTax+'%'+(shFix>0?' +R$'+shFix:'');
-    document.getElementById('c-sh-preco').textContent=fmt(preco);
-    document.getElementById('c-sh-base').textContent=fmt(base);
-    document.getElementById('c-sh-taxa-v').textContent=fmt(preco*shTax/100+shFix);
-    document.getElementById('c-sh-lucro').textContent=fmt(shLucro);
-    document.getElementById('c-sh-lucro').className='comp-lucro-val '+(!mlWin&&shLucro>=0?'positive':'negative');
-    document.getElementById('c-sh-marg').textContent=shMarg.toFixed(1)+'%';
+    // ── SHOPEE (faixas 2026) ──
+    let shTax = 0, shFix = 0;
+    if (preco < 8)        { shTax = 50; shFix = 0; }
+    else if (preco < 80)  { shTax = 20; shFix = vendedor==='cpf' ? 7 : 4; }
+    else if (preco < 100) { shTax = 14; shFix = 16; }
+    else if (preco < 200) { shTax = 14; shFix = 20; }
+    else                  { shTax = 14; shFix = 26; }
+    const shTaxVal = (preco * shTax / 100) + shFix;
+    const shLucro  = preco - base - shTaxVal;
+    const shMarg   = preco > 0 ? (shLucro / preco * 100) : 0;
+    const mlWin    = mlLucro >= shLucro;
 
-    // Veredito
-    const vEl=document.getElementById('c-veredito');
-    if(vEl){
-      const vantagem=Math.abs(mlLucro-shLucro);
-      vEl.innerHTML=`<div class="veredito-icon">${mlWin?'🟡':'🟠'}</div>
+    // ── ML CARD ──
+    document.getElementById('c-ml-card').className = 'comp-card' + (mlWin ? ' winner' : '');
+    document.getElementById('c-ml-badge').className = 'comp-badge-' + (mlWin ? 'win' : 'lose');
+    document.getElementById('c-ml-badge').textContent = mlWin ? '✓ Melhor' : '';
+    document.getElementById('c-ml-taxa-r').textContent = mlCat + '%';
+    document.getElementById('c-ml-preco').textContent  = fmt(preco);
+    document.getElementById('c-ml-base').textContent   = fmt(base);
+    document.getElementById('c-ml-taxa-v').textContent = fmt(mlTaxVal);
+    document.getElementById('c-ml-lucro').textContent  = fmt(mlLucro);
+    document.getElementById('c-ml-lucro').className    = 'comp-lucro-val ' + (mlLucro >= 0 ? 'positive' : 'negative');
+    document.getElementById('c-ml-marg').textContent   = mlMarg.toFixed(1) + '%';
+
+    // ── SHOPEE CARD ──
+    document.getElementById('c-sh-card').className = 'comp-card' + (!mlWin ? ' winner' : '');
+    document.getElementById('c-sh-badge').className = 'comp-badge-' + (!mlWin ? 'win' : 'lose');
+    document.getElementById('c-sh-badge').textContent = !mlWin ? '✓ Melhor' : '';
+    document.getElementById('c-sh-taxa-r').textContent = shTax + '%' + (shFix > 0 ? ' +R$' + shFix : '');
+    document.getElementById('c-sh-preco').textContent  = fmt(preco);
+    document.getElementById('c-sh-base').textContent   = fmt(base);
+    document.getElementById('c-sh-taxa-v').textContent = fmt(shTaxVal);
+    document.getElementById('c-sh-lucro').textContent  = fmt(shLucro);
+    document.getElementById('c-sh-lucro').className    = 'comp-lucro-val ' + (!mlWin && shLucro >= 0 ? 'positive' : 'negative');
+    document.getElementById('c-sh-marg').textContent   = shMarg.toFixed(1) + '%';
+
+    // ── VEREDITO ──
+    const vantagem = Math.abs(mlLucro - shLucro);
+    const vEl = document.getElementById('c-veredito');
+    if (vEl) {
+      vEl.innerHTML = `<div class="veredito-icon">${mlWin ? '🟡' : '🟠'}</div>
         <div><div class="veredito-label">Melhor plataforma</div>
-        <div class="veredito-txt"><strong>${mlWin?'Mercado Livre':'Shopee'}</strong> gera R$${fmt(vantagem)} a mais por venda.</div></div>`;
+        <div class="veredito-txt"><strong>${mlWin ? 'Mercado Livre' : 'Shopee'}</strong> gera ${fmt(vantagem)} a mais por venda.</div></div>`;
     }
-    document.getElementById('c-result').style.display='block';
-    const hcc=document.getElementById('hist-comp-card');
-    if(hcc) hcc.style.display='block';
-    logCalcHistory('comparador','Preço '+fmt(preco),{preco,custo,melhor:mlWin?'Mercado Livre':'Shopee',lucroML:fmt(mlLucro),lucroSH:fmt(shLucro)});
-    renderCalcHistoryPanel('comparador','hist-comparador');
+    document.getElementById('c-result').style.display = 'block';
+    const hcc = document.getElementById('hist-comp-card');
+    if (hcc) hcc.style.display = 'block';
+    logCalcHistory('comparador', 'Preço ' + fmt(preco), {
+      preco, custo, frete, imposto, mlCat,
+      melhor: mlWin ? 'Mercado Livre' : 'Shopee',
+      lucroML: fmt(mlLucro), lucroSH: fmt(shLucro)
+    });
+    renderCalcHistoryPanel('comparador', 'hist-comparador');
+  }
+
+  // Atualiza info da faixa Shopee ao digitar preço
+  function onPrecoComp() {
+    const preco = parseFloat(document.getElementById('c-preco').value) || 0;
+    const info = document.getElementById('c-shopee-info');
+    const txt  = document.getElementById('c-shopee-txt');
+    if (!info || !txt) return;
+    if (!preco) { txt.textContent = 'Informe o preço para ver a faixa da Shopee.'; info.className = 'info-box show'; return; }
+    let faixa = '';
+    if (preco < 8)        faixa = 'Faixa 1: taxa de 50%';
+    else if (preco < 80)  faixa = 'Faixa 2: 20% + R$4 fixo (CPF alto volume: +R$3)';
+    else if (preco < 100) faixa = 'Faixa 3: 14% + R$16 fixo';
+    else if (preco < 200) faixa = 'Faixa 4: 14% + R$20 fixo';
+    else                  faixa = 'Faixa 5: 14% + R$26 fixo';
+    txt.textContent = '📦 Shopee — ' + faixa;
+    info.className = 'info-box show';
   }
 
 
@@ -3345,16 +3372,21 @@ ${details}`;
 
   async function initSolicitarEquipe() {
     // Load all users for member selection
-    const { data: profiles, error: profErr } = await sb.from('profiles').select('id,username').neq('id', currentUser.id);
+    const { data: profiles, error: profErr } = await sb.from('profiles')
+      .select('id,username')
+      .neq('id', currentUser.id)
+      .eq('status','active');
     const sel = document.getElementById('req-member-select');
-    if (profErr) { console.error('Profiles error:', profErr.message); }
-    if (sel) {
+    if (profErr) {
+      console.error('Profiles error:', profErr.message);
+      if (sel) sel.innerHTML = `<option value="">Erro ao carregar: ${profErr.message}</option>`;
+    } else if (sel) {
       if (profiles && profiles.length > 0) {
         profiles.forEach(p => { allUsersForReq[p.id] = p.username; });
-        sel.innerHTML = '<option value="">Selecionar usuário...</option>' +
+        sel.innerHTML = '<option value="">Selecionar usuário para convidar...</option>' +
           profiles.map(p => `<option value="${p.id}">${p.username}</option>`).join('');
       } else {
-        sel.innerHTML = '<option value="">Nenhum usuário disponível</option>';
+        sel.innerHTML = '<option value="">Nenhum outro usuário cadastrado</option>';
       }
     }
     reqPendingMembers = [];
@@ -3394,13 +3426,18 @@ ${details}`;
     if (!nome) { msg.style.color='var(--red)'; msg.textContent='Informe o nome da equipe.'; return; }
     msg.style.color='var(--text-muted)'; msg.textContent='Enviando...';
     const members = reqPendingMembers.map(m => ({ id: m.id, name: m.name }));
-    const { error } = await sb.from('team_requests').insert({
+    const { data: inserted, error } = await sb.from('team_requests').insert({
       team_name: nome,
       requested_by: currentUser.id,
       members_requested: JSON.stringify(members),
       status: 'pending'
-    });
-    if (error) { msg.style.color='var(--red)'; msg.textContent='Erro: '+error.message; return; }
+    }).select();
+    if (error) {
+      console.error('Insert error:', error);
+      msg.style.color='var(--red)';
+      msg.textContent='Erro ao enviar: '+error.message;
+      return;
+    }
     msg.style.color='var(--green-400)';
     msg.textContent='✅ Solicitação enviada! Aguarde a aprovação do admin.';
     document.getElementById('req-team-name').value='';
@@ -3438,10 +3475,14 @@ ${details}`;
   async function loadAdminSolicitacoes() {
     const el = document.getElementById('admin-solicitacoes');
     if (!el) return;
-    const { data: reqs } = await sb.from('team_requests')
+    const { data: reqs, error: reqErr } = await sb.from('team_requests')
       .select('*').eq('status','pending')
       .order('created_at', { ascending: true });
 
+    if (reqErr) {
+      el.innerHTML = `<div style="font-size:13px;color:var(--red)">Erro RLS: ${reqErr.message}<br><small>Verifique as políticas da tabela team_requests</small></div>`;
+      return;
+    }
     if (!reqs || !reqs.length) {
       el.innerHTML = '<div style="font-size:13px;color:var(--text-muted)">✅ Nenhuma solicitação pendente.</div>';
       return;
