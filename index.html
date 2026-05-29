@@ -138,7 +138,7 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
 .nav-item:hover { background: var(--bg-elevated); color: var(--text-primary); }
 .nav-item.active { background: var(--green-dim); color: var(--green-400); border-color: var(--border-green); }
 .nav-icon { font-size: 15px; flex-shrink: 0; }
-.sidebar-footer { padding: 14px 20px 0; border-top: 1px solid var(--border); margin-top: 16px; }
+.sidebar-footer { padding: 14px 20px 14px; border-top: 1px solid var(--border); margin-top: auto; position: sticky; bottom: 0; background: var(--bg-surface); flex-shrink: 0; }
 .sidebar-user { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
 .sidebar-avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--green-700); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; flex-shrink: 0; }
 .sidebar-user-info { min-width: 0; }
@@ -376,6 +376,14 @@ tbody tr:hover td { background: var(--bg-elevated); }
       <button class="nav-item" onclick="showPanel('comparador',this)"><span class="nav-icon">⚖️</span> Comparador</button>
     </div>
     <div class="nav-section" style="margin-top:8px">
+      <div class="nav-label">Equipe</div>
+      <button class="nav-item" id="nav-dashboard" onclick="showPanel('dashboard',this)" style="display:none"><span class="nav-icon">📊</span> Dashboard</button>
+      <button class="nav-item" id="nav-equipe" onclick="showPanel('equipe',this)" style="display:none"><span class="nav-icon">👥</span> Equipe</button>
+      <button class="nav-item" id="nav-chat" onclick="showPanel('chat',this)" style="display:none"><span class="nav-icon">💬</span> Chat</button>
+      <button class="nav-item" id="nav-notas" onclick="showPanel('notas',this)" style="display:none"><span class="nav-icon">📝</span> Notas</button>
+      <button class="nav-item" id="nav-historico" onclick="showPanel('historico',this)" style="display:none"><span class="nav-icon">🕐</span> Histórico</button>
+    </div>
+    <div class="nav-section" style="margin-top:4px">
       <div class="nav-label">Conta</div>
       <button class="nav-item" onclick="showPanel('perfil',this)"><span class="nav-icon">👤</span> Meu Perfil</button>
       <button class="nav-item admin-only" onclick="showPanel('admin',this)" id="nav-admin" style="display:none"><span class="nav-icon">⚙️</span> Admin</button>
@@ -652,6 +660,187 @@ tbody tr:hover td { background: var(--bg-elevated); }
         </div>
       </div>
 
+      <!-- DASHBOARD -->
+      <div id="panel-dashboard" class="panel">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:14px">
+          <div class="card" style="margin:0"><div class="metric-label">Produtos em estoque</div><div class="metric-value positive" id="dash-produtos">—</div></div>
+          <div class="card" style="margin:0"><div class="metric-label">Valor total estoque</div><div class="metric-value positive" id="dash-valor">—</div></div>
+          <div class="card" style="margin:0"><div class="metric-label">Precificações salvas</div><div class="metric-value positive" id="dash-precif">—</div></div>
+          <div class="card" style="margin:0"><div class="metric-label">Margem média</div><div class="metric-value positive" id="dash-margem">—</div></div>
+          <div class="card" style="margin:0"><div class="metric-label">Membros ativos</div><div class="metric-value positive" id="dash-membros">—</div></div>
+          <div class="card" style="margin:0"><div class="metric-label">Mensagens hoje</div><div class="metric-value positive" id="dash-msgs">—</div></div>
+        </div>
+
+        <!-- Estoque baixo alert -->
+        <div class="card" id="dash-alert-card" style="display:none;border-color:rgba(251,191,36,0.4);background:rgba(251,191,36,0.05)">
+          <div class="card-title" style="color:#fbbf24">⚠️ Produtos com estoque baixo</div>
+          <div id="dash-low-stock" style="display:flex;flex-direction:column;gap:8px"></div>
+        </div>
+
+        <!-- Atividade recente -->
+        <div class="card">
+          <div class="card-title">🕐 Atividade recente</div>
+          <div id="dash-activity" style="display:flex;flex-direction:column;gap:8px">
+            <div class="empty-state">Carregando...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CHAT -->
+      <div id="panel-chat" class="panel">
+        <div class="card" style="display:flex;flex-direction:column;height:calc(100vh - 220px);min-height:360px;padding:0;overflow:hidden">
+          <div style="padding:14px 16px;border-bottom:1px solid var(--border)">
+            <div class="card-title" style="margin:0">💬 Chat da Equipe</div>
+          </div>
+          <div id="chat-messages" style="flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:10px">
+            <div class="empty-state">Carregando mensagens...</div>
+          </div>
+          <div style="padding:12px 14px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:center">
+            <input type="text" id="chat-input" placeholder="Digite uma mensagem..." onkeydown="if(event.key==='Enter')enviarMensagem()" style="flex:1;padding:10px 13px;font-size:14px" />
+            <button class="btn btn-primary btn-sm" onclick="enviarMensagem()" style="white-space:nowrap;flex-shrink:0">Enviar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- NOTAS -->
+      <div id="panel-notas" class="panel">
+        <div class="card">
+          <div class="card-title">📝 Nova nota / tarefa</div>
+          <div class="form-grid" style="grid-template-columns:1fr auto">
+            <div class="form-group">
+              <input type="text" id="nota-input" placeholder="Digite uma nota ou tarefa..." onkeydown="if(event.key==='Enter')adicionarNota(false)" />
+            </div>
+            <div style="display:flex;gap:8px;align-items:flex-end">
+              <button class="btn btn-sm" onclick="adicionarNota(false)" style="white-space:nowrap">📝 Nota</button>
+              <button class="btn btn-primary btn-sm" onclick="adicionarNota(true)" style="white-space:nowrap">✅ Tarefa</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">✅ Tarefas</div>
+          <div id="notas-tarefas" style="display:flex;flex-direction:column;gap:8px">
+            <div class="empty-state">Nenhuma tarefa ainda.</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📝 Notas</div>
+          <div id="notas-notas" style="display:flex;flex-direction:column;gap:8px">
+            <div class="empty-state">Nenhuma nota ainda.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HISTÓRICO -->
+      <div id="panel-historico" class="panel">
+        <div class="card">
+          <div class="card-title">🕐 Histórico de Atividades</div>
+          <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+            <button class="btn btn-sm" onclick="filterActivity('all')" id="hist-all" style="border-color:var(--border-green);color:var(--green-400)">Tudo</button>
+            <button class="btn btn-sm" onclick="filterActivity('stock')" id="hist-stock">Estoque</button>
+            <button class="btn btn-sm" onclick="filterActivity('pricing')" id="hist-pricing">Precificação</button>
+            <button class="btn btn-sm" onclick="filterActivity('chat')" id="hist-chat">Chat</button>
+            <button class="btn btn-sm" onclick="filterActivity('team')" id="hist-team">Equipe</button>
+          </div>
+          <div id="historico-list" style="display:flex;flex-direction:column;gap:6px">
+            <div class="empty-state">Carregando histórico...</div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- EQUIPE -->
+      <div id="panel-equipe" class="panel">
+
+        <!-- Team header with members -->
+        <div class="card" id="equipe-header-card">
+          <div style="display:flex;gap:16px;align-items:flex-start">
+
+            <!-- Members column (left) -->
+            <div id="equipe-members-col" style="display:flex;flex-direction:column;gap:8px;align-items:center;min-width:52px">
+              <!-- populated by JS -->
+            </div>
+
+            <!-- Team info (right) -->
+            <div style="flex:1;min-width:0">
+              <div style="font-size:18px;font-weight:700;color:var(--text-primary);margin-bottom:4px" id="equipe-nome">—</div>
+              <div style="font-size:12px;color:var(--text-muted)" id="equipe-membros-count">— membros</div>
+              <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+                <div style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius);padding:8px 14px;text-align:center">
+                  <div style="font-size:18px;font-weight:700;color:var(--green-400)" id="equipe-stock-count">0</div>
+                  <div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em">Produtos</div>
+                </div>
+                <div style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius);padding:8px 14px;text-align:center">
+                  <div style="font-size:18px;font-weight:700;color:var(--green-400)" id="equipe-pricing-count">0</div>
+                  <div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em">Precificações</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ESTOQUE DA EQUIPE -->
+        <div class="card">
+          <div class="card-title">📦 Estoque da Equipe</div>
+          <div class="form-grid">
+            <div class="form-group span2"><label>Nome do produto</label><input type="text" id="te-nome" placeholder="Ex: Camiseta Básica Preta M" /></div>
+            <div class="form-group"><label>SKU / Código</label><input type="text" id="te-sku" placeholder="CAM-001" /></div>
+            <div class="form-group"><label>Quantidade</label><input type="number" id="te-qtd" placeholder="0" min="0" /></div>
+            <div class="form-group"><label>Estoque mínimo</label><input type="number" id="te-min" placeholder="5" min="0" /></div>
+            <div class="form-group"><label>Custo unitário (R$)</label><input type="number" id="te-custo" placeholder="0,00" step="0.01" /></div>
+          </div>
+          <button class="btn btn-primary" onclick="addTeamStock()">+ Adicionar ao estoque</button>
+          <div style="margin-top:16px">
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Produto</th><th>SKU</th><th>Qtd</th><th>Custo</th><th>Total</th><th>Status</th><th>Adicionado por</th><th></th></tr></thead>
+                <tbody id="te-tbody"><tr><td colspan="8"><div class="empty-state">Nenhum produto no estoque da equipe.</div></td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- PRECIFICAÇÃO DA EQUIPE -->
+        <div class="card">
+          <div class="card-title">🧮 Precificações Salvas</div>
+          <div class="form-grid">
+            <div class="form-group"><label>Nome do produto</label><input type="text" id="tp-nome" placeholder="Ex: Tênis Esportivo" /></div>
+            <div class="form-group"><label>Custo (R$)</label><input type="number" id="tp-custo" placeholder="0,00" step="0.01" /></div>
+            <div class="form-group"><label>Frete (R$)</label><input type="number" id="tp-frete" placeholder="0,00" step="0.01" /></div>
+            <div class="form-group"><label>Margem (%)</label><input type="number" id="tp-margem" placeholder="20" /></div>
+            <div class="form-group">
+              <label>Plataforma</label>
+              <select id="tp-plat">
+                <option value="ml_12">ML Clássico · cat. média (12%)</option>
+                <option value="ml_10">ML Clássico · cat. baixa (10%)</option>
+                <option value="ml_14">ML Clássico · cat. alta (14%)</option>
+                <option value="ml_15">ML Premium · cat. baixa (15%)</option>
+                <option value="ml_17">ML Premium · cat. média (17%)</option>
+                <option value="ml_19">ML Premium · cat. alta (19%)</option>
+                <option value="shopee">Shopee · faixa automática</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="addTeamPricing()">🧮 Calcular e salvar</button>
+          <div style="margin-top:16px">
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Produto</th><th>Custo</th><th>Plataforma</th><th>Preço sugerido</th><th>Lucro</th><th>Por</th><th></th></tr></thead>
+                <tbody id="tp-tbody"><tr><td colspan="7"><div class="empty-state">Nenhuma precificação salva pela equipe.</div></td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div id="equipe-empty" class="card" style="text-align:center;padding:40px;display:none">
+          <div style="font-size:40px;margin-bottom:12px">👥</div>
+          <div style="font-size:15px;font-weight:600;color:var(--text-primary);margin-bottom:6px">Você não está em nenhuma equipe</div>
+          <div style="font-size:13px;color:var(--text-muted)">Peça ao administrador para te adicionar a uma equipe.</div>
+        </div>
+      </div>
+
+
       <!-- ADMIN -->
       <div id="panel-admin" class="panel">
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-bottom:16px">
@@ -660,6 +849,37 @@ tbody tr:hover td { background: var(--bg-elevated); }
           <div class="admin-stat"><div class="admin-stat-val" id="admin-ativos">—</div><div class="admin-stat-label">Ativos</div></div>
           <div class="admin-stat"><div class="admin-stat-val" id="admin-inativos">—</div><div class="admin-stat-label">Inativos</div></div>
         </div>
+        <!-- TEAM MANAGEMENT -->
+        <div class="card" style="margin-bottom:14px">
+          <div class="card-title">👥 Gerenciar Equipes</div>
+          <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:16px">
+
+            <div class="form-group">
+              <label>1. Nome da equipe</label>
+              <input type="text" id="admin-team-name" placeholder="Ex: Renew Trading LTDA" />
+            </div>
+
+            <div class="form-group">
+              <label>2. Adicionar membros</label>
+              <div id="admin-new-members-list" style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px"></div>
+              <div style="display:flex;gap:8px;align-items:center">
+                <select id="admin-new-member-select" style="flex:1;font-size:13px;padding:8px 10px">
+                  <option value="">Selecionar usuário...</option>
+                </select>
+                <button class="btn btn-sm" onclick="adicionarMembroNovo()" style="white-space:nowrap;flex-shrink:0">+ Adicionar</button>
+              </div>
+            </div>
+
+            <button class="btn btn-primary" onclick="criarEquipe()" style="display:inline-flex;align-items:center;gap:8px;justify-content:center;font-size:14px;font-weight:600;margin-top:4px">
+              👥 3. Criar equipe
+            </button>
+          </div>
+          <div id="admin-team-msg" style="font-size:12px;margin-bottom:10px;min-height:16px"></div>
+          <div id="admin-teams-list" style="display:flex;flex-direction:column;gap:10px">
+            <div style="font-size:13px;color:var(--text-muted)">Carregando equipes...</div>
+          </div>
+        </div>
+
         <div class="card">
           <div class="card-title">Gerenciar contas</div>
           <div class="table-wrap">
@@ -680,6 +900,8 @@ tbody tr:hover td { background: var(--bg-elevated); }
     <button class="bottom-nav-item" onclick="showPanel('lucro',this)" data-panel="lucro"><span class="bnav-icon">📈</span><span class="bnav-label">Lucro</span></button>
     <button class="bottom-nav-item" onclick="showPanel('descricao',this)" data-panel="descricao"><span class="bnav-icon">✨</span><span class="bnav-label">IA</span></button>
     <button class="bottom-nav-item" onclick="showPanel('comparador',this)" data-panel="comparador"><span class="bnav-icon">⚖️</span><span class="bnav-label">Comparar</span></button>
+    <button class="bottom-nav-item" id="bnav-dashboard" onclick="showPanel('dashboard',this)" data-panel="dashboard" style="display:none"><span class="bnav-icon">📊</span><span class="bnav-label">Dashboard</span></button>
+    <button class="bottom-nav-item" id="bnav-chat" onclick="showPanel('chat',this)" data-panel="chat" style="display:none"><span class="bnav-icon">💬</span><span class="bnav-label">Chat</span></button>
     <button class="bottom-nav-item" onclick="showPanel('perfil',this)" data-panel="perfil"><span class="bnav-icon">👤</span><span class="bnav-label">Perfil</span></button>
     <button class="bottom-nav-item" id="bnav-admin" onclick="showPanel('admin',this)" data-panel="admin" style="display:none"><span class="bnav-icon">⚙️</span><span class="bnav-label">Admin</span></button>
   </nav>
@@ -743,6 +965,8 @@ async function loadUserAndShow(user) {
   document.getElementById('nav-admin').style.display = isAdmin ? 'flex' : 'none';
   const bnavAdmin = document.getElementById('bnav-admin');
   if (bnavAdmin) bnavAdmin.style.display = isAdmin ? 'flex' : 'none';
+  // Check if user is in a team to show equipe nav
+  checkUserTeam(user.id);
   const mobileTopbar = document.getElementById('mobile-topbar-avatar');
   if (mobileTopbar) mobileTopbar.style.display = 'flex';
   setTimeout(updateSidebarAvatar, 200);
@@ -976,7 +1200,12 @@ const PANEL_META = {
   descricao: { title: 'Gerador de Descrição com IA',  sub: 'Crie textos de anúncio otimizados com inteligência artificial' },
   comparador:{ title: 'Comparador ML vs Shopee',      sub: 'Veja lado a lado qual plataforma é mais lucrativa' },
   perfil:    { title: 'Meu Perfil',                       sub: 'Edite suas informações, avatar e PIN de acesso' },
-  admin:     { title: 'Painel Admin',                     sub: 'Gerencie usuários e permissões do Sellwise' }
+  admin:     { title: 'Painel Admin',                     sub: 'Gerencie usuários e permissões do Sellwise' },
+  equipe:    { title: 'Minha Equipe',                     sub: 'Estoque e precificação compartilhados com sua equipe' },
+  dashboard: { title: 'Dashboard',                        sub: 'Visão geral das métricas da sua equipe' },
+  chat:      { title: 'Chat da Equipe',                   sub: 'Avisos e mensagens em tempo real' },
+  notas:     { title: 'Notas & Tarefas',                  sub: 'Anotações e tarefas compartilhadas da equipe' },
+  historico: { title: 'Histórico de Atividades',          sub: 'Tudo que aconteceu na sua equipe' }
 };
 
 function showPanel(id, btn) {
@@ -989,8 +1218,17 @@ function showPanel(id, btn) {
   document.getElementById('topbar-title').textContent = PANEL_META[id].title;
   document.getElementById('topbar-sub').textContent   = PANEL_META[id].sub;
   window.scrollTo({ top: 0, behavior: 'smooth' });
-  if (id === 'admin') setTimeout(loadAdminPanel, 50);
+  if (id === 'admin') {
+    setTimeout(loadAdminPanel, 50);
+    setTimeout(loadAdminTeams, 150);
+    setTimeout(initNewTeamForm, 250);
+  }
   if (id === 'perfil') setTimeout(initPerfilPanel, 50);
+  if (id === 'equipe') setTimeout(initEquipePanel, 50);
+  if (id === 'dashboard') setTimeout(loadDashboard, 50);
+  if (id === 'chat') setTimeout(loadChat, 50);
+  if (id === 'notas') setTimeout(loadNotas, 50);
+  if (id === 'historico') setTimeout(loadHistorico, 50);
 }
 
 const ML_RATES = { ml_10:10, ml_12:12, ml_14:14, ml_15:15, ml_17:17, ml_19:19 };
@@ -1537,6 +1775,681 @@ function copiarDescricao(){
     if(error){msg.style.color='var(--red)';msg.textContent='Erro: '+error.message;return;}
     msg.style.color='var(--green-400)';
     msg.textContent='✅ Link enviado! Verifique seu email.';
+  }
+
+
+
+  async function checkUserTeam(userId) {
+    const { data } = await sb.from('team_members').select('team_id').eq('user_id', userId).limit(1);
+    const inTeam = data && data.length > 0;
+    const isAdmin = currentProfile?.role === 'admin';
+    const show = inTeam || isAdmin;
+    showTeamNavs(show);
+  }
+
+  // ===== EQUIPE =====
+  let currentTeam = null;
+  let currentTeamMembers = [];
+
+  async function initEquipePanel() {
+    // Check if user is in a team
+    const { data: membership } = await sb
+      .from('team_members')
+      .select('team_id')
+      .eq('user_id', currentUser.id)
+      .single();
+
+    if (!membership) {
+      // Admin can still see all teams
+      if (currentProfile?.role === 'admin') {
+        const { data: teams } = await sb.from('teams').select('*').limit(1).single();
+        if (teams) { currentTeam = teams; await loadEquipeData(); return; }
+      }
+      document.getElementById('equipe-header-card').style.display = 'none';
+      document.querySelectorAll('#panel-equipe .card').forEach(c => c.style.display = 'none');
+      document.getElementById('equipe-empty').style.display = 'block';
+      return;
+    }
+
+    // Load team
+    const { data: team } = await sb.from('teams').select('*').eq('id', membership.team_id).single();
+    if (!team) return;
+    currentTeam = team;
+    await loadEquipeData();
+  }
+
+  async function loadEquipeData() {
+    if (!currentTeam) return;
+
+    document.getElementById('equipe-header-card').style.display = 'block';
+    document.getElementById('equipe-empty').style.display = 'none';
+    document.getElementById('equipe-nome').textContent = currentTeam.name;
+
+    // Load members with their profiles
+    const { data: members } = await sb
+      .from('team_members')
+      .select('user_id')
+      .eq('team_id', currentTeam.id);
+
+    currentTeamMembers = members || [];
+    document.getElementById('equipe-membros-count').textContent = `${currentTeamMembers.length} membro${currentTeamMembers.length !== 1 ? 's' : ''}`;
+
+    // Load member profiles for avatars
+    if (currentTeamMembers.length > 0) {
+      const userIds = currentTeamMembers.map(m => m.user_id);
+      const { data: profiles } = await sb.from('profiles').select('id,username,avatar,role').in('id', userIds);
+      renderMemberAvatars(profiles || []);
+    }
+
+    // Load stock and pricing
+    await loadTeamStock();
+    await loadTeamPricing();
+  }
+
+  function renderMemberAvatars(profiles) {
+    const col = document.getElementById('equipe-members-col');
+    col.innerHTML = '';
+    profiles.forEach(p => {
+      const avKey = p.avatar || 'av1';
+      let inner;
+      if (avKey.startsWith('http')) {
+        inner = `<img src="${avKey}" style="width:44px;height:44px;border-radius:50%;object-fit:cover">`;
+      } else {
+        const [,emoji,color] = getAvatarData(avKey);
+        inner = `<div style="width:44px;height:44px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;font-size:20px">${emoji}</div>`;
+      }
+      const isMe = p.id === currentUser?.id;
+      col.innerHTML += `
+        <div style="position:relative;display:flex;flex-direction:column;align-items:center;gap:3px">
+          <div style="width:44px;height:44px;border-radius:50%;overflow:hidden;border:2px solid ${isMe ? '#22c55e' : 'rgba(34,197,94,0.25)'}">
+            ${inner}
+          </div>
+          ${isMe ? '<div style="position:absolute;bottom:2px;right:2px;width:10px;height:10px;border-radius:50%;background:#22c55e;border:2px solid #111a14"></div>' : ''}
+          <div style="font-size:9px;color:var(--text-muted);text-align:center;max-width:48px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.username||'—'}</div>
+        </div>`;
+    });
+  }
+
+  async function loadTeamStock() {
+    if (!currentTeam) return;
+    const { data: stock } = await sb.from('team_stock')
+      .select('*, profiles:created_by(username)')
+      .eq('team_id', currentTeam.id)
+      .order('created_at', { ascending: false });
+
+    document.getElementById('equipe-stock-count').textContent = stock?.length || 0;
+    const tbody = document.getElementById('te-tbody');
+    if (!stock || !stock.length) {
+      tbody.innerHTML = '<tr><td colspan="8"><div class="empty-state">Nenhum produto no estoque da equipe.</div></td></tr>';
+      return;
+    }
+    tbody.innerHTML = stock.map(p => {
+      let cls, label;
+      if (p.qtd === 0) { cls='badge-out'; label='Sem estoque'; }
+      else if (p.qtd <= p.min_qtd) { cls='badge-low'; label='Estoque baixo'; }
+      else { cls='badge-ok'; label='Normal'; }
+      return `<tr>
+        <td><strong>${p.nome}</strong></td>
+        <td style="color:var(--text-muted);font-size:12px">${p.sku||'—'}</td>
+        <td><strong>${p.qtd}</strong></td>
+        <td>${fmt(p.custo)}</td>
+        <td>${fmt(p.custo*p.qtd)}</td>
+        <td><span class="badge ${cls}">${label}</span></td>
+        <td style="font-size:12px;color:var(--text-muted)">${p.profiles?.username||'—'}</td>
+        <td><button class="btn btn-sm" onclick="removeTeamStock('${p.id}')" style="color:var(--red);border-color:rgba(248,113,113,0.3);font-size:11px;padding:4px 8px">🗑</button></td>
+      </tr>`;
+    }).join('');
+  }
+
+  async function addTeamStock() {
+    if (!currentTeam) return;
+    const nome = document.getElementById('te-nome').value.trim();
+    if (!nome) { alert('Informe o nome do produto.'); return; }
+    const { error } = await sb.from('team_stock').insert({
+      team_id: currentTeam.id,
+      nome,
+      sku: document.getElementById('te-sku').value.trim(),
+      qtd: parseInt(document.getElementById('te-qtd').value)||0,
+      min_qtd: parseInt(document.getElementById('te-min').value)||5,
+      custo: parseFloat(document.getElementById('te-custo').value)||0,
+      created_by: currentUser.id
+    });
+    if (error) { alert('Erro ao adicionar: ' + error.message); return; }
+    await logActivity(currentTeam.id, 'adicionou ao estoque', nome);
+    ['te-nome','te-sku','te-qtd','te-min','te-custo'].forEach(id => document.getElementById(id).value='');
+    await loadTeamStock();
+  }
+
+  async function removeTeamStock(id) {
+    await sb.from('team_stock').delete().eq('id', id);
+    await loadTeamStock();
+  }
+
+  async function loadTeamPricing() {
+    if (!currentTeam) return;
+    const { data: pricing } = await sb.from('team_pricing')
+      .select('*, profiles:created_by(username)')
+      .eq('team_id', currentTeam.id)
+      .order('created_at', { ascending: false });
+
+    document.getElementById('equipe-pricing-count').textContent = pricing?.length || 0;
+    const tbody = document.getElementById('tp-tbody');
+    if (!pricing || !pricing.length) {
+      tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state">Nenhuma precificação salva pela equipe.</div></td></tr>';
+      return;
+    }
+    tbody.innerHTML = pricing.map(p => `<tr>
+      <td><strong>${p.nome}</strong></td>
+      <td>${fmt(p.custo)}</td>
+      <td style="font-size:12px;color:var(--text-muted)">${p.plataforma||'—'}</td>
+      <td style="color:var(--green-400);font-weight:600">${fmt(p.preco_sugerido||0)}</td>
+      <td style="color:var(--green-400)">${fmt(p.lucro||0)}</td>
+      <td style="font-size:12px;color:var(--text-muted)">${p.profiles?.username||'—'}</td>
+      <td><button class="btn btn-sm" onclick="removeTeamPricing('${p.id}')" style="color:var(--red);border-color:rgba(248,113,113,0.3);font-size:11px;padding:4px 8px">🗑</button></td>
+    </tr>`).join('');
+  }
+
+  async function addTeamPricing() {
+    if (!currentTeam) return;
+    const nome = document.getElementById('tp-nome').value.trim();
+    if (!nome) { alert('Informe o nome do produto.'); return; }
+    const custo = parseFloat(document.getElementById('tp-custo').value)||0;
+    const frete = parseFloat(document.getElementById('tp-frete').value)||0;
+    const margem = parseFloat(document.getElementById('tp-margem').value)||20;
+    const plat = document.getElementById('tp-plat').value;
+    const perc = ML_RATES[plat] || 12;
+    const base = custo + frete;
+    const preco = base / (1 - (perc + margem) / 100);
+    const lucro = preco - base - (preco * perc / 100);
+    const { error } = await sb.from('team_pricing').insert({
+      team_id: currentTeam.id, nome,
+      custo, frete, margem, plataforma: plat,
+      preco_sugerido: parseFloat(preco.toFixed(2)),
+      lucro: parseFloat(lucro.toFixed(2)),
+      created_by: currentUser.id
+    });
+    if (error) { alert('Erro ao salvar: ' + error.message); return; }
+    await logActivity(currentTeam.id, 'salvou uma precificação', nome + ' → ' + fmt(preco));
+    ['tp-nome','tp-custo','tp-frete','tp-margem'].forEach(id => document.getElementById(id).value='');
+    await loadTeamPricing();
+  }
+
+  async function removeTeamPricing(id) {
+    await sb.from('team_pricing').delete().eq('id', id);
+    await loadTeamPricing();
+  }
+
+  // ===== ADMIN TEAM MANAGEMENT =====
+  // Store pending members for new team
+  let pendingMembers = [];
+
+  let allUsersMap = {};
+
+  async function initNewTeamForm() {
+    const { data: profiles, error } = await sb.from('profiles').select('id,username');
+    const sel = document.getElementById('admin-new-member-select');
+    if (!sel) return;
+    if (error || !profiles || profiles.length === 0) {
+      sel.innerHTML = '<option value="">Nenhum usuário encontrado</option>';
+      return;
+    }
+    // Store all users in a map for easy lookup
+    allUsersMap = {};
+    profiles.forEach(p => { allUsersMap[p.id] = p.username; });
+    const others = profiles.filter(p => p.id !== currentUser.id);
+    sel.innerHTML = '<option value="">Selecionar usuário...</option>' +
+      others.map(p => `<option value="${p.id}">${p.username}</option>`).join('');
+    pendingMembers = [{ id: currentUser.id, name: 'Você (admin)' }];
+    renderPendingMembers();
+  }
+
+  function adicionarMembroNovo() {
+    const sel = document.getElementById('admin-new-member-select');
+    const userId = sel.value;
+    if (!userId) return;
+    if (pendingMembers.find(m => m.id === userId)) { sel.value = ''; return; }
+    const userName = allUsersMap[userId] || 'Usuário';
+    pendingMembers.push({ id: userId, name: userName });
+    sel.value = '';
+    renderPendingMembers();
+  }
+
+  function removerMembroNovo(userId) {
+    if (userId === currentUser.id) return; // can't remove yourself
+    pendingMembers = pendingMembers.filter(m => m.id !== userId);
+    renderPendingMembers();
+  }
+
+  function renderPendingMembers() {
+    const list = document.getElementById('admin-new-members-list');
+    if (!list) return;
+    if (!pendingMembers.length) { list.innerHTML = ''; return; }
+    list.innerHTML = pendingMembers.map(m => `
+      <div style="display:flex;align-items:center;justify-content:space-between;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius);padding:7px 12px">
+        <span style="font-size:13px;color:var(--text-primary)">👤 ${m.name}</span>
+        ${m.id !== currentUser.id
+          ? `<button onclick="removerMembroNovo('${m.id}')" style="font-size:11px;color:var(--red);background:none;border:none;cursor:pointer;padding:2px 6px">✕ Remover</button>`
+          : `<span style="font-size:11px;color:var(--green-400)">Admin</span>`}
+      </div>`).join('');
+  }
+
+  async function criarEquipe() {
+    const name = document.getElementById('admin-team-name').value.trim();
+    const msg = document.getElementById('admin-team-msg');
+    if (!name) { msg.style.color='var(--red)'; msg.textContent='Informe o nome da equipe.'; return; }
+    if (pendingMembers.length === 0) { msg.style.color='var(--red)'; msg.textContent='Adicione pelo menos um membro.'; return; }
+    msg.style.color='var(--text-muted)'; msg.textContent='Criando equipe...';
+    const { data: newTeam, error } = await sb.from('teams').insert({ name, created_by: currentUser.id }).select().single();
+    if (error) { msg.style.color='var(--red)'; msg.textContent='Erro: '+error.message; return; }
+    // Add all pending members
+    if (newTeam) {
+      const memberInserts = pendingMembers.map(m => ({ team_id: newTeam.id, user_id: m.id }));
+      await sb.from('team_members').insert(memberInserts);
+      await checkUserTeam(currentUser.id);
+    }
+    document.getElementById('admin-team-name').value = '';
+    pendingMembers = [];
+    renderPendingMembers();
+    await logActivity(newTeam?.id, 'criou a equipe', name);
+    msg.style.color='var(--green-400)';
+    msg.textContent='✅ Equipe "'+name+'" criada com sucesso! Acesse em "Minha Equipe".';
+    setTimeout(()=>msg.textContent='', 4000);
+    const navEquipe = document.getElementById('nav-equipe');
+    const bnavEquipe = document.getElementById('bnav-equipe');
+    if (navEquipe) navEquipe.style.display = 'flex';
+    if (bnavEquipe) bnavEquipe.style.display = 'flex';
+    await loadAdminTeams();
+    // Re-init form for next team
+    setTimeout(initNewTeamForm, 500);
+  }
+
+  async function loadAdminTeams() {
+    const { data: teams } = await sb.from('teams').select('*').order('created_at', { ascending: true });
+    const container = document.getElementById('admin-teams-list');
+    if (!teams || !teams.length) {
+      container.innerHTML = '<div style="font-size:13px;color:var(--text-muted)">Nenhuma equipe criada ainda.</div>';
+      return;
+    }
+    // Load members for each team
+    const { data: allProfiles } = await sb.from('profiles').select('id,username,avatar');
+    const { data: allMembers } = await sb.from('team_members').select('*');
+
+    container.innerHTML = teams.map(team => {
+      const members = (allMembers||[]).filter(m => m.team_id === team.id);
+      const memberProfiles = members.map(m => (allProfiles||[]).find(p => p.id === m.user_id)).filter(Boolean);
+      const nonMembers = (allProfiles||[]).filter(p => !members.find(m => m.user_id === p.id));
+
+      const memberAvatars = memberProfiles.map(p => {
+        const avKey = p.avatar || 'av1';
+        if (avKey.startsWith('http')) return `<img src="${avKey}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;border:1.5px solid var(--border-green)">`;
+        const [,emoji,color] = getAvatarData(avKey);
+        return `<div style="width:28px;height:28px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;font-size:13px;border:1.5px solid var(--border-green)">${emoji}</div>`;
+      }).join('');
+
+      const addOptions = nonMembers.map(p => `<option value="${p.id}">${p.username}</option>`).join('');
+      const memberRows = memberProfiles.map(p => `
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)">
+          <span style="font-size:13px;color:var(--text-primary)">${p.username}</span>
+          <button class="btn btn-sm" onclick="removeMember('${team.id}','${p.id}')" style="font-size:11px;padding:3px 8px;color:var(--red);border-color:rgba(248,113,113,0.3)">Remover</button>
+        </div>`).join('');
+
+      return `<div style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px;margin-bottom:4px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div>
+            <div style="font-size:14px;font-weight:600;color:var(--text-primary)">${team.name}</div>
+            <div style="font-size:11px;color:var(--text-muted)">${members.length} membro${members.length!==1?'s':''}</div>
+          </div>
+          <div style="display:flex;gap:-6px">${memberAvatars}</div>
+        </div>
+        ${memberRows ? `<div style="margin-bottom:10px">${memberRows}</div>` : ''}
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <select id="add-member-${team.id}" style="flex:1;font-size:13px;padding:7px 10px;min-width:120px">
+            <option value="">Adicionar membro...</option>
+            ${addOptions}
+          </select>
+          <button class="btn btn-primary btn-sm" onclick="addMember('${team.id}')" style="font-size:12px;white-space:nowrap">+ Adicionar</button>
+          <button class="btn btn-sm" onclick="deletarEquipe('${team.id}')" style="font-size:12px;color:var(--red);border-color:rgba(248,113,113,0.3)">🗑 Deletar</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  async function addMember(teamId) {
+    const sel = document.getElementById('add-member-' + teamId);
+    const userId = sel.value;
+    if (!userId) { alert('Selecione um usuário.'); return; }
+    const { error } = await sb.from('team_members').insert({ team_id: teamId, user_id: userId });
+    if (error) { alert('Erro: ' + error.message); return; }
+    await loadAdminTeams();
+    // Refresh equipe nav in case user added themselves
+    if (currentUser) await checkUserTeam(currentUser.id);
+  }
+
+  async function removeMember(teamId, userId) {
+    await sb.from('team_members').delete().eq('team_id', teamId).eq('user_id', userId);
+    await loadAdminTeams();
+  }
+
+  async function deletarEquipe(teamId) {
+    if (!confirm('Deletar esta equipe? Todos os dados compartilhados serão perdidos.')) return;
+    await sb.from('teams').delete().eq('id', teamId);
+    await loadAdminTeams();
+  }
+
+
+  // ===== HELPERS =====
+  function showTeamNavs(show) {
+    // Show all in sidebar
+    ['dashboard','equipe','chat','notas','historico'].forEach(id => {
+      const n = document.getElementById('nav-'+id);
+      if (n) n.style.display = show ? 'flex' : 'none';
+    });
+    // Only dashboard and chat in bottom nav (limited space)
+    ['dashboard','chat'].forEach(id => {
+      const b = document.getElementById('bnav-'+id);
+      if (b) b.style.display = show ? 'flex' : 'none';
+    });
+  }
+
+  async function logActivity(teamId, action, details) {
+    if (!teamId || !currentUser) return;
+    await sb.from('team_activity').insert({
+      team_id: teamId, user_id: currentUser.id, action, details
+    });
+  }
+
+  function timeAgo(dateStr) {
+    const diff = Date.now() - new Date(dateStr).getTime();
+    const m = Math.floor(diff/60000), h = Math.floor(m/60), d = Math.floor(h/24);
+    if (d > 0) return `${d}d atrás`;
+    if (h > 0) return `${h}h atrás`;
+    if (m > 0) return `${m}min atrás`;
+    return 'agora';
+  }
+
+  function activityIcon(action) {
+    if (action.includes('estoque')) return '📦';
+    if (action.includes('precific')) return '🧮';
+    if (action.includes('mensagem')) return '💬';
+    if (action.includes('nota') || action.includes('tarefa')) return '📝';
+    if (action.includes('equipe') || action.includes('membro')) return '👥';
+    return '🔔';
+  }
+
+  // ===== DASHBOARD =====
+  async function loadDashboard() {
+    if (!currentTeam) { await initEquipePanel(); }
+    if (!currentTeam) return;
+
+    const [stockRes, pricingRes, membersRes, msgsRes, actRes] = await Promise.all([
+      sb.from('team_stock').select('*').eq('team_id', currentTeam.id),
+      sb.from('team_pricing').select('lucro,margem').eq('team_id', currentTeam.id),
+      sb.from('team_members').select('user_id').eq('team_id', currentTeam.id),
+      sb.from('team_messages').select('id,created_at').eq('team_id', currentTeam.id).gte('created_at', new Date().toISOString().split('T')[0]),
+      sb.from('team_activity').select('*, profiles:user_id(username,avatar)').eq('team_id', currentTeam.id).order('created_at',{ascending:false}).limit(5)
+    ]);
+
+    const stock = stockRes.data || [];
+    const pricing = pricingRes.data || [];
+    const members = membersRes.data || [];
+    const msgs = msgsRes.data || [];
+    const activities = actRes.data || [];
+
+    const valorTotal = stock.reduce((s,p) => s + (p.custo * p.qtd), 0);
+    const margemMedia = pricing.length ? (pricing.reduce((s,p) => s + (p.margem||0), 0) / pricing.length) : 0;
+    const lowStock = stock.filter(p => p.qtd <= p.min_qtd);
+
+    document.getElementById('dash-produtos').textContent = stock.length;
+    document.getElementById('dash-valor').textContent = fmt(valorTotal);
+    document.getElementById('dash-precif').textContent = pricing.length;
+    document.getElementById('dash-margem').textContent = margemMedia.toFixed(1) + '%';
+    document.getElementById('dash-membros').textContent = members.length;
+    document.getElementById('dash-msgs').textContent = msgs.length;
+
+    // Low stock alerts
+    const alertCard = document.getElementById('dash-alert-card');
+    if (lowStock.length > 0) {
+      alertCard.style.display = 'block';
+      document.getElementById('dash-low-stock').innerHTML = lowStock.map(p => `
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)">
+          <span style="font-size:13px;font-weight:500">${p.nome}</span>
+          <span class="badge ${p.qtd===0?'badge-out':'badge-low'}">${p.qtd===0?'Sem estoque':'Qtd: '+p.qtd}</span>
+        </div>`).join('');
+    } else {
+      alertCard.style.display = 'none';
+    }
+
+    // Recent activity
+    const actEl = document.getElementById('dash-activity');
+    if (!activities.length) {
+      actEl.innerHTML = '<div class="empty-state">Nenhuma atividade ainda.</div>';
+    } else {
+      actEl.innerHTML = activities.map(a => {
+        const avKey = a.profiles?.avatar || 'av1';
+        const uname = a.profiles?.username || '—';
+        let avHtml;
+        if (avKey.startsWith('http')) avHtml = `<img src="${avKey}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0">`;
+        else { const [,e,c]=getAvatarData(avKey); avHtml=`<div style="width:28px;height:28px;border-radius:50%;background:${c};display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0">${e}</div>`; }
+        return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">
+          ${avHtml}
+          <div style="flex:1;min-width:0">
+            <div style="font-size:13px;color:var(--text-primary)">${activityIcon(a.action)} <strong>${uname}</strong> ${a.action}</div>
+            ${a.details ? `<div style="font-size:11px;color:var(--text-muted);margin-top:2px">${a.details}</div>` : ''}
+          </div>
+          <span style="font-size:11px;color:var(--text-muted);flex-shrink:0">${timeAgo(a.created_at)}</span>
+        </div>`;
+      }).join('');
+    }
+  }
+
+  // ===== CHAT =====
+  let chatSubscription = null;
+
+  async function loadChat() {
+    if (!currentTeam) { await initEquipePanel(); }
+    if (!currentTeam) return;
+
+    const { data: msgs } = await sb.from('team_messages')
+      .select('*, profiles:user_id(username,avatar)')
+      .eq('team_id', currentTeam.id)
+      .order('created_at', { ascending: true })
+      .limit(100);
+
+    renderMessages(msgs || []);
+
+    // Subscribe to realtime
+    if (chatSubscription) sb.removeChannel(chatSubscription);
+    chatSubscription = sb.channel('chat-' + currentTeam.id)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'team_messages', filter: 'team_id=eq.' + currentTeam.id },
+        async (payload) => {
+          // Skip messages from current user — already appended immediately
+          if (payload.new.user_id === currentUser?.id) return;
+          const { data: msg } = await sb.from('team_messages')
+            .select('*, profiles:user_id(username,avatar)')
+            .eq('id', payload.new.id).single();
+          if (msg) appendMessage(msg);
+        }
+      ).subscribe();
+  }
+
+  function renderMessages(msgs) {
+    const el = document.getElementById('chat-messages');
+    if (!msgs.length) { el.innerHTML = '<div class="empty-state">Sem mensagens ainda. Seja o primeiro a escrever!</div>'; return; }
+    el.innerHTML = msgs.map(m => chatBubble(m)).join('');
+    el.scrollTop = el.scrollHeight;
+  }
+
+  function appendMessage(msg) {
+    const el = document.getElementById('chat-messages');
+    const wasEmpty = el.querySelector('.empty-state');
+    if (wasEmpty) el.innerHTML = '';
+    el.innerHTML += chatBubble(msg);
+    el.scrollTop = el.scrollHeight;
+  }
+
+  function chatBubble(m) {
+    const isMe = m.user_id === currentUser?.id;
+    const avKey = m.profiles?.avatar || 'av1';
+    const fullName = m.profiles?.username || '—';
+    const uname = fullName.length > 8 ? fullName.slice(0,7) + '…' : fullName;
+    let avHtml;
+    if (avKey.startsWith('http')) {
+      avHtml = `<img src="${avKey}" style="width:34px;height:34px;border-radius:50%;object-fit:cover;flex-shrink:0">`;
+    } else {
+      const [,e,c]=getAvatarData(avKey);
+      avHtml=`<div style="width:34px;height:34px;border-radius:50%;background:${c};display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">${e}</div>`;
+    }
+    const time = new Date(m.created_at).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+    return `<div style="display:flex;gap:8px;align-items:flex-start;${isMe?'flex-direction:row-reverse;':''}">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex-shrink:0;width:36px">
+        ${avHtml}
+        <span style="font-size:9px;color:var(--text-muted);text-align:center;max-width:36px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500">${uname}</span>
+      </div>
+      <div style="max-width:72%">
+        <div style="background:${isMe?'var(--green-700)':'var(--bg-elevated)'};color:${isMe?'#fff':'var(--text-primary)'};border-radius:${isMe?'12px 4px 12px 12px':'4px 12px 12px 12px'};padding:8px 12px;font-size:13px;line-height:1.5">
+          ${m.content}
+        </div>
+        <div style="font-size:10px;color:var(--text-muted);margin-top:3px;${isMe?'text-align:right':''}">${time}</div>
+      </div>
+    </div>`;
+  }
+
+  async function enviarMensagem() {
+    const input = document.getElementById('chat-input');
+    const text = input.value.trim();
+    if (!text || !currentTeam) return;
+    input.value = '';
+    const { data: newMsg, error } = await sb.from('team_messages').insert({
+      team_id: currentTeam.id, user_id: currentUser.id, content: text
+    }).select().single();
+    if (error) { input.value = text; alert('Erro ao enviar: ' + error.message); return; }
+    // Build message object manually with current user profile
+    if (newMsg) {
+      const fakeMsg = {
+        ...newMsg,
+        profiles: {
+          username: currentProfile?.username || currentUser.email.split('@')[0],
+          avatar: currentProfile?.avatar || 'av1'
+        }
+      };
+      appendMessage(fakeMsg);
+    }
+    logActivity(currentTeam.id, 'enviou uma mensagem', text.slice(0,50) + (text.length>50?'...':''));
+  }
+
+  // ===== NOTAS =====
+  async function loadNotas() {
+    if (!currentTeam) { await initEquipePanel(); }
+    if (!currentTeam) return;
+
+    const { data: notas } = await sb.from('team_notes')
+      .select('*, profiles:user_id(username)')
+      .eq('team_id', currentTeam.id)
+      .order('created_at', { ascending: false });
+
+    const tarefas = (notas||[]).filter(n => n.is_task);
+    const simples = (notas||[]).filter(n => !n.is_task);
+
+    const tarefasEl = document.getElementById('notas-tarefas');
+    const notasEl = document.getElementById('notas-notas');
+
+    tarefasEl.innerHTML = tarefas.length ? tarefas.map(n => `
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius);${n.done?'opacity:0.6':''}">
+        <input type="checkbox" ${n.done?'checked':''} onchange="toggleTarefa('${n.id}',this.checked)" style="width:16px;height:16px;accent-color:var(--green-500);cursor:pointer;flex-shrink:0" />
+        <span style="flex:1;font-size:13px;color:var(--text-primary);${n.done?'text-decoration:line-through':''}">${n.content}</span>
+        <span style="font-size:10px;color:var(--text-muted)">${n.profiles?.username||'—'}</span>
+        <button onclick="deletarNota('${n.id}')" style="font-size:12px;color:var(--red);background:none;border:none;cursor:pointer;padding:2px">✕</button>
+      </div>`).join('') : '<div class="empty-state">Nenhuma tarefa ainda.</div>';
+
+    notasEl.innerHTML = simples.length ? simples.map(n => `
+      <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius)">
+        <span style="font-size:13px;color:var(--text-primary);flex:1;line-height:1.5">${n.content}</span>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0">
+          <span style="font-size:10px;color:var(--text-muted)">${n.profiles?.username||'—'}</span>
+          <span style="font-size:10px;color:var(--text-muted)">${timeAgo(n.created_at)}</span>
+        </div>
+        <button onclick="deletarNota('${n.id}')" style="font-size:12px;color:var(--red);background:none;border:none;cursor:pointer;padding:2px;flex-shrink:0">✕</button>
+      </div>`).join('') : '<div class="empty-state">Nenhuma nota ainda.</div>';
+  }
+
+  async function adicionarNota(isTask) {
+    const input = document.getElementById('nota-input');
+    const content = input.value.trim();
+    if (!content || !currentTeam) return;
+    input.value = '';
+    const { error } = await sb.from('team_notes').insert({
+      team_id: currentTeam.id, user_id: currentUser.id, content, is_task: isTask, done: false
+    });
+    if (!error) {
+      logActivity(currentTeam.id, isTask ? 'adicionou uma tarefa' : 'adicionou uma nota', content.slice(0,60));
+      await loadNotas();
+    }
+  }
+
+  async function toggleTarefa(id, done) {
+    await sb.from('team_notes').update({ done }).eq('id', id);
+    await loadNotas();
+  }
+
+  async function deletarNota(id) {
+    await sb.from('team_notes').delete().eq('id', id);
+    await loadNotas();
+  }
+
+  // ===== HISTÓRICO =====
+  let allActivities = [];
+  let currentFilter = 'all';
+
+  async function loadHistorico() {
+    if (!currentTeam) { await initEquipePanel(); }
+    if (!currentTeam) return;
+
+    const { data: activities } = await sb.from('team_activity')
+      .select('*, profiles:user_id(username,avatar)')
+      .eq('team_id', currentTeam.id)
+      .order('created_at', { ascending: false })
+      .limit(200);
+
+    allActivities = activities || [];
+    renderHistorico();
+  }
+
+  function filterActivity(type) {
+    currentFilter = type;
+    ['all','stock','pricing','chat','team'].forEach(t => {
+      const btn = document.getElementById('hist-'+t);
+      if (btn) {
+        btn.style.borderColor = t===type ? 'var(--border-green)' : 'var(--border-strong)';
+        btn.style.color = t===type ? 'var(--green-400)' : 'var(--text-secondary)';
+      }
+    });
+    renderHistorico();
+  }
+
+  function renderHistorico() {
+    const el = document.getElementById('historico-list');
+    let items = allActivities;
+    if (currentFilter !== 'all') {
+      const map = { stock: 'estoque', pricing: 'precific', chat: 'mensagem', team: 'membro' };
+      items = items.filter(a => a.action.includes(map[currentFilter]));
+    }
+    if (!items.length) { el.innerHTML = '<div class="empty-state">Nenhuma atividade encontrada.</div>'; return; }
+    el.innerHTML = items.map(a => {
+      const avKey = a.profiles?.avatar || 'av1';
+      const uname = a.profiles?.username || '—';
+      let avHtml;
+      if (avKey.startsWith('http')) avHtml = `<img src="${avKey}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0">`;
+      else { const [,e,c]=getAvatarData(avKey); avHtml=`<div style="width:32px;height:32px;border-radius:50%;background:${c};display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0">${e}</div>`; }
+      const date = new Date(a.created_at).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+      return `<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">
+        ${avHtml}
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;color:var(--text-primary)">${activityIcon(a.action)} <strong>${uname}</strong> ${a.action}</div>
+          ${a.details?`<div style="font-size:11px;color:var(--text-muted);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a.details}</div>`:''}
+        </div>
+        <span style="font-size:11px;color:var(--text-muted);flex-shrink:0">${date}</span>
+      </div>`;
+    }).join('');
   }
 
 
