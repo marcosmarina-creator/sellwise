@@ -930,44 +930,50 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
           <div class="comp-grid">
             <div class="comp-card" id="c-ml-card">
               <div class="comp-header">
-              <div style="display:flex;align-items:center;gap:10px">
-                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAABCGlDQ1BJQ0MgUHJvZmlsZQAAeJxjYGA8wQAELAYMDLl5JUVB7k4KEZFRCuwPGBiBEAwSk4sLGHADoKpv1yBqL+viUYcLcKakFicD6Q9ArFIEtBxopAiQLZIOYWuA2EkQtg2IXV5SUAJkB4DYRSFBzkB2CpCtkY7ETkJiJxcUgdT3ANk2uTmlyQh3M/Ck5oUGA2kOIJZhKGYIYnBncAL5H6IkfxEDg8VXBgbmCQixpJkMDNtbGRgkbiHEVBYwMPC3MDBsO48QQ4RJQWJRIliIBYiZ0tIYGD4tZ2DgjWRgEL7AwMAVDQsIHG5TALvNnSEfCNMZchhSgSKeDHkMyQx6QJYRgwGDIYMZAKbWPz9HbOBQAAAFxUlEQVR4nO2aXWyUVRrHf+e873x02pkppXSshdYhpThQqFJ0EWtIoWw26qKi0QsvjF8XuvFiN5u9XDVxk73YTdwrjbsxa5Ybd5Nd4iZoLBBEtBGRFUvRllJoS9uhLW2p89WZvufx4h2k0AKbdM1s4/yvTp6TPO/zO+d5zldelTpri+0xICw5iShsr9dg2UsTAFHYIrjBL0EAEdCFDmKxKgIUWkWAQqsIUGgVAQqtIkChVQQotH4cAEYUxqirbJK3/VCn8Gu/dz3ZN3OiLUH7xb0vZCHn2FjaoH0GpV2bmVVofQXFiEKMAgUIaMtgjAYByzI4RuW73CC1EoxRKCUo5X7XChjIgjOrUUqu8v9fAYhR6FIhl/bxTecKxsdLsEXwqBRojaP9BMqy1K8eJ1iRQhJuAAhon0CJgIMLkQAraFzHSbCC+T5b3P4MWL68LQdWSDj5WTX1teP4q3OQBlJ5X9dI5c5rsa+5UooBFYDj/wnRe6qCjdExVkWSXJqyGEtuREmKMm83s8rDNwNVhKszbGu5iEkrtF/o6aniYMcaIpUJkikPjz/0Je8fiOE4ikce6GRfe4yqigR9g8uZmbHZsa2H/YcbqKuZpOG2Mf51sJGjx+v45dMf095Rz90bBtnW0oukFWrOTIio+QAiCuUTvu6OcGp4D6VWPwHaOXPOoTTyGMa7Hr9PWOY/zcz0YVC3MJHdQv2Kl9jcdBIRzSt//Ckej2F4NER05SQjo0FyjoVxFLdGpkllbEr9OZSC2Po4ktUcP3krff2VWLbh4bYuDh+NMjpRxlO7j/HegXX8+rlDRKMXkZn8TOdjnZdCylYkpoS+i6/z6KNt7qxnnqX73WPYpYp1DUGmplIY7qRlx26s/LS273+L0fh9VFW5+fxg6yk++2oVsdWj/Omv93Hbyilub4ozdC7MuvoLBPw5uk5XEwxl+PTIahBNqCzN5HSA8lAK23LQyhDwZwFwHH3zFLo8+gNny2j/5HlqondRu2Y7q2oCJJNpKisrsG2X+dOOLmYyKWpW1tHX3cHQ2SNsaXqH9U1jHDjYQHXVNImUj2BZBhFFV3c1RmBDbJjcjM3tay/w5jtbWV6eornpPPuPNHBHbIho3QRv//0utt9zhoboBd7cs5V7mvvZ2dqNZK6M/oIpJKJQfqGvdwWjvbA2NsbHHRvoV2/QGAuTSibY3tqE12Nxrn+EoyeyXOr+Dbt37mWkvxxdGWDDxmH+/LcteCyhcW2czVv6IQH4YWbag68kx9BImJqaSxDg+8LFzrcdXPsMMAuUAtmFi3heCiklSBaqa6b4x3vbaF7/Cbt+1sm+j36H4/ye4LI6Pth/htraCCc6JzHjb/Dsrn/j8dr85Yuf8OLzh3EymsHhciKVCfbs3UR8LMjAcJjzIxWghIA/y8nT1TQ3DvKrFw4habCsa5bRzJz2hLrhMjpvIxNHUVKWo6Wlj5f+8HN6eiPc3/Y+9c4dmJHf4kzu5cShl7kz9ATPPfIWw+NhfvHaw2zaPEB5ZZpcTuP1OoyOB7m7aYB9h9ZxPl5BMm3z+ANf0tUbYVdbFzlHY80abNuglGBZBq3luu3raV4Ray2YhOLerX2g4NW3d3JL+FtaN50lEv4n4RKD8dsMx5fz7oe7GBgP8cyTn9PW2o1MK2xLWF6eJJX20hQb4szACtZEx5ic8lFVkWDH1l4+/2oVD24/BV7cpfcGAd5MC+4DAMZR6KDgpDTtRxo41lnLxFQpxtFoy7CsPEVz4yA77+3BE5zFfHslEMcoQKGVO4ood0e1bAMWxOMhqioSaGtxT5oL7gNXQeSPEpQCFm5ROfm2DRggkYedO4qXi22uz/yxQgSUF7dwF6kF94G50to9GjjTCmT+Eka+uOalwEKjmrcpBZK92tdidEOAy7L0Qq+/i8jb/1Hw8GO5D/w/qwhQaBUBCq0iQKFVBCi0igCFVhGg0FryALbkb0lL9WeP7wDvKYzj1Gwo/QAAAABJRU5ErkJggg==" style="width:42px;height:42px;border-radius:10px;flex-shrink:0;object-fit:cover">
-                <div>
-                  <div class="comp-plat">Mercado Livre</div>
-                  <div style="font-size:10px;color:var(--text-muted)">ML Clássico / Premium</div>
+                <div style="display:flex;align-items:center;gap:10px">
+                  <img src="data:image/png;base64,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" style="width:42px;height:42px;border-radius:10px;flex-shrink:0;object-fit:cover">
+                  <div>
+                    <div class="comp-plat">Mercado Livre</div>
+                    <div style="font-size:10px;color:var(--text-muted)" id="c-ml-taxa-r">—</div>
+                  </div>
                 </div>
+                <span id="c-ml-badge" class="comp-badge-lose"></span>
               </div>
-              <span id="c-ml-badge" class="comp-badge-lose">—</span>
-            </div>
-              <div class="comp-row"><span class="comp-row-label">Comissão</span><span class="comp-row-val" id="c-ml-comissao">—</span></div>
-              <div class="comp-row"><span class="comp-row-label">Valor da taxa</span><span class="comp-row-val red" id="c-ml-taxa">—</span></div>
-              <div class="comp-row"><span class="comp-row-label">Taxa fixa</span><span class="comp-row-val" id="c-ml-fixa">—</span></div>
-              <div class="comp-row"><span class="comp-row-label">Outros custos</span><span class="comp-row-val red" id="c-ml-outros">—</span></div>
-              <div class="comp-row"><span class="comp-row-label">Repasse</span><span class="comp-row-val green" id="c-ml-repasse">—</span></div>
-              <div class="comp-row"><span class="comp-row-label">Margem real</span><span class="comp-row-val" id="c-ml-marg">—</span></div>
-              <div class="comp-lucro-row"><span class="comp-lucro-label">Lucro líquido</span><span class="comp-lucro-val" id="c-ml-lucro">—</span></div>
+              <div class="comp-row"><span class="comp-row-label">Preço de venda</span><span class="comp-row-val" id="c-ml-preco">—</span></div>
+              <div class="comp-row"><span class="comp-row-label">Custo + Frete</span><span class="comp-row-val red" id="c-ml-base">—</span></div>
+              <div class="comp-row"><span class="comp-row-label">Taxa plataforma</span><span class="comp-row-val red" id="c-ml-taxa-v">—</span></div>
+              <div class="comp-row"><span class="comp-row-label">Margem líquida</span><span class="comp-row-val" id="c-ml-marg">—</span></div>
+              <div class="comp-lucro-row">
+                <span class="comp-lucro-label">Lucro líquido</span>
+                <span class="comp-lucro-val" id="c-ml-lucro">—</span>
+              </div>
             </div>
             <div class="comp-card" id="c-sh-card">
               <div class="comp-header">
-              <div style="display:flex;align-items:center;gap:10px">
-                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAABCGlDQ1BJQ0MgUHJvZmlsZQAAeJxjYGA8wQAELAYMDLl5JUVB7k4KEZFRCuwPGBiBEAwSk4sLGHADoKpv1yBqL+viUYcLcKakFicD6Q9ArFIEtBxopAiQLZIOYWuA2EkQtg2IXV5SUAJkB4DYRSFBzkB2CpCtkY7ETkJiJxcUgdT3ANk2uTmlyQh3M/Ck5oUGA2kOIJZhKGYIYnBncAL5H6IkfxEDg8VXBgbmCQixpJkMDNtbGRgkbiHEVBYwMPC3MDBsO48QQ4RJQWJRIliIBYiZ0tIYGD4tZ2DgjWRgEL7AwMAVDQsIHG5TALvNnSEfCNMZchhSgSKeDHkMyQx6QJYRgwGDIYMZAKbWPz9HbOBQAAAFdklEQVR4nO2a248cxRXGf6eqe2fHXhuS9QpxcTDG2DHxBYMtcLCFMIkMyEQiSqLwYgVFMbzlgVee4B9AIB4QPIAA88QlkUWwJUtB3CWUIMAYJUCQRXCCCWa93u1b1Tl56N7ZtTy7O4DNIDGfNNJ099Sp+s6p6qnvU4nt2WzMhhmYYFbfFsDMEHPNY5t5ZgIGpgrTUUzqEGa4WXGYbqdSXwKmgjPDTDCt75oJzgC1mb6UJo7UHzVU67AJXdDpdNb32fc61waCMB26lzgdMk2u1AwxEKmJz8Q+tb+GHp2G1Mlx3QicFViTvTMMdzrPTqHOXHfWRLXeIk7/vBd8exU4SxgQ6DcGBPqNAYF+Y0Cg3xgQ6De+ZwREQL5bnHsejYiDMsOyiVoDyJnfGn8d9EZAhFBkFBetoVi3lUrLWoV9B6rRVZFNwzBEBM0ysp/ehKzagJ08QVh7Ja2nH0USRc6CSPkqmCOFjYxEqMqSbMkPsNVXoE/eh3/kXmIU8rUbyScnqYx6OomAeMw5TByIw74Fct0rIAJFSbF8FXL73aRDi0gXn4Os2YKzSNJehG27EbKC7MBe2gefQVMHpRExvBMsepz3nA0ZuTCB2ovAJCVZtYkEQauciX8dojyZseTHG2mdvwKAamQpFBn5heux7Tei4pGX98NFl9B661XSvEJFwXlq60GAiOBBFKgrVUtYQQGc4DTWlY3dRO8M5l6FzuHLSZg6gZgx8eZL2OQ4o1uvR5MUYgmq+KmTaFVgN91GOHyIdN/jEALVZT+hCkbMvsRUifkEIRZomWEhEvIJtCyhKCAWhKqgrApcqKDMqNQIeQam80rpuRexCIQKMcVEaF92OSde3cfEmy8ysuUGFI93DisKvPfw7uskW65Fhzzujb+SLB0l/u4u8k/+id/3DNXNv0JXrse/crB2RbbvwLKK5OCf0M/+Q9j1awgO/fNe4vIVhGt+hjvyAe0D+3EuNOvp9GrM+x60ECAGBEiXXcjYL+4gHR3jywNPIa4Jl03hhhfTenkffu/9yLLzKG79PVpMIn95DIKR7/4jOrQU/8A9hHVXkm/9OXboHdzeB8m37yT89g/oucvR8y6g2nkLcuvthKJAtu0kX3kJUhTgupdhbgLicKHC8inQyMQ//s74ay8gZUABCRHTiJQFGiL59b/ELl6NHT0Co2OUU4HWRx+SfHEUSww/lGLrN4Mpyfh/8WPnw4o1uLJAjn5K1Izqw/eI7x9Gx49ByMn/9hoyfhx80tXogoWmUFlh3oHzjKzeSPHxYUI2xQ937cbhiYBmBSRG+u8jhA1X40VoP/sw4UerYXgY+/wzWvufg3ZC2HQd6fPPEq/aQrx0PW7l5bT2P4ccO4a/bgeyaAn66RF48iGGt+2A4/+jNX4C835OAqJ7Np+6RhovEhFCVVFs2wWrNiEh4ofbmIBmOSaGHv+c9PknGMpzCDlWxnpetYaxECEdQqoScFhpEAuqKif/zZ0k779N+vqLuNExRDw2mWEaobUYiYZmk4gTaLU7Xq1BbY5p46eazUMAwBwxnyRqhajDrBmguLoxRjq0hCjgTOp5aoI1xqxEqytp9RtUnEdDSTWyDAkFfupk7a8q4HxtCquC1l4paliMHXO3G4H5txISce02IiPQDBiTGafZHKaKaIWRIKrNc5jl1DbXYLHCkZCOHwU8RjLz36DaccbrJM5yvOfBvASkcYDFQscWry3wJsNmjTvtG496IQhGRNwQimH6zTcbfdpO9kK2N/R/P/wNMSDQbwwI9BsDAv3GgEC/MSDQbwwI9BtJ10MaCzSadW6kNwiNagFb4LiB2Ffbq56qB+bQnXONqdv3ntrKzJEbmVZsPfVZp23aswX4P6Ur7tc2gyh+AAAAAElFTkSuQmCC" style="width:42px;height:42px;border-radius:10px;flex-shrink:0;object-fit:cover">
-                <div>
-                  <div class="comp-plat">Shopee</div>
-                  <div style="font-size:10px;color:var(--text-muted)">Faixa automática 2026</div>
+                <div style="display:flex;align-items:center;gap:10px">
+                  <img src="data:image/png;base64,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" style="width:42px;height:42px;border-radius:10px;flex-shrink:0;object-fit:cover">
+                  <div>
+                    <div class="comp-plat">Shopee</div>
+                    <div style="font-size:10px;color:var(--text-muted)" id="c-sh-taxa-r">—</div>
+                  </div>
                 </div>
+                <span id="c-sh-badge" class="comp-badge-lose"></span>
               </div>
-              <span id="c-sh-badge" class="comp-badge-lose">—</span>
-            </div>
-              <div class="comp-row"><span class="comp-row-label">Comissão</span><span class="comp-row-val" id="c-sh-comissao">—</span></div>
-              <div class="comp-row"><span class="comp-row-label">Valor da taxa</span><span class="comp-row-val red" id="c-sh-taxa">—</span></div>
-              <div class="comp-row"><span class="comp-row-label">Taxa fixa</span><span class="comp-row-val red" id="c-sh-fixa">—</span></div>
-              <div class="comp-row"><span class="comp-row-label">Outros custos</span><span class="comp-row-val red" id="c-sh-outros">—</span></div>
-              <div class="comp-row"><span class="comp-row-label">Repasse</span><span class="comp-row-val green" id="c-sh-repasse">—</span></div>
-              <div class="comp-row"><span class="comp-row-label">Margem real</span><span class="comp-row-val" id="c-sh-marg">—</span></div>
-              <div class="comp-lucro-row"><span class="comp-lucro-label">Lucro líquido</span><span class="comp-lucro-val" id="c-sh-lucro">—</span></div>
+              <div class="comp-row"><span class="comp-row-label">Preço de venda</span><span class="comp-row-val" id="c-sh-preco">—</span></div>
+              <div class="comp-row"><span class="comp-row-label">Custo + Frete</span><span class="comp-row-val red" id="c-sh-base">—</span></div>
+              <div class="comp-row"><span class="comp-row-label">Taxa plataforma</span><span class="comp-row-val red" id="c-sh-taxa-v">—</span></div>
+              <div class="comp-row"><span class="comp-row-label">Margem líquida</span><span class="comp-row-val" id="c-sh-marg">—</span></div>
+              <div class="comp-lucro-row">
+                <span class="comp-lucro-label">Lucro líquido</span>
+                <span class="comp-lucro-val" id="c-sh-lucro">—</span>
+              </div>
             </div>
           </div>
-          <div class="veredito-card"><span class="veredito-icon">🏆</span><div><div class="veredito-label">Melhor plataforma</div><div class="veredito-txt" id="c-veredito-txt">—</div></div></div>
+          <div class="veredito-card" id="c-veredito" style="margin-top:14px">
+            <div class="veredito-icon">🏆</div>
+            <div><div class="veredito-label">Melhor plataforma</div>
+            <div class="veredito-txt" id="c-veredito-txt">—</div></div>
+          </div>
         </div>
         <div class="card" id="hist-comp-card" style="display:none">
           <div class="card-title">🕐 Histórico de comparações</div>
@@ -1637,12 +1643,14 @@ function showPanel(id, btn) {
     setTimeout(loadAdminPanel, 50);
     setTimeout(loadAdminTeams, 150);
     setTimeout(initNewTeamForm, 250);
+    setTimeout(loadAdminSolicitacoes, 100);
   }
   if (id === 'perfil') setTimeout(initPerfilPanel, 50);
   if (id === 'equipe') setTimeout(initEquipePanel, 50);
   if (id === 'dashboard') setTimeout(loadDashboard, 50);
   if (id === 'chat') setTimeout(loadChat, 50);
   if (id === 'notas') setTimeout(loadNotas, 50);
+  if (id === 'solicitar-equipe') setTimeout(initSolicitarEquipe, 50);
   if (id === 'historico') setTimeout(loadHistorico, 50);
 }
 
@@ -3337,12 +3345,17 @@ ${details}`;
 
   async function initSolicitarEquipe() {
     // Load all users for member selection
-    const { data: profiles } = await sb.from('profiles').select('id,username').neq('id', currentUser.id);
+    const { data: profiles, error: profErr } = await sb.from('profiles').select('id,username').neq('id', currentUser.id);
     const sel = document.getElementById('req-member-select');
-    if (sel && profiles) {
-      profiles.forEach(p => { allUsersForReq[p.id] = p.username; });
-      sel.innerHTML = '<option value="">Selecionar usuário...</option>' +
-        profiles.map(p => `<option value="${p.id}">${p.username}</option>`).join('');
+    if (profErr) { console.error('Profiles error:', profErr.message); }
+    if (sel) {
+      if (profiles && profiles.length > 0) {
+        profiles.forEach(p => { allUsersForReq[p.id] = p.username; });
+        sel.innerHTML = '<option value="">Selecionar usuário...</option>' +
+          profiles.map(p => `<option value="${p.id}">${p.username}</option>`).join('');
+      } else {
+        sel.innerHTML = '<option value="">Nenhum usuário disponível</option>';
+      }
     }
     reqPendingMembers = [];
     renderReqMembers();
