@@ -112,154 +112,200 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
 .pin-size-btn.active { border-color: var(--border-green); color: var(--green-400); background: var(--green-dim); }
 .auth-skip { font-size: 12px; color: var(--text-muted); margin-top: 12px; cursor: pointer; text-decoration: underline; }
 
+
 /* ===== APP LAYOUT ===== */
 #app { display: none; }
-#app.visible { display: flex; min-height: 100vh; }
+#app.visible { display: flex; flex-direction: column; min-height: 100vh; }
 
-.sidebar {
-  width: 220px; min-height: 100vh; background: var(--bg-surface);
-  border-right: 1px solid var(--border); display: flex; flex-direction: column;
-  padding: 24px 0 20px; flex-shrink: 0; position: sticky; top: 0; height: 100vh; overflow-y: auto;
+.app-header {
+  background: var(--bg-surface); border-bottom: 1px solid var(--border);
+  padding: 13px 20px; display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 50; flex-shrink: 0;
 }
-.logo { padding: 0 20px 24px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
-.logo-mark { display: flex; align-items: center; gap: 10px; }
-.logo-icon { width: 32px; height: 32px; background: var(--green-700); border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.logo-icon svg { width: 16px; height: 16px; fill: #fff; }
-.logo-name { font-size: 17px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.5px; }
-.logo-name span { color: var(--green-500); }
-.logo-sub { font-size: 11px; color: var(--text-muted); margin-top: 5px; padding-left: 42px; }
-.nav-section { padding: 0 10px; flex: 1; }
-.nav-label { font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; padding: 0 10px; margin-bottom: 4px; }
-.nav-item {
-  display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: 7px;
-  color: var(--text-secondary); cursor: pointer; font-size: 13px; font-weight: 500;
-  margin-bottom: 1px; transition: all 0.15s; border: 1px solid transparent; background: none; width: 100%; text-align: left;
+.header-logo { font-size: 19px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.5px; cursor: pointer; display: flex; align-items: center; gap: 9px; }
+.header-logo-icon { width: 30px; height: 30px; background: var(--green-700); border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.header-logo-icon svg { width: 15px; height: 15px; fill: #fff; }
+.header-logo span { color: var(--green-500); }
+.header-right { display: flex; align-items: center; gap: 10px; }
+.header-avatar-wrap { position: relative; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.header-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--green-700); display: flex; align-items: center; justify-content: center; font-size: 18px; border: 2px solid rgba(34,197,94,0.35); overflow: hidden; }
+.header-online { position: absolute; bottom: 1px; right: 1px; width: 10px; height: 10px; border-radius: 50%; background: #22c55e; border: 2px solid var(--bg-surface); }
+
+.back-bar {
+  background: var(--bg-surface); border-bottom: 1px solid var(--border);
+  padding: 9px 20px; display: none; align-items: center; gap: 10px;
+  position: sticky; top: 57px; z-index: 40;
 }
-.nav-item:hover { background: var(--bg-elevated); color: var(--text-primary); }
-.nav-item.active { background: var(--green-dim); color: var(--green-400); border-color: var(--border-green); }
-.nav-icon { font-size: 15px; flex-shrink: 0; }
-.sidebar-footer { padding: 14px 20px 14px; border-top: 1px solid var(--border); margin-top: auto; position: sticky; bottom: 0; background: var(--bg-surface); flex-shrink: 0; }
-.sidebar-user { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
-.sidebar-avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--green-700); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; flex-shrink: 0; }
-.sidebar-user-info { min-width: 0; }
-.sidebar-username { font-size: 12px; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.sidebar-role { font-size: 10px; color: var(--green-500); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
-.sidebar-badge { font-size: 11px; color: var(--text-muted); line-height: 1.6; }
-.sidebar-badge strong { color: var(--green-500); font-weight: 500; }
-.btn-logout { width: 100%; font-family: 'Geist', sans-serif; font-size: 12px; color: var(--text-muted); background: none; border: 1px solid var(--border); border-radius: var(--radius); padding: 6px; cursor: pointer; transition: all 0.15s; margin-top: 8px; }
-.btn-logout:hover { border-color: var(--red); color: var(--red); }
-.bottom-nav { display: none; }
+.back-bar.show { display: flex; }
+.back-btn { background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 5px; padding: 4px 0; font-family: 'Geist', sans-serif; transition: color 0.15s; }
+.back-btn:hover { color: var(--green-400); }
+.back-bar-title { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+.back-bar-tag { font-size: 11px; font-weight: 600; padding: 3px 9px; background: var(--green-dim); color: var(--green-400); border: 1px solid var(--border-green); border-radius: 20px; margin-left: auto; flex-shrink: 0; }
+
 .main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
-.topbar { background: var(--bg-surface); border-bottom: 1px solid var(--border); padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; gap: 12px; }
-.topbar-info { min-width: 0; flex: 1; }
-.topbar-title { font-size: 15px; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.topbar-sub { font-size: 12px; color: var(--text-muted); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.topbar-tag { font-size: 11px; font-weight: 600; padding: 4px 10px; background: var(--green-dim); color: var(--green-400); border: 1px solid var(--border-green); border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
-.content { padding: 20px 24px; flex: 1; }
+.content { padding: 20px; max-width: 860px; margin: 0 auto; width: 100%; padding-bottom: 90px; }
+
+.sidebar { display: none; }
+.topbar { display: none; }
+
+/* HOME CARDS */
+.section-welcome { margin-bottom: 22px; }
+.section-welcome-title { font-size: 22px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+.section-welcome-sub { font-size: 13px; color: var(--text-muted); }
+.home-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 13px; }
+.home-card {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px;
+  padding: 22px 18px; cursor: pointer; transition: all 0.18s;
+  display: flex; flex-direction: column; align-items: center;
+  text-align: center; gap: 10px; user-select: none; -webkit-tap-highlight-color: transparent;
+}
+.home-card:hover { border-color: var(--border-green); background: rgba(34,197,94,0.03); transform: translateY(-1px); }
+.home-card:active { transform: scale(0.96); }
+.home-card-icon { width: 54px; height: 54px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0; }
+.home-card-title { font-size: 14px; font-weight: 700; color: var(--text-primary); line-height: 1.3; }
+.home-card-desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+.home-card.full { grid-column: span 2; flex-direction: row; text-align: left; padding: 16px 18px; gap: 14px; }
+.home-card.full .home-card-icon { width: 44px; height: 44px; font-size: 20px; }
+.home-card.full .home-card-text { flex: 1; min-width: 0; }
+.home-card.full::after { content: '›'; font-size: 22px; color: var(--text-muted); margin-left: auto; }
+
+/* PANELS */
 .panel { display: none; }
 .panel.active { display: block; }
-.card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px 20px; margin-bottom: 14px; }
-.card-title { font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 14px; display: flex; align-items: center; gap: 7px; }
-.card-title::before { content: ''; display: block; width: 3px; height: 11px; background: var(--green-500); border-radius: 2px; flex-shrink: 0; }
-.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 14px; }
-.form-group { display: flex; flex-direction: column; gap: 5px; }
-.form-group.span2 { grid-column: span 2; }
-label { font-size: 11px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
-input, select, textarea { font-family: 'Geist', sans-serif; font-size: 14px; color: var(--text-primary); background: var(--bg-input); border: 1px solid var(--border-strong); border-radius: var(--radius); padding: 10px 12px; outline: none; transition: border-color 0.15s, box-shadow 0.15s; width: 100%; }
-input:focus, select:focus, textarea:focus { border-color: var(--green-500); box-shadow: 0 0 0 3px var(--green-glow); }
-input::placeholder { color: var(--text-muted); }
-textarea { resize: vertical; min-height: 80px; }
-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%234a6352' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 28px; }
-option, optgroup { background: var(--bg-surface); color: var(--text-primary); }
-.btn { font-family: 'Geist', sans-serif; font-size: 14px; font-weight: 500; padding: 11px 18px; border-radius: var(--radius); border: 1px solid var(--border-strong); background: var(--bg-elevated); color: var(--text-primary); cursor: pointer; transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px; }
-.btn:hover { background: var(--bg-input); border-color: var(--border-green); color: var(--green-400); }
-.btn-primary { background: var(--green-700); border-color: var(--green-600); color: #fff; }
-.btn-primary:hover { background: var(--green-800); border-color: var(--green-700); color: #fff; }
-.btn-full { width: 100%; justify-content: center; }
-.btn-sm { padding: 7px 13px; font-size: 13px; }
-.result-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
-.metric { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }
-.metric-label { font-size: 10px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
-.metric-value { font-size: 18px; font-weight: 600; color: var(--text-primary); }
-.metric-value.positive { color: var(--green-400); }
-.metric-value.negative { color: var(--red); }
-.info-box { background: rgba(34,197,94,0.05); border: 1px solid var(--border-green); border-radius: var(--radius); padding: 9px 13px; font-size: 12px; color: var(--green-300); margin-bottom: 12px; display: none; gap: 7px; align-items: flex-start; line-height: 1.5; }
-.info-box.show { display: flex; }
-.table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 500px; }
-thead tr { border-bottom: 1px solid var(--border-strong); }
-th { padding: 9px 11px; text-align: left; font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.07em; white-space: nowrap; }
-td { padding: 11px 11px; border-bottom: 1px solid var(--border); color: var(--text-primary); vertical-align: middle; }
-tbody tr:last-child td { border-bottom: none; }
-tbody tr:hover td { background: var(--bg-elevated); }
-.badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; white-space: nowrap; }
-.badge-ok  { background: rgba(34,197,94,0.12); color: var(--green-400); border: 1px solid rgba(34,197,94,0.2); }
-.badge-low { background: rgba(251,191,36,0.1); color: #fbbf24; border: 1px solid rgba(251,191,36,0.2); }
-.badge-out { background: rgba(248,113,113,0.1); color: var(--red); border: 1px solid rgba(248,113,113,0.2); }
-.badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
-.ai-output { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; margin-top: 14px; font-size: 13px; line-height: 1.75; color: var(--text-primary); white-space: pre-wrap; min-height: 60px; display: none; }
-.ai-actions { display: none; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
-.ai-actions.show { display: flex; }
-.empty-state { text-align: center; padding: 32px 16px; color: var(--text-muted); font-size: 13px; }
-.empty-state svg { width: 32px; height: 32px; margin-bottom: 8px; opacity: 0.2; display: block; margin-left: auto; margin-right: auto; }
-.comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
-.comp-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px; }
-.comp-card.winner { border-color: var(--border-green); background: rgba(34,197,94,0.03); }
-.comp-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; gap: 8px; flex-wrap: wrap; }
-.comp-plat { font-size: 14px; font-weight: 600; color: var(--text-primary); }
-.comp-badge-win { font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 20px; background: rgba(34,197,94,0.12); color: var(--green-400); border: 1px solid rgba(34,197,94,0.25); white-space: nowrap; }
-.comp-badge-lose { font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 20px; background: var(--bg-elevated); color: var(--text-muted); border: 1px solid var(--border); white-space: nowrap; }
-.comp-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; padding: 7px 0; border-bottom: 1px solid var(--border); gap: 8px; }
-.comp-row:last-child { border-bottom: none; }
-.comp-row-label { color: var(--text-muted); flex-shrink: 0; }
-.comp-row-val { font-weight: 500; color: var(--text-primary); text-align: right; }
-.comp-row-val.red { color: var(--red); }
-.comp-row-val.green { color: var(--green-400); }
-.comp-lucro-row { display: flex; justify-content: space-between; align-items: baseline; padding: 12px 0 6px; border-top: 1px solid var(--border-strong); margin-top: 4px; gap: 8px; }
-.comp-lucro-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); }
-.comp-lucro-val { font-size: 22px; font-weight: 700; }
-.veredito-card { background: rgba(34,197,94,0.05); border: 1px solid var(--border-green); border-radius: var(--radius-lg); padding: 16px 18px; display: flex; align-items: center; gap: 14px; }
-.veredito-icon { font-size: 24px; flex-shrink: 0; }
-.veredito-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--green-500); margin-bottom: 3px; }
-.veredito-txt { font-size: 13px; font-weight: 500; color: var(--text-primary); line-height: 1.4; }
-::-webkit-scrollbar { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; }
-.hidden { display: none !important; }
+
+/* BOTTOM NAV */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+  background: var(--bg-surface); border-top: 1px solid var(--border);
+  padding: 7px 4px calc(7px + env(safe-area-inset-bottom)); display: flex;
+}
+.bottom-nav-item {
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: 5px 2px; border-radius: 8px; border: none; background: none;
+  cursor: pointer; color: var(--text-muted); transition: all 0.15s;
+  font-family: 'Geist', sans-serif; -webkit-tap-highlight-color: transparent;
+}
+.bottom-nav-item.active { color: var(--green-400); }
+.bottom-nav-item .bnav-icon { font-size: 20px; line-height: 1; }
+.bottom-nav-item .bnav-label { font-size: 9px; font-weight: 500; white-space: nowrap; }
+
 
 @media (max-width: 700px) {
-  .auth-card { width: 92vw; padding: 28px 20px 24px; }
-  #app.visible { flex-direction: column; }
-  .sidebar { width: 100%; min-height: unset; height: auto; position: sticky; top: 0; z-index: 20; flex-direction: row; align-items: center; padding: 12px 16px; border-right: none; border-bottom: 1px solid var(--border); overflow: visible; }
-  .logo { padding: 0; border-bottom: none; margin-bottom: 0; flex: 1; }
-  .logo-sub { display: none; }
-  .logo-name { font-size: 16px; }
-  .logo-icon { width: 28px; height: 28px; }
-  .nav-section { display: none; }
-  .sidebar-footer { display: none; }
-  .bottom-nav { display: flex; position: fixed; bottom: 0; left: 0; right: 0; z-index: 100; background: var(--bg-surface); border-top: 1px solid var(--border); padding: 8px 4px calc(8px + env(safe-area-inset-bottom)); }
-  .bottom-nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px 2px; border-radius: 8px; border: none; background: none; cursor: pointer; color: var(--text-muted); transition: all 0.15s; font-family: 'Geist', sans-serif; }
-  .bottom-nav-item.active { color: var(--green-400); }
-  .bottom-nav-item .bnav-icon { font-size: 20px; line-height: 1; }
-  .bottom-nav-item .bnav-label { font-size: 10px; font-weight: 500; white-space: nowrap; }
-  .topbar { padding: 10px 16px; }
-  .topbar-sub { display: none; }
-  .topbar-title { font-size: 14px; }
-  .topbar-tag { font-size: 10px; padding: 3px 8px; }
-  .content { padding: 16px; padding-bottom: 90px; }
-  .card { padding: 14px 16px; }
+  .auth-card { width: 94vw; max-width: 360px; padding: 28px 18px 24px; }
+  .content { padding: 14px; padding-bottom: 90px; }
+  .card { padding: 14px; margin-bottom: 12px; }
+  .card-title { font-size: 10px; margin-bottom: 12px; }
   .form-grid { grid-template-columns: 1fr; gap: 10px; }
   .form-group.span2 { grid-column: span 1; }
-  input, select, textarea { font-size: 16px; padding: 12px 13px; }
-  .btn { width: 100%; justify-content: center; font-size: 15px; padding: 13px 18px; }
-  .btn-sm { width: auto; font-size: 13px; padding: 8px 14px; }
+  input, select, textarea { font-size: 16px; padding: 11px 12px; }
+  .btn { width: 100%; justify-content: center; font-size: 15px; padding: 13px 16px; }
+  .btn-sm { width: auto; font-size: 13px; padding: 8px 13px; }
   .result-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
-  .metric { padding: 10px 12px; }
-  .metric-value { font-size: 16px; }
+  .metric { padding: 10px 11px; }
+  .metric-label { font-size: 9px; }
+  .metric-value { font-size: 15px; }
   .comp-grid { grid-template-columns: 1fr; }
   .comp-lucro-val { font-size: 20px; }
-  .table-wrap::before { content: 'Deslize para ver mais →'; display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 8px; }
+  .veredito-card { flex-direction: column; gap: 8px; text-align: center; }
+  .table-wrap::before { content: 'Deslize para ver →'; display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 6px; }
+  .home-grid { gap: 10px; }
+  .home-card { padding: 18px 14px; }
+  .home-card-icon { width: 46px; height: 46px; font-size: 22px; }
+  .home-card-title { font-size: 13px; }
+  .home-card-desc { font-size: 11px; }
+  .admin-stat { padding: 12px 14px; }
+  .admin-stat-val { font-size: 22px; }
+  .pin-keypad { gap: 6px; }
+  .pin-key { padding: 12px 6px; font-size: 15px; border-radius: 8px; }
+  .auth-btn { padding: 13px; font-size: 15px; }
+  .auth-input { font-size: 16px; padding: 11px 13px; }
+  #panel-chat .card { height: calc(100vh - 165px) !important; min-height: 300px !important; }
+  #panel-historico .btn-sm { font-size: 11px; padding: 6px 10px; width: auto; }
 }
+
+  /* ===== COMPONENTS ===== */
+  .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px 20px; margin-bottom: 14px; }
+  .card-title { font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 14px; display: flex; align-items: center; gap: 7px; }
+  .card-title::before { content: ''; display: block; width: 3px; height: 11px; background: var(--green-500); border-radius: 2px; flex-shrink: 0; }
+  .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 14px; }
+  .form-group { display: flex; flex-direction: column; gap: 5px; }
+  .form-group.span2 { grid-column: span 2; }
+  label { font-size: 11px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  input, select, textarea { font-family: 'Geist', sans-serif; font-size: 14px; color: var(--text-primary); background: var(--bg-input); border: 1px solid var(--border-strong); border-radius: var(--radius); padding: 10px 12px; outline: none; transition: border-color 0.15s, box-shadow 0.15s; width: 100%; }
+  input:focus, select:focus, textarea:focus { border-color: var(--green-500); box-shadow: 0 0 0 3px var(--green-glow); }
+  input::placeholder { color: var(--text-muted); }
+  textarea { resize: vertical; min-height: 80px; }
+  select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%234a6352' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 28px; }
+  option, optgroup { background: var(--bg-surface); color: var(--text-primary); }
+  .btn { font-family: 'Geist', sans-serif; font-size: 14px; font-weight: 500; padding: 11px 18px; border-radius: var(--radius); border: 1px solid var(--border-strong); background: var(--bg-elevated); color: var(--text-primary); cursor: pointer; transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px; }
+  .btn:hover { background: var(--bg-input); border-color: var(--border-green); color: var(--green-400); }
+  .btn-primary { background: var(--green-700); border-color: var(--green-600); color: #fff; }
+  .btn-primary:hover { background: var(--green-800); border-color: var(--green-700); color: #fff; }
+  .btn-full { width: 100%; justify-content: center; }
+  .btn-sm { padding: 7px 13px; font-size: 13px; }
+  .result-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
+  .metric { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }
+  .metric-label { font-size: 10px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+  .metric-value { font-size: 18px; font-weight: 600; color: var(--text-primary); }
+  .metric-value.positive { color: var(--green-400); }
+  .metric-value.negative { color: var(--red); }
+  .info-box { background: rgba(34,197,94,0.06); border: 1px solid var(--border-green); border-radius: var(--radius); padding: 9px 13px; font-size: 12px; color: var(--green-300); margin-bottom: 12px; display: none; gap: 7px; align-items: flex-start; line-height: 1.5; }
+  .info-box.show { display: flex; }
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 480px; }
+  thead tr { border-bottom: 1px solid var(--border-strong); }
+  th { padding: 9px 11px; text-align: left; font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.07em; white-space: nowrap; }
+  td { padding: 11px 11px; border-bottom: 1px solid var(--border); color: var(--text-primary); vertical-align: middle; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: var(--bg-elevated); }
+  .badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+  .badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+  .badge-ok  { background: rgba(34,197,94,0.12); color: var(--green-400); border: 1px solid rgba(34,197,94,0.2); }
+  .badge-low { background: rgba(251,191,36,0.1); color: #fbbf24; border: 1px solid rgba(251,191,36,0.2); }
+  .badge-out { background: rgba(248,113,113,0.1); color: var(--red); border: 1px solid rgba(248,113,113,0.2); }
+  .ai-output { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; margin-top: 14px; font-size: 13px; line-height: 1.75; color: var(--text-primary); white-space: pre-wrap; min-height: 60px; display: none; }
+  .ai-actions { display: none; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+  .ai-actions.show { display: flex; }
+  .empty-state { text-align: center; padding: 32px 16px; color: var(--text-muted); font-size: 13px; }
+  .empty-state svg { width: 32px; height: 32px; margin-bottom: 8px; opacity: 0.2; display: block; margin-left: auto; margin-right: auto; }
+  .comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  .comp-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px; }
+  .comp-card.winner { border-color: var(--border-green); background: rgba(34,197,94,0.03); }
+  .comp-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; gap: 8px; flex-wrap: wrap; }
+  .comp-plat { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .comp-badge-win { font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 20px; background: rgba(34,197,94,0.1); color: var(--green-400); border: 1px solid rgba(34,197,94,0.25); }
+  .comp-badge-lose { font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 20px; background: var(--bg-elevated); color: var(--text-muted); border: 1px solid var(--border); }
+  .comp-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; padding: 7px 0; border-bottom: 1px solid var(--border); gap: 8px; }
+  .comp-row:last-child { border-bottom: none; }
+  .comp-row-label { color: var(--text-muted); flex-shrink: 0; }
+  .comp-row-val { font-weight: 500; color: var(--text-primary); text-align: right; }
+  .comp-row-val.red { color: var(--red); }
+  .comp-row-val.green { color: var(--green-400); }
+  .comp-lucro-row { display: flex; justify-content: space-between; align-items: baseline; padding: 12px 0 6px; border-top: 1px solid var(--border-strong); margin-top: 4px; gap: 8px; }
+  .comp-lucro-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); }
+  .comp-lucro-val { font-size: 22px; font-weight: 700; }
+  .veredito-card { background: rgba(34,197,94,0.05); border: 1px solid var(--border-green); border-radius: var(--radius-lg); padding: 16px 18px; display: flex; align-items: center; gap: 14px; }
+  .veredito-icon { font-size: 24px; flex-shrink: 0; }
+  .veredito-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--green-500); margin-bottom: 3px; }
+  .veredito-txt { font-size: 13px; font-weight: 500; color: var(--text-primary); line-height: 1.4; }
+  .admin-stat { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px 20px; display: flex; flex-direction: column; gap: 4px; }
+  .admin-stat-val { font-size: 28px; font-weight: 700; color: var(--green-400); }
+  .admin-stat-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; }
+  .role-badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+  .role-admin { background: rgba(34,197,94,0.1); color: var(--green-400); border: 1px solid var(--border-green); }
+  .role-user { background: var(--bg-elevated); color: var(--text-muted); border: 1px solid var(--border); }
+  .member-avatar { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; position: relative; border: 2px solid rgba(34,197,94,0.3); }
+  .avatar-option { width: 100%; aspect-ratio: 1; border-radius: 50%; border: 2px solid transparent; cursor: pointer; font-size: 22px; display: flex; align-items: center; justify-content: center; transition: all 0.15s; position: relative; user-select: none; }
+  .avatar-option:hover { transform: scale(1.1); }
+  .avatar-option.selected { border-color: var(--green-500); box-shadow: 0 0 0 3px var(--green-glow); }
+  .profile-avatar-big { width: 64px; height: 64px; border-radius: 50%; font-size: 30px; display: flex; align-items: center; justify-content: center; border: 2px solid rgba(34,197,94,0.4); flex-shrink: 0; }
+  .pin-size-toggle { display: flex; gap: 8px; margin-bottom: 16px; }
+  .pin-size-btn { flex: 1; padding: 8px; border-radius: var(--radius); border: 1px solid var(--border-strong); background: var(--bg-elevated); color: var(--text-secondary); font-family: 'Geist', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.15s; }
+  .pin-size-btn.active { border-color: var(--border-green); color: var(--green-400); background: var(--green-dim); }
+  .auth-skip { font-size: 12px; color: var(--text-muted); margin-top: 12px; cursor: pointer; text-decoration: underline; }
+  .hidden { display: none !important; }
+  .home-card.full .home-card-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+
 </style>
 </head>
 <body>
@@ -353,66 +399,210 @@ tbody tr:hover td { background: var(--bg-elevated); }
 
 <!-- ===== APP ===== -->
 <div id="app">
-  <nav class="sidebar">
-    <div class="logo">
-      <div class="logo-mark">
-        <div class="logo-icon"><svg viewBox="0 0 24 24" fill="white"><path d="M3 3h18v4H3zM3 10h11v4H3zM3 17h14v4H3z"/></svg></div>
-        <span class="logo-name">Sell<span>wise</span></span>
-      </div>
-      <div class="logo-sub">Painel do Vendedor</div>
-    </div>
-    <div class="mobile-topbar-avatar" id="mobile-topbar-avatar" style="display:none">
-      <div class="mobile-avatar-wrap" onclick="showPanel('perfil', document.querySelector('[data-panel=perfil]'))" style="position:relative;cursor:pointer;width:38px;height:38px">
-        <div id="mobile-avatar-img" style="width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;background:#15803d;border:2px solid rgba(34,197,94,0.5);overflow:hidden;box-shadow:0 0 0 2px rgba(34,197,94,0.15)">😊</div>
-        <div style="position:absolute;bottom:1px;right:1px;width:10px;height:10px;border-radius:50%;background:#22c55e;border:2px solid #111a14;box-shadow:0 0 4px rgba(34,197,94,0.6)"></div>
-      </div>
-    </div>
-    <div class="nav-section">
-      <div class="nav-label">Ferramentas</div>
-      <button class="nav-item active" onclick="showPanel('preco',this)"><span class="nav-icon">🧮</span> Precificação</button>
-      <button class="nav-item" onclick="showPanel('estoque',this)"><span class="nav-icon">📦</span> Estoque</button>
-      <button class="nav-item" onclick="showPanel('lucro',this)"><span class="nav-icon">📈</span> Lucratividade</button>
-      <button class="nav-item" onclick="showPanel('descricao',this)"><span class="nav-icon">✨</span> Descrição IA</button>
-      <button class="nav-item" onclick="showPanel('comparador',this)"><span class="nav-icon">⚖️</span> Comparador</button>
-    </div>
-    <div class="nav-section" style="margin-top:8px">
-      <div class="nav-label">Equipe</div>
-      <button class="nav-item" id="nav-dashboard" onclick="showPanel('dashboard',this)" style="display:none"><span class="nav-icon">📊</span> Dashboard</button>
-      <button class="nav-item" id="nav-equipe" onclick="showPanel('equipe',this)" style="display:none"><span class="nav-icon">👥</span> Equipe</button>
-      <button class="nav-item" id="nav-chat" onclick="showPanel('chat',this)" style="display:none"><span class="nav-icon">💬</span> Chat</button>
-      <button class="nav-item" id="nav-notas" onclick="showPanel('notas',this)" style="display:none"><span class="nav-icon">📝</span> Notas</button>
-      <button class="nav-item" id="nav-historico" onclick="showPanel('historico',this)" style="display:none"><span class="nav-icon">🕐</span> Histórico</button>
-    </div>
-    <div class="nav-section" style="margin-top:4px">
-      <div class="nav-label">Conta</div>
-      <button class="nav-item" onclick="showPanel('perfil',this)"><span class="nav-icon">👤</span> Meu Perfil</button>
-      <button class="nav-item admin-only" onclick="showPanel('admin',this)" id="nav-admin" style="display:none"><span class="nav-icon">⚙️</span> Admin</button>
-    </div>
-    <div class="sidebar-footer">
-      <div class="sidebar-user">
-        <div class="sidebar-avatar" id="sb-avatar">M</div>
-        <div class="sidebar-user-info">
-          <div class="sidebar-username" id="sb-username">—</div>
-          <div class="sidebar-role" id="sb-role">user</div>
-        </div>
-      </div>
-      <div class="sidebar-badge">Taxas atualizadas<br><strong>Março 2026</strong> · ML &amp; Shopee</div>
-      <button class="btn-logout" onclick="doLogout()">Sair da conta</button>
-    </div>
-  </nav>
 
-  <div class="main">
-    <div class="topbar">
-      <div class="topbar-info">
-        <div class="topbar-title" id="topbar-title">Calculadora de Precificação</div>
-        <div class="topbar-sub" id="topbar-sub">Calcule o preço ideal com as taxas reais de 2026</div>
-      </div>
-      <div class="topbar-tag">⚡ Taxas 2026</div>
+  <!-- HEADER -->
+  <header class="app-header">
+    <div class="header-logo" onclick="goHome()">
+      <div class="header-logo-icon"><svg viewBox="0 0 24 24" fill="white"><path d="M3 3h18v4H3zM3 10h11v4H3zM3 17h14v4H3z"/></svg></div>
+      Sell<span>wise</span>
     </div>
+    <div class="header-right">
+      <div style="text-align:right;display:none" id="header-user-info">
+        <div style="font-size:13px;font-weight:500;color:var(--text-secondary)" id="header-username">—</div>
+        <div style="font-size:10px;color:var(--green-400);font-weight:600" id="header-role">—</div>
+      </div>
+      <div class="header-avatar-wrap" onclick="goSection('conta')">
+        <div class="header-avatar" id="header-avatar">😊</div>
+        <div class="header-online"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- BACK BAR -->
+  <div class="back-bar" id="back-bar">
+    <button class="back-btn" id="back-btn" onclick="goBack()">← Voltar</button>
+    <span class="back-bar-title" id="back-bar-title"></span>
+    <span class="back-bar-tag">⚡ Taxas 2026</span>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
     <div class="content">
 
+      <!-- HOME -->
+      <div id="panel-home" class="panel active">
+        <div class="section-welcome">
+          <div class="section-welcome-title" id="home-welcome">Olá! 👋</div>
+          <div class="section-welcome-sub">O que você quer fazer hoje?</div>
+        </div>
+        <div class="home-grid">
+
+          <div class="home-card" onclick="goSection('calculadoras')">
+            <div class="home-card-icon" style="background:rgba(34,197,94,0.15)">🧮</div>
+            <div class="home-card-title">Calculadoras</div>
+            <div class="home-card-desc">Precificação, lucratividade e comparador</div>
+          </div>
+
+          <div class="home-card" onclick="goSection('estoque-hub')">
+            <div class="home-card-icon" style="background:rgba(245,158,11,0.15)">📦</div>
+            <div class="home-card-title">Estoque</div>
+            <div class="home-card-desc">Controle produtos e alertas de quantidade</div>
+          </div>
+
+          <div class="home-card" onclick="showTool('descricao')">
+            <div class="home-card-icon" style="background:rgba(168,85,247,0.15)">✨</div>
+            <div class="home-card-title">Descrição IA</div>
+            <div class="home-card-desc">Gere textos de anúncio com IA</div>
+          </div>
+
+          <div class="home-card" id="home-card-equipe" onclick="goSection('equipe-hub')" style="display:none">
+            <div class="home-card-icon" style="background:rgba(59,130,246,0.15)">👥</div>
+            <div class="home-card-title">Equipe</div>
+            <div class="home-card-desc">Chat, dashboard e muito mais</div>
+          </div>
+
+          <div class="home-card full" onclick="goSection('conta')">
+            <div class="home-card-icon" style="background:rgba(34,197,94,0.12)">👤</div>
+            <div>
+              <div class="home-card-title">Minha Conta</div>
+              <div class="home-card-desc">Perfil, avatar, PIN e configurações</div>
+            </div>
+          </div>
+
+          <div class="home-card full" id="home-card-admin" onclick="showTool('admin')" style="display:none">
+            <div class="home-card-icon" style="background:rgba(239,68,68,0.12)">⚙️</div>
+            <div>
+              <div class="home-card-title">Painel Admin</div>
+              <div class="home-card-desc">Gerencie usuários e equipes</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- SECTION: CALCULADORAS -->
+      <div id="panel-calculadoras" class="panel">
+        <div class="section-welcome">
+          <div class="section-welcome-title">🧮 Calculadoras</div>
+          <div class="section-welcome-sub">Ferramentas de precificação e análise</div>
+        </div>
+        <div class="home-grid">
+          <div class="home-card" onclick="showTool('preco')">
+            <div class="home-card-icon" style="background:rgba(34,197,94,0.15)">🧮</div>
+            <div class="home-card-title">Precificação</div>
+            <div class="home-card-desc">Calcule o preço ideal com taxas 2026</div>
+          </div>
+          <div class="home-card" onclick="showTool('lucro')">
+            <div class="home-card-icon" style="background:rgba(34,197,94,0.12)">📈</div>
+            <div class="home-card-title">Lucratividade</div>
+            <div class="home-card-desc">Simule lucro real por venda</div>
+          </div>
+          <div class="home-card full" onclick="showTool('comparador')">
+            <div class="home-card-icon" style="background:rgba(59,130,246,0.15)">⚖️</div>
+            <div>
+              <div class="home-card-title">Comparador ML vs Shopee</div>
+              <div class="home-card-desc">Veja qual plataforma é mais lucrativa</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION: ESTOQUE HUB -->
+      <div id="panel-estoque-hub" class="panel">
+        <div class="section-welcome">
+          <div class="section-welcome-title">📦 Estoque</div>
+          <div class="section-welcome-sub">Controle seus produtos e anúncios</div>
+        </div>
+        <div class="home-grid">
+          <div class="home-card full" onclick="showTool('estoque')">
+            <div class="home-card-icon" style="background:rgba(245,158,11,0.15)">📦</div>
+            <div>
+              <div class="home-card-title">Controle de Estoque</div>
+              <div class="home-card-desc">Cadastre produtos e monitore quantidades</div>
+            </div>
+          </div>
+          <div class="home-card full" onclick="showTool('descricao')">
+            <div class="home-card-icon" style="background:rgba(168,85,247,0.15)">✨</div>
+            <div>
+              <div class="home-card-title">Descrição IA</div>
+              <div class="home-card-desc">Gere textos de anúncio otimizados</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION: EQUIPE HUB -->
+      <div id="panel-equipe-hub" class="panel">
+        <div class="section-welcome">
+          <div class="section-welcome-title">👥 Equipe</div>
+          <div class="section-welcome-sub">Colabore com sua equipe em tempo real</div>
+        </div>
+        <div class="home-grid">
+          <div class="home-card" onclick="showTool('dashboard')">
+            <div class="home-card-icon" style="background:rgba(34,197,94,0.15)">📊</div>
+            <div class="home-card-title">Dashboard</div>
+            <div class="home-card-desc">Métricas e alertas da equipe</div>
+          </div>
+          <div class="home-card" onclick="showTool('chat')">
+            <div class="home-card-icon" style="background:rgba(59,130,246,0.15)">💬</div>
+            <div class="home-card-title">Chat</div>
+            <div class="home-card-desc">Mensagens em tempo real</div>
+          </div>
+          <div class="home-card" onclick="showTool('equipe')">
+            <div class="home-card-icon" style="background:rgba(168,85,247,0.15)">👥</div>
+            <div class="home-card-title">Minha Equipe</div>
+            <div class="home-card-desc">Estoque e precificação compartilhados</div>
+          </div>
+          <div class="home-card" onclick="showTool('notas')">
+            <div class="home-card-icon" style="background:rgba(245,158,11,0.15)">📝</div>
+            <div class="home-card-title">Notas & Tarefas</div>
+            <div class="home-card-desc">Anotações compartilhadas</div>
+          </div>
+          <div class="home-card full" onclick="showTool('historico')">
+            <div class="home-card-icon" style="background:rgba(107,114,128,0.2)">🕐</div>
+            <div>
+              <div class="home-card-title">Histórico</div>
+              <div class="home-card-desc">Tudo que aconteceu na sua equipe</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION: CONTA -->
+      <div id="panel-conta" class="panel">
+        <div class="section-welcome">
+          <div class="section-welcome-title">👤 Minha Conta</div>
+          <div class="section-welcome-sub">Gerencie seu perfil e configurações</div>
+        </div>
+        <div class="home-grid">
+          <div class="home-card full" onclick="showTool('perfil')">
+            <div class="home-card-icon" style="background:rgba(34,197,94,0.15)">👤</div>
+            <div>
+              <div class="home-card-title">Meu Perfil</div>
+              <div class="home-card-desc">Avatar, username, senha e PIN</div>
+            </div>
+          </div>
+          <div class="home-card full" id="conta-card-admin" onclick="showTool('admin')" style="display:none">
+            <div class="home-card-icon" style="background:rgba(239,68,68,0.12)">⚙️</div>
+            <div>
+              <div class="home-card-title">Painel Admin</div>
+              <div class="home-card-desc">Usuários, equipes e permissões</div>
+            </div>
+          </div>
+          <div class="home-card full" onclick="doLogout()">
+            <div class="home-card-icon" style="background:rgba(239,68,68,0.08)">🚪</div>
+            <div>
+              <div class="home-card-title" style="color:var(--red)">Sair da conta</div>
+              <div class="home-card-desc">Encerrar sessão no Sellwise</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TOOL PANELS (existing functionality) -->
+
       <!-- PRECIFICAÇÃO -->
-      <div id="panel-preco" class="panel active">
+      <div id="panel-preco" class="panel">
         <div class="card">
           <div class="card-title">Dados do produto</div>
           <div class="form-grid">
@@ -891,20 +1081,31 @@ tbody tr:hover td { background: var(--bg-elevated); }
         </div>
       </div>
 
-    </div>
-  </div>
+      </div><!-- /panel-admin -->
 
+    </div><!-- /content -->
+  </div><!-- /main -->
+
+  <!-- BOTTOM NAV -->
   <nav class="bottom-nav" id="bottom-nav">
-    <button class="bottom-nav-item active" onclick="showPanel('preco',this)" data-panel="preco"><span class="bnav-icon">🧮</span><span class="bnav-label">Preço</span></button>
-    <button class="bottom-nav-item" onclick="showPanel('estoque',this)" data-panel="estoque"><span class="bnav-icon">📦</span><span class="bnav-label">Estoque</span></button>
-    <button class="bottom-nav-item" onclick="showPanel('lucro',this)" data-panel="lucro"><span class="bnav-icon">📈</span><span class="bnav-label">Lucro</span></button>
-    <button class="bottom-nav-item" onclick="showPanel('descricao',this)" data-panel="descricao"><span class="bnav-icon">✨</span><span class="bnav-label">IA</span></button>
-    <button class="bottom-nav-item" onclick="showPanel('comparador',this)" data-panel="comparador"><span class="bnav-icon">⚖️</span><span class="bnav-label">Comparar</span></button>
-    <button class="bottom-nav-item" id="bnav-dashboard" onclick="showPanel('dashboard',this)" data-panel="dashboard" style="display:none"><span class="bnav-icon">📊</span><span class="bnav-label">Dashboard</span></button>
-    <button class="bottom-nav-item" id="bnav-chat" onclick="showPanel('chat',this)" data-panel="chat" style="display:none"><span class="bnav-icon">💬</span><span class="bnav-label">Chat</span></button>
-    <button class="bottom-nav-item" onclick="showPanel('perfil',this)" data-panel="perfil"><span class="bnav-icon">👤</span><span class="bnav-label">Perfil</span></button>
-    <button class="bottom-nav-item" id="bnav-admin" onclick="showPanel('admin',this)" data-panel="admin" style="display:none"><span class="bnav-icon">⚙️</span><span class="bnav-label">Admin</span></button>
+    <button class="bottom-nav-item" onclick="goHome()" id="bnav-home" data-panel="home"><span class="bnav-icon">🏠</span><span class="bnav-label">Início</span></button>
+    <button class="bottom-nav-item" onclick="goSection('calculadoras')" id="bnav-calc" data-panel="calculadoras"><span class="bnav-icon">🧮</span><span class="bnav-label">Calculadoras</span></button>
+    <button class="bottom-nav-item" onclick="goSection('estoque-hub')" id="bnav-estoque" data-panel="estoque-hub"><span class="bnav-icon">📦</span><span class="bnav-label">Estoque</span></button>
+    <button class="bottom-nav-item" id="bnav-equipe-hub" onclick="goSection('equipe-hub')" data-panel="equipe-hub" style="display:none"><span class="bnav-icon">👥</span><span class="bnav-label">Equipe</span></button>
+    <button class="bottom-nav-item" onclick="goSection('conta')" id="bnav-conta" data-panel="conta"><span class="bnav-icon">👤</span><span class="bnav-label">Conta</span></button>
   </nav>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <button class="bottom-nav-item active" onclick="goHome()" id="bnav-home" data-panel="home"><span class="bnav-icon">🏠</span><span class="bnav-label">Início</span></button>
+    <button class="bottom-nav-item" onclick="goSection('calculadoras')" id="bnav-calc" data-panel="calculadoras"><span class="bnav-icon">🧮</span><span class="bnav-label">Calculadoras</span></button>
+    <button class="bottom-nav-item" onclick="goSection('estoque-hub')" id="bnav-estoque" data-panel="estoque-hub"><span class="bnav-icon">📦</span><span class="bnav-label">Estoque</span></button>
+    <button class="bottom-nav-item" id="bnav-equipe-hub" onclick="goSection('equipe-hub')" data-panel="equipe-hub" style="display:none"><span class="bnav-icon">👥</span><span class="bnav-label">Equipe</span></button>
+    <button class="bottom-nav-item" onclick="goSection('conta')" id="bnav-conta" data-panel="conta"><span class="bnav-icon">👤</span><span class="bnav-label">Conta</span></button>
+  </nav>
+
+</div><!-- /app -->
+
 </div>
 
 <script>
@@ -960,26 +1161,31 @@ async function loadUserAndShow(user) {
   const username = profile?.username || user.email.split('@')[0];
   const role = isAdmin ? 'admin' : (profile?.role || 'user');
 
-  document.getElementById('sb-username').textContent = username;
-  document.getElementById('sb-role').textContent = role === 'admin' ? '⭐ Admin' : 'Usuário';
-  document.getElementById('nav-admin').style.display = isAdmin ? 'flex' : 'none';
-  const bnavAdmin = document.getElementById('bnav-admin');
-  if (bnavAdmin) bnavAdmin.style.display = isAdmin ? 'flex' : 'none';
-  // Check if user is in a team to show equipe nav
+  // Update header avatar and welcome
+  const hAvatar = document.getElementById('header-avatar');
+  if (hAvatar) { hAvatar.textContent = username[0].toUpperCase(); hAvatar.style.background = 'var(--green-700)'; }
+  const homeWelcome = document.getElementById('home-welcome');
+  if (homeWelcome) homeWelcome.textContent = 'Olá, ' + username + '! 👋';
+  // Show admin cards if admin
+  if (isAdmin) {
+    ['home-card-admin','conta-card-admin'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'flex';
+    });
+  }
+  // Check team membership
   checkUserTeam(user.id);
-  const mobileTopbar = document.getElementById('mobile-topbar-avatar');
-  if (mobileTopbar) mobileTopbar.style.display = 'flex';
-  setTimeout(updateSidebarAvatar, 200);
-  document.getElementById('sb-avatar').textContent = username[0].toUpperCase();
-  if (isAdmin) document.getElementById('nav-admin').style.display = 'flex';
-  setTimeout(updateSidebarAvatar, 100);
+  setTimeout(updateHeaderAvatar, 300);
+
 
   document.getElementById('auth-container').style.display = 'none';
   document.getElementById('app').classList.add('visible');
+  // goHome defined later in script - use timeout to ensure it's available
+  setTimeout(goHome, 10);
 
   const hasPinStored = !!localStorage.getItem('sw_pin_' + user.id);
   if (!hasPinStored) {
-    setTimeout(() => offerPinSetup(username, user.id), 500);
+    setTimeout(() => offerPinSetup(username, user.id), 600);
   }
 }
 
@@ -1457,33 +1663,22 @@ function copiarDescricao(){
     return AVATARS.find(a => a[0] === key) || AVATARS[0];
   }
 
-  function updateSidebarAvatar() {
+  function updateSidebarAvatar() { updateHeaderAvatar(); }
+
+  function updateHeaderAvatar() {
     if (!currentProfile) return;
     const key = currentProfile.avatar || 'av1';
-    // Desktop sidebar
-    const el = document.getElementById('sb-avatar');
-    if (el) {
-      if (key.startsWith('http')) {
-        el.innerHTML = `<img src="${key}" style="width:28px;height:28px;border-radius:50%;object-fit:cover">`;
-        el.style.background = 'transparent';
-      } else {
-        const [,emoji,color] = getAvatarData(key);
-        el.textContent = emoji; el.style.background = color;
-      }
-    }
-    // Mobile topbar
-    const mob = document.getElementById('mobile-avatar-img');
-    if (mob) {
-      if (key.startsWith('http')) {
-        mob.innerHTML = `<img src="${key}" style="width:38px;height:38px;border-radius:50%;object-fit:cover;display:block">`;
-        mob.style.background = 'transparent';
-        mob.style.fontSize = '0';
-      } else {
-        const [,emoji,color] = getAvatarData(key);
-        mob.innerHTML = emoji;
-        mob.style.background = color;
-        mob.style.fontSize = '20px';
-      }
+    const el = document.getElementById('header-avatar');
+    if (!el) return;
+    if (key.startsWith('http')) {
+      el.innerHTML = `<img src="${key}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;display:block">`;
+      el.style.background = 'transparent';
+      el.style.fontSize = '0';
+    } else {
+      const [,emoji,color] = getAvatarData(key);
+      el.innerHTML = emoji;
+      el.style.background = color;
+      el.style.fontSize = '18px';
     }
   }
 
@@ -1567,9 +1762,8 @@ function copiarDescricao(){
     const { error } = await sb.from('profiles').update({ username, avatar: avatarVal }).eq('id', currentUser.id);
     if (error) { msg.style.color='var(--red)'; msg.textContent='Erro ao salvar: '+error.message; return; }
     if (currentProfile) { currentProfile.username = username; currentProfile.avatar = avatarVal; }
-    document.getElementById('sb-username').textContent = username;
     localStorage.setItem('sw_pin_name', username);
-    updateSidebarAvatar();
+    updateHeaderAvatar();
     msg.style.color='var(--green-400)'; msg.textContent='✅ Perfil salvo!';
     setTimeout(()=>msg.textContent='', 3000);
   }
@@ -1782,8 +1976,14 @@ function copiarDescricao(){
   async function checkUserTeam(userId) {
     const { data } = await sb.from('team_members').select('team_id').eq('user_id', userId).limit(1);
     const inTeam = data && data.length > 0;
-    const isAdmin = currentProfile?.role === 'admin';
-    const show = inTeam || isAdmin;
+    const isAdminUser = currentProfile?.role === 'admin';
+    const show = inTeam || isAdminUser;
+    // Show equipe card on home
+    const homeCard = document.getElementById('home-card-equipe');
+    if (homeCard) homeCard.style.display = show ? 'flex' : 'none';
+    // Show equipe in bottom nav
+    const bnavEq = document.getElementById('bnav-equipe-hub');
+    if (bnavEq) bnavEq.style.display = show ? 'flex' : 'none';
     showTeamNavs(show);
   }
 
@@ -1792,30 +1992,37 @@ function copiarDescricao(){
   let currentTeamMembers = [];
 
   async function initEquipePanel() {
-    // Check if user is in a team
-    const { data: membership } = await sb
-      .from('team_members')
-      .select('team_id')
-      .eq('user_id', currentUser.id)
-      .single();
+    // Reset visibility first
+    const headerCard = document.getElementById('equipe-header-card');
+    const emptyCard = document.getElementById('equipe-empty');
+    if (headerCard) headerCard.style.display = 'block';
+    document.querySelectorAll('#panel-equipe .card').forEach(c => c.style.display = 'block');
+    if (emptyCard) emptyCard.style.display = 'none';
 
-    if (!membership) {
-      // Admin can still see all teams
-      if (currentProfile?.role === 'admin') {
-        const { data: teams } = await sb.from('teams').select('*').limit(1).single();
-        if (teams) { currentTeam = teams; await loadEquipeData(); return; }
-      }
-      document.getElementById('equipe-header-card').style.display = 'none';
-      document.querySelectorAll('#panel-equipe .card').forEach(c => c.style.display = 'none');
-      document.getElementById('equipe-empty').style.display = 'block';
-      return;
+    // If we already have a team loaded, just refresh data
+    if (currentTeam) { await loadEquipeData(); return; }
+
+    // Try to find team via membership
+    const { data: memberships } = await sb
+      .from('team_members').select('team_id')
+      .eq('user_id', currentUser.id).limit(1);
+
+    if (memberships && memberships.length > 0) {
+      const { data: team } = await sb.from('teams').select('*')
+        .eq('id', memberships[0].team_id).single();
+      if (team) { currentTeam = team; await loadEquipeData(); return; }
     }
 
-    // Load team
-    const { data: team } = await sb.from('teams').select('*').eq('id', membership.team_id).single();
-    if (!team) return;
-    currentTeam = team;
-    await loadEquipeData();
+    // Admin fallback: load first available team
+    const { data: teamsList } = await sb.from('teams').select('*').limit(1);
+    if (teamsList && teamsList.length > 0) {
+      currentTeam = teamsList[0]; await loadEquipeData(); return;
+    }
+
+    // Truly no team
+    if (headerCard) headerCard.style.display = 'none';
+    document.querySelectorAll('#panel-equipe .card').forEach(c => { if(c.id !== 'equipe-empty') c.style.display = 'none'; });
+    if (emptyCard) emptyCard.style.display = 'block';
   }
 
   async function loadEquipeData() {
@@ -2179,7 +2386,10 @@ function copiarDescricao(){
   // ===== DASHBOARD =====
   async function loadDashboard() {
     if (!currentTeam) { await initEquipePanel(); }
-    if (!currentTeam) return;
+    if (!currentTeam) {
+      document.getElementById('dash-activity').innerHTML = '<div class="empty-state">Você precisa estar em uma equipe.</div>';
+      return;
+    }
 
     const [stockRes, pricingRes, membersRes, msgsRes, actRes] = await Promise.all([
       sb.from('team_stock').select('*').eq('team_id', currentTeam.id),
@@ -2246,8 +2456,23 @@ function copiarDescricao(){
   let chatSubscription = null;
 
   async function loadChat() {
-    if (!currentTeam) { await initEquipePanel(); }
-    if (!currentTeam) return;
+    if (!currentTeam) {
+      // Try to find team directly without going through initEquipePanel
+      const { data: memberships } = await sb.from('team_members').select('team_id').eq('user_id', currentUser.id).limit(1);
+      if (memberships && memberships.length > 0) {
+        const { data: team } = await sb.from('teams').select('*').eq('id', memberships[0].team_id).single();
+        if (team) currentTeam = team;
+      }
+      if (!currentTeam) {
+        const { data: tl } = await sb.from('teams').select('*').limit(1);
+        if (tl && tl.length > 0) currentTeam = tl[0];
+      }
+    }
+    if (!currentTeam) {
+      const el = document.getElementById('chat-messages');
+      if (el) el.innerHTML = '<div class="empty-state" style="padding:40px">Você precisa estar em uma equipe para usar o chat.</div>';
+      return;
+    }
 
     const { data: msgs } = await sb.from('team_messages')
       .select('*, profiles:user_id(username,avatar)')
@@ -2340,7 +2565,7 @@ function copiarDescricao(){
   // ===== NOTAS =====
   async function loadNotas() {
     if (!currentTeam) { await initEquipePanel(); }
-    if (!currentTeam) return;
+    if (!currentTeam) return;  // empty state handled by initEquipePanel
 
     const { data: notas } = await sb.from('team_notes')
       .select('*, profiles:user_id(username)')
@@ -2451,6 +2676,112 @@ function copiarDescricao(){
       </div>`;
     }).join('');
   }
+
+
+  // ===== NEW NAVIGATION SYSTEM =====
+  let navHistory = [];
+  let currentSection = 'home';
+
+  function goHome() {
+    navHistory = [];
+    activatePanel('home');
+    document.getElementById('back-bar').classList.remove('show');
+    updateBottomNav('home');
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  function goSection(section) {
+    navHistory.push(currentSection);
+    currentSection = section;
+    activatePanel(section);
+    const titles = {
+      calculadoras: '🧮 Calculadoras',
+      'estoque-hub': '📦 Estoque',
+      'equipe-hub': '👥 Equipe',
+      conta: '👤 Minha Conta'
+    };
+    showBackBar(titles[section] || section);
+    updateBottomNav(section);
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  function showTool(id) {
+    const sectionOf = {
+      preco:'calculadoras', lucro:'calculadoras', comparador:'calculadoras',
+      estoque:'estoque-hub', descricao:'estoque-hub',
+      dashboard:'equipe-hub', chat:'equipe-hub', equipe:'equipe-hub',
+      notas:'equipe-hub', historico:'equipe-hub',
+      perfil:'conta', admin:'conta'
+    };
+    const titles = {
+      preco:'Precificação', lucro:'Lucratividade', comparador:'Comparador ML vs Shopee',
+      estoque:'Controle de Estoque', descricao:'Descrição IA',
+      dashboard:'Dashboard', chat:'Chat da Equipe', equipe:'Minha Equipe',
+      notas:'Notas & Tarefas', historico:'Histórico',
+      perfil:'Meu Perfil', admin:'Painel Admin'
+    };
+    if (!navHistory.includes(currentSection)) navHistory.push(currentSection);
+    currentSection = id;
+    activatePanel(id);
+    showBackBar(titles[id] || id);
+    updateBottomNav(sectionOf[id] || 'home');
+    window.scrollTo({top:0,behavior:'smooth'});
+    // Trigger load functions
+    if (id === 'admin') { setTimeout(loadAdminPanel,50); setTimeout(loadAdminTeams,150); setTimeout(initNewTeamForm,250); }
+    if (id === 'perfil') setTimeout(initPerfilPanel,50);
+    if (id === 'equipe') setTimeout(initEquipePanel,50);
+    if (id === 'dashboard') setTimeout(loadDashboard,50);
+    if (id === 'chat') setTimeout(loadChat,50);
+    if (id === 'notas') setTimeout(loadNotas,50);
+    if (id === 'historico') setTimeout(loadHistorico,50);
+  }
+
+  function goBack() {
+    if (navHistory.length === 0) { goHome(); return; }
+    const prev = navHistory.pop();
+    currentSection = prev;
+    if (prev === 'home') {
+      goHome();
+    } else if (['calculadoras','estoque-hub','equipe-hub','conta'].includes(prev)) {
+      goSection(prev);
+      navHistory.pop(); // goSection pushes, remove extra
+    } else {
+      activatePanel(prev);
+      showBackBar(null);
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+  }
+
+  function activatePanel(id) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    const el = document.getElementById('panel-' + id);
+    if (el) el.classList.add('active');
+  }
+
+  function showBackBar(title) {
+    const bar = document.getElementById('back-bar');
+    const titleEl = document.getElementById('back-bar-title');
+    bar.classList.add('show');
+    if (titleEl && title) titleEl.textContent = title;
+  }
+
+  function updateBottomNav(activeId) {
+    const map = {
+      home:'home', 'home':'home',
+      calculadoras:'calc', preco:'calc', lucro:'calc', comparador:'calc',
+      'estoque-hub':'estoque', estoque:'estoque', descricao:'estoque',
+      'equipe-hub':'equipe-hub', dashboard:'equipe-hub', chat:'equipe-hub',
+      equipe:'equipe-hub', notas:'equipe-hub', historico:'equipe-hub',
+      conta:'conta', perfil:'conta', admin:'conta'
+    };
+    document.querySelectorAll('.bottom-nav-item').forEach(b => b.classList.remove('active'));
+    const targetId = 'bnav-' + (map[activeId] || 'home');
+    const el = document.getElementById(targetId);
+    if (el) el.classList.add('active');
+  }
+
+  // Keep showPanel as alias for backward compatibility
+  function showPanel(id, btn) { showTool(id); }
 
 
 init();
