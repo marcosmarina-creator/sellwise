@@ -3456,6 +3456,7 @@ ${details}`;
       msg.textContent='Erro ao enviar: '+error.message;
       return;
     }
+    console.log('✅ Solicitação inserida:', inserted);
     msg.style.color='var(--green-400)';
     msg.textContent='✅ Solicitação enviada! Aguarde a aprovação do admin.';
     document.getElementById('req-team-name').value='';
@@ -3493,26 +3494,38 @@ ${details}`;
   async function loadAdminSolicitacoes() {
     const el = document.getElementById('admin-solicitacoes');
     if (!el) return;
+    el.innerHTML = '<div style="font-size:13px;color:var(--text-muted)">Carregando solicitações...</div>';
+    
+    // Fetch ALL requests (including all statuses for debug)
     const { data: reqs, error: reqErr } = await sb.from('team_requests')
-      .select('*').eq('status','pending')
-      .order('created_at', { ascending: true });
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    console.log('team_requests query:', { reqs, reqErr });
 
     if (reqErr) {
-      el.innerHTML = `<div style="font-size:13px;color:var(--red)">Erro RLS: ${reqErr.message}<br><small>Verifique as políticas da tabela team_requests</small></div>`;
+      el.innerHTML = `<div style="padding:10px;background:rgba(248,113,113,0.08);border-radius:8px;color:var(--red);font-size:13px">
+        ⚠️ Erro ao carregar: ${reqErr.message}<br>
+        <small style="color:var(--text-muted)">Role: RLS pode estar bloqueando. Rode o SQL de correção.</small>
+      </div>`;
       return;
     }
-    if (!reqs || !reqs.length) {
-      el.innerHTML = '<div style="font-size:13px;color:var(--text-muted)">✅ Nenhuma solicitação pendente.</div>';
+
+    const pending = (reqs || []).filter(r => r.status === 'pending');
+    const total = (reqs || []).length;
+
+    if (!pending.length) {
+      el.innerHTML = `<div style="font-size:13px;color:var(--text-muted)">✅ Nenhuma solicitação pendente. (${total} no total)</div>`;
       return;
     }
 
     // Load requester usernames
-    const userIds = [...new Set(reqs.map(r => r.requested_by))];
-    const { data: profiles } = await sb.from('profiles').select('id,username').in('id', userIds);
+    const userIds = [...new Set(pending.map(r => r.requested_by))];
+    const { data: profiles } = await sb.from('profiles').select('id,username');
     const profileMap = {};
     (profiles||[]).forEach(p => { profileMap[p.id] = p.username; });
 
-    el.innerHTML = reqs.map(r => {
+    el.innerHTML = pending.map(r => {
       let members = [];
       try {
         if (Array.isArray(r.members_requested)) members = r.members_requested;
