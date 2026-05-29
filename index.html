@@ -190,61 +190,129 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
 .bottom-nav-item .bnav-label { font-size: 9px; font-weight: 500; white-space: nowrap; }
 
 
-@media (max-width: 700px) {
-  .auth-card { width: 94vw; max-width: 360px; padding: 28px 18px 24px; }
-  .content { padding: 14px; padding-bottom: 90px; }
-  .card { padding: 14px; margin-bottom: 12px; }
-  .card-title { font-size: 10px; margin-bottom: 12px; }
-  .form-grid { grid-template-columns: 1fr; gap: 10px; }
-  .form-group.span2 { grid-column: span 1; }
-  input, select, textarea { font-size: 16px; padding: 11px 12px; }
-  .btn { width: 100%; justify-content: center; font-size: 15px; padding: 13px 16px; }
-  .btn-sm { width: auto; font-size: 13px; padding: 8px 13px; }
-  .result-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
-  .metric { padding: 10px 11px; }
-  .metric-label { font-size: 9px; }
-  .metric-value { font-size: 15px; }
-  .comp-grid { grid-template-columns: 1fr; }
-  .comp-lucro-val { font-size: 20px; }
-  .veredito-card { flex-direction: column; gap: 8px; text-align: center; }
-  .table-wrap::before { content: 'Deslize para ver →'; display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 6px; }
+@media (max-width: 768px) {
+
+  /* ── AUTH ── */
+  .auth-card { width: 94vw; max-width: 380px; padding: 28px 18px 24px; }
+  .auth-btn { padding: 14px; font-size: 15px; }
+  .auth-input { font-size: 16px; padding: 12px 14px; }
+
+  /* ── LAYOUT ── */
+  .app-header { padding: 11px 16px; }
+  .back-bar { padding: 8px 14px; top: 54px; }
+  .back-bar-title { font-size: 13px; max-width: 50vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .back-bar-tag { font-size: 10px; padding: 2px 8px; }
+  .content { padding: 12px 14px; padding-bottom: 90px; }
+
+  /* ── HOME CARDS ── */
+  .section-welcome-title { font-size: 18px; }
+  .section-welcome-sub { font-size: 12px; }
   .home-grid { gap: 10px; }
-  .home-card { padding: 18px 14px; }
-  .home-card-icon { width: 46px; height: 46px; font-size: 22px; }
+  .home-card { padding: 18px 14px; gap: 8px; border-radius: 14px; }
+  .home-card-icon { width: 46px; height: 46px; font-size: 22px; border-radius: 12px; }
   .home-card-title { font-size: 13px; }
   .home-card-desc { font-size: 11px; }
-  .admin-stat { padding: 12px 14px; }
-  .admin-stat-val { font-size: 22px; }
-  .pin-keypad { gap: 6px; }
-  .pin-key { padding: 12px 6px; font-size: 15px; border-radius: 8px; }
-  .auth-btn { padding: 13px; font-size: 15px; }
-  .auth-input { font-size: 16px; padding: 11px 13px; }
-  #panel-chat .card { height: calc(100vh - 165px) !important; min-height: 300px !important; }
-  #panel-historico .btn-sm { font-size: 11px; padding: 6px 10px; width: auto; }
-  /* Home mobile tweaks */
-  .section-welcome-title { font-size: 18px; }
   .home-card.full { padding: 14px 16px; gap: 12px; }
   .home-card.full .home-card-icon { width: 40px; height: 40px; font-size: 18px; }
-  /* Back bar mobile */
-  .back-bar { padding: 8px 16px; top: 55px; }
-  .back-bar-title { font-size: 13px; }
-  .back-bar-tag { font-size: 10px; padding: 2px 8px; }
-  /* Comp cards stacked nicely */
+
+  /* ── CARDS ── */
+  .card { padding: 14px; margin-bottom: 12px; border-radius: 14px; }
+  .card-title { font-size: 10px; margin-bottom: 12px; }
+
+  /* ── FORMS ── */
+  .form-grid { grid-template-columns: 1fr; gap: 10px; }
+  .form-group.span2 { grid-column: span 1; }
+  label { font-size: 11px; }
+  input, select, textarea { font-size: 16px; padding: 12px 13px; border-radius: 8px; }
+  input::placeholder { font-size: 14px; }
+
+  /* ── BUTTONS ── */
+  .btn { width: 100%; justify-content: center; font-size: 15px; padding: 13px 16px; border-radius: 10px; }
+  .btn-sm { width: auto; font-size: 12px; padding: 8px 12px; }
+  .btn-primary { font-size: 15px; }
+
+  /* ── SAVE AREA (precificação) ── */
+  #p-save-area { flex-direction: column; }
+  #p-save-area input { width: 100%; }
+  #p-save-area .btn-sm { width: 100%; justify-content: center; }
+
+  /* ── RESULTS ── */
+  .result-grid { grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
+  .metric { padding: 10px 12px; }
+  .metric-label { font-size: 9px; }
+  .metric-value { font-size: 15px; }
+
+  /* ── COMPARADOR ── */
+  .comp-grid { grid-template-columns: 1fr; gap: 12px; }
+  .comp-lucro-val { font-size: 20px; }
   .comp-lucro-row { padding: 10px 0 4px; }
-  /* Dashboard stats 2 cols */
-  #panel-dashboard > div:first-child { grid-template-columns: 1fr 1fr !important; }
-  /* Table min-width smaller on mobile */
-  table { min-width: 420px; }
-  /* Notas buttons inline */
+  .veredito-card { flex-direction: column; gap: 10px; text-align: center; }
+
+  /* ── TABLES ── */
+  .table-wrap { border-radius: 8px; }
+  .table-wrap::before { content: '← Deslize para ver mais →'; display: block; font-size: 11px; color: var(--text-muted); text-align: center; margin-bottom: 8px; }
+  table { min-width: 460px; font-size: 12px; }
+  th { padding: 8px 9px; font-size: 9px; }
+  td { padding: 10px 9px; }
+
+  /* ── CHAT ── */
+  #panel-chat .card {
+    height: calc(100svh - 160px) !important;
+    min-height: 300px !important;
+    border-radius: 14px;
+  }
+  #chat-messages { padding: 10px 12px; gap: 8px; }
+  #chat-input { font-size: 16px; padding: 10px 12px; }
+
+  /* ── DASHBOARD ── */
+  #panel-dashboard > div:first-child { grid-template-columns: 1fr 1fr !important; gap: 8px !important; }
+  .admin-stat { padding: 12px; }
+  .admin-stat-val { font-size: 22px; }
+
+  /* ── NOTAS ── */
   #panel-notas .form-grid { display: flex; flex-direction: column; gap: 10px; }
-  #panel-notas .btn-sm { flex: 1; }
-  /* Header height */
-  .app-header { padding: 11px 16px; }
+  #panel-notas .form-grid > div:last-child { display: flex; gap: 8px; }
+  #panel-notas .form-grid .btn { flex: 1; padding: 12px 8px; font-size: 13px; }
+
+  /* ── HISTÓRICO (activity) ── */
+  #panel-historico .btn-sm { font-size: 11px; padding: 6px 10px; width: auto; }
+  #panel-historico > .card > div:nth-child(2) { flex-wrap: wrap; gap: 6px; }
+
+  /* ── HISTORY ITEMS (calc) ── */
+  #hist-preco > div, #hist-lucro > div, #hist-comparador > div {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  #hist-preco > div > div:last-child,
+  #hist-lucro > div > div:last-child,
+  #hist-comparador > div > div:last-child { justify-content: flex-start; }
+
+  /* ── ADMIN ── */
+  .role-badge { font-size: 10px; padding: 2px 6px; }
+  #admin-tbody td { padding: 8px 6px; font-size: 12px; }
+  #admin-tbody .btn-sm { font-size: 10px; padding: 4px 7px; }
+
+  /* ── EQUIPE ── */
+  #equipe-header-card > div { flex-direction: column; gap: 12px; }
+  #equipe-members-col { flex-direction: row !important; flex-wrap: wrap; justify-content: center; min-width: unset !important; width: 100%; }
+
+  /* ── PERFIL ── */
+  .profile-avatar-big { width: 56px; height: 56px; font-size: 24px; }
+
+  /* ── PIN ── */
+  .pin-keypad { gap: 8px; }
+  .pin-key { padding: 14px 8px; font-size: 16px; border-radius: 10px; min-width: 60px; }
+
+  /* ── BADGES ── */
+  .badge { font-size: 10px; padding: 2px 6px; }
 }
+
 @media (max-width: 380px) {
   .home-grid { grid-template-columns: 1fr; }
   .home-card.full { flex-direction: column; text-align: center; }
   .home-card.full::after { display: none; }
+  .result-grid { grid-template-columns: 1fr; }
+  .comp-header { flex-direction: column; align-items: flex-start; gap: 6px; }
 }
 
   /* ===== COMPONENTS ===== */
@@ -956,9 +1024,9 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
           <div id="chat-messages" style="flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:10px">
             <div class="empty-state">Carregando mensagens...</div>
           </div>
-          <div style="padding:12px 14px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:center">
-            <input type="text" id="chat-input" placeholder="Digite uma mensagem..." onkeydown="if(event.key==='Enter')enviarMensagem()" style="flex:1;padding:10px 13px;font-size:14px" />
-            <button class="btn btn-primary btn-sm" onclick="enviarMensagem()" style="white-space:nowrap;flex-shrink:0">Enviar</button>
+          <div style="padding:10px 12px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:center;background:var(--bg-surface);position:sticky;bottom:0">
+            <input type="text" id="chat-input" placeholder="Digite uma mensagem..." onkeydown="if(event.key==='Enter')enviarMensagem()" style="flex:1;padding:10px 13px;font-size:16px;border-radius:20px" />
+            <button class="btn btn-primary btn-sm" onclick="enviarMensagem()" style="white-space:nowrap;flex-shrink:0;border-radius:50%;width:40px;height:40px;padding:0;display:flex;align-items:center;justify-content:center;font-size:18px">➤</button>
           </div>
         </div>
       </div>
@@ -2911,7 +2979,7 @@ function copiarDescricao(){
             <div style="font-size:11px;color:var(--text-muted)">${summary}</div>
             <div style="font-size:10px;color:var(--text-muted);margin-top:2px">${formatHistoryDate(h.created_at)}</div>
           </div>
-          <div style="display:flex;gap:5px;flex-shrink:0;align-items:center;flex-wrap:wrap;justify-content:flex-end">
+          <div style="display:flex;gap:4px;flex-shrink:0;align-items:center;flex-wrap:wrap;justify-content:flex-end;max-width:120px">
             <button onclick="compartilharEquipe('${h.id}','${tipo}')" style="font-size:10px;padding:3px 8px;background:rgba(59,130,246,0.1);color:#60a5fa;border:1px solid rgba(59,130,246,0.25);border-radius:5px;cursor:pointer;white-space:nowrap">👥 Equipe</button>
             <button onclick="renomearHistorico('${h.id}','${tipo}','${containerId}')" style="font-size:10px;padding:3px 8px;background:var(--bg-elevated);color:var(--text-secondary);border:1px solid var(--border);border-radius:5px;cursor:pointer">✏️</button>
             <button onclick="deletarHistorico('${h.id}','${tipo}','${containerId}')" style="font-size:10px;padding:3px 8px;background:rgba(248,113,113,0.08);color:var(--red);border:1px solid rgba(248,113,113,0.2);border-radius:5px;cursor:pointer">🗑</button>
