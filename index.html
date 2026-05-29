@@ -221,6 +221,30 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
   .auth-input { font-size: 16px; padding: 11px 13px; }
   #panel-chat .card { height: calc(100vh - 165px) !important; min-height: 300px !important; }
   #panel-historico .btn-sm { font-size: 11px; padding: 6px 10px; width: auto; }
+  /* Home mobile tweaks */
+  .section-welcome-title { font-size: 18px; }
+  .home-card.full { padding: 14px 16px; gap: 12px; }
+  .home-card.full .home-card-icon { width: 40px; height: 40px; font-size: 18px; }
+  /* Back bar mobile */
+  .back-bar { padding: 8px 16px; top: 55px; }
+  .back-bar-title { font-size: 13px; }
+  .back-bar-tag { font-size: 10px; padding: 2px 8px; }
+  /* Comp cards stacked nicely */
+  .comp-lucro-row { padding: 10px 0 4px; }
+  /* Dashboard stats 2 cols */
+  #panel-dashboard > div:first-child { grid-template-columns: 1fr 1fr !important; }
+  /* Table min-width smaller on mobile */
+  table { min-width: 420px; }
+  /* Notas buttons inline */
+  #panel-notas .form-grid { display: flex; flex-direction: column; gap: 10px; }
+  #panel-notas .btn-sm { flex: 1; }
+  /* Header height */
+  .app-header { padding: 11px 16px; }
+}
+@media (max-width: 380px) {
+  .home-grid { grid-template-columns: 1fr; }
+  .home-card.full { flex-direction: column; text-align: center; }
+  .home-card.full::after { display: none; }
 }
 
   /* ===== COMPONENTS ===== */
@@ -316,6 +340,10 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
     <div class="auth-logo">
       <div class="auth-logo-icon"><svg viewBox="0 0 24 24"><path d="M3 3h18v4H3zM3 10h11v4H3zM3 17h14v4H3z"/></svg></div>
       <span class="auth-logo-name">Sell<span>wise</span></span>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:20px;opacity:0.7">
+      
+      <span style="font-size:11px;color:var(--text-muted)">Gestão para ML & Shopee</span>
     </div>
 
     <!-- LOGIN -->
@@ -441,12 +469,14 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
             <div class="home-card-icon" style="background:rgba(34,197,94,0.15)">🧮</div>
             <div class="home-card-title">Calculadoras</div>
             <div class="home-card-desc">Precificação, lucratividade e comparador</div>
+            <div style="display:flex;gap:6px;margin-top:2px"></div>
           </div>
 
           <div class="home-card" onclick="goSection('estoque-hub')">
             <div class="home-card-icon" style="background:rgba(245,158,11,0.15)">📦</div>
             <div class="home-card-title">Estoque</div>
             <div class="home-card-desc">Controle produtos e alertas de quantidade</div>
+            
           </div>
 
           <div class="home-card" onclick="showTool('descricao')">
@@ -499,10 +529,11 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
           </div>
           <div class="home-card full" onclick="showTool('comparador')">
             <div class="home-card-icon" style="background:rgba(59,130,246,0.15)">⚖️</div>
-            <div>
+            <div style="flex:1;min-width:0">
               <div class="home-card-title">Comparador ML vs Shopee</div>
               <div class="home-card-desc">Veja qual plataforma é mais lucrativa</div>
             </div>
+            
           </div>
         </div>
       </div>
@@ -612,6 +643,7 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
             <div class="form-group"><label>Imposto / outros (%)</label><input type="number" id="p-imposto" placeholder="0" min="0" /></div>
           </div>
           <div class="card-title" style="margin-top:8px">Plataforma</div>
+          
           <div class="form-grid">
             <div class="form-group">
               <label>Plataforma</label>
@@ -645,6 +677,10 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
             <div class="metric"><div class="metric-label">Lucro líquido</div><div class="metric-value positive" id="p-lucro">—</div></div>
           </div>
         </div>
+        <div class="card" style="margin-top:0">
+          <div class="card-title">🕐 Histórico de precificações</div>
+          <div id="hist-preco"></div>
+        </div>
       </div>
 
       <!-- ESTOQUE -->
@@ -668,6 +704,10 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
             </table>
           </div>
         </div>
+        <div class="card" style="margin-top:0">
+          <div class="card-title">🕐 Histórico de movimentações</div>
+          <div id="hist-estoque"></div>
+        </div>
       </div>
 
       <!-- LUCRATIVIDADE -->
@@ -681,6 +721,7 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
             <div class="form-group"><label>Qtd vendida (simulação)</label><input type="number" id="l-qtd" placeholder="1" min="1" /></div>
           </div>
           <div class="card-title" style="margin-top:8px">Plataforma &amp; taxas</div>
+          
           <div class="form-grid">
             <div class="form-group">
               <label>Plataforma</label>
@@ -715,6 +756,10 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
             <div class="metric"><div class="metric-label">Margem real</div><div class="metric-value" id="l-marg">—</div></div>
             <div class="metric"><div class="metric-label">Lucro total (qtd)</div><div class="metric-value positive" id="l-total">—</div></div>
           </div>
+        </div>
+        <div class="card" style="margin-top:0">
+          <div class="card-title">🕐 Histórico de lucratividade</div>
+          <div id="hist-lucro"></div>
         </div>
       </div>
 
@@ -756,7 +801,16 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
         <div id="c-result" style="display:none">
           <div class="comp-grid">
             <div class="comp-card" id="c-ml-card">
-              <div class="comp-header"><span class="comp-plat">Mercado Livre</span><span id="c-ml-badge" class="comp-badge-lose">—</span></div>
+              <div class="comp-header">
+              <div style="display:flex;align-items:center;gap:10px">
+                <img src="data:image/png;base64,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" style="width:42px;height:42px;border-radius:10px;flex-shrink:0;object-fit:cover">
+                <div>
+                  <div class="comp-plat">Mercado Livre</div>
+                  <div style="font-size:10px;color:var(--text-muted)">ML Clássico / Premium</div>
+                </div>
+              </div>
+              <span id="c-ml-badge" class="comp-badge-lose">—</span>
+            </div>
               <div class="comp-row"><span class="comp-row-label">Comissão</span><span class="comp-row-val" id="c-ml-comissao">—</span></div>
               <div class="comp-row"><span class="comp-row-label">Valor da taxa</span><span class="comp-row-val red" id="c-ml-taxa">—</span></div>
               <div class="comp-row"><span class="comp-row-label">Taxa fixa</span><span class="comp-row-val" id="c-ml-fixa">—</span></div>
@@ -766,7 +820,16 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
               <div class="comp-lucro-row"><span class="comp-lucro-label">Lucro líquido</span><span class="comp-lucro-val" id="c-ml-lucro">—</span></div>
             </div>
             <div class="comp-card" id="c-sh-card">
-              <div class="comp-header"><span class="comp-plat">Shopee</span><span id="c-sh-badge" class="comp-badge-lose">—</span></div>
+              <div class="comp-header">
+              <div style="display:flex;align-items:center;gap:10px">
+                <img src="data:image/png;base64,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" style="width:42px;height:42px;border-radius:10px;flex-shrink:0;object-fit:cover">
+                <div>
+                  <div class="comp-plat">Shopee</div>
+                  <div style="font-size:10px;color:var(--text-muted)">Faixa automática 2026</div>
+                </div>
+              </div>
+              <span id="c-sh-badge" class="comp-badge-lose">—</span>
+            </div>
               <div class="comp-row"><span class="comp-row-label">Comissão</span><span class="comp-row-val" id="c-sh-comissao">—</span></div>
               <div class="comp-row"><span class="comp-row-label">Valor da taxa</span><span class="comp-row-val red" id="c-sh-taxa">—</span></div>
               <div class="comp-row"><span class="comp-row-label">Taxa fixa</span><span class="comp-row-val red" id="c-sh-fixa">—</span></div>
@@ -999,18 +1062,7 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
             <div class="form-group"><label>Custo (R$)</label><input type="number" id="tp-custo" placeholder="0,00" step="0.01" /></div>
             <div class="form-group"><label>Frete (R$)</label><input type="number" id="tp-frete" placeholder="0,00" step="0.01" /></div>
             <div class="form-group"><label>Margem (%)</label><input type="number" id="tp-margem" placeholder="20" /></div>
-            <div class="form-group">
-              <label>Plataforma</label>
-              <select id="tp-plat">
-                <option value="ml_12">ML Clássico · cat. média (12%)</option>
-                <option value="ml_10">ML Clássico · cat. baixa (10%)</option>
-                <option value="ml_14">ML Clássico · cat. alta (14%)</option>
-                <option value="ml_15">ML Premium · cat. baixa (15%)</option>
-                <option value="ml_17">ML Premium · cat. média (17%)</option>
-                <option value="ml_19">ML Premium · cat. alta (19%)</option>
-                <option value="shopee">Shopee · faixa automática</option>
-              </select>
-            </div>
+            
           </div>
           <button class="btn btn-primary" onclick="addTeamPricing()">🧮 Calcular e salvar</button>
           <div style="margin-top:16px">
@@ -1180,8 +1232,7 @@ async function loadUserAndShow(user) {
 
   document.getElementById('auth-container').style.display = 'none';
   document.getElementById('app').classList.add('visible');
-  // goHome defined later in script - use timeout to ensure it's available
-  setTimeout(goHome, 10);
+  setTimeout(()=>{ initHistory(); goHome(); loadUserStock(); }, 10);
 
   const hasPinStored = !!localStorage.getItem('sw_pin_' + user.id);
   if (!hasPinStored) {
@@ -1492,26 +1543,12 @@ function calcPreco() {
   const el=document.getElementById('p-lucro');
   el.textContent=fmt(lucro); el.className='metric-value '+(lucro>=0?'positive':'negative');
   document.getElementById('p-result').style.display='grid';
-}
-
-function addProduto() {
-  const nome=document.getElementById('e-nome').value.trim();
-  if (!nome){alert('Informe o nome do produto.');return;}
-  produtos.push({id:Date.now(),nome,sku:document.getElementById('e-sku').value.trim(),qtd:parseInt(document.getElementById('e-qtd').value)||0,min:parseInt(document.getElementById('e-min').value)||5,custo:parseFloat(document.getElementById('e-custo').value)||0});
-  renderTabela();
-  ['e-nome','e-sku','e-qtd','e-min','e-custo'].forEach(id=>document.getElementById(id).value='');
-}
-
-function renderTabela() {
-  const tbody=document.getElementById('e-tbody');
-  if (!produtos.length){tbody.innerHTML='<tr><td colspan="7"><div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zM16 3H8L6 7h12l-2-4z"/></svg><div>Nenhum produto cadastrado ainda.</div></div></td></tr>';return;}
-  tbody.innerHTML=produtos.map(p=>{
-    let cls,label;
-    if(p.qtd===0){cls='badge-out';label='Sem estoque';}
-    else if(p.qtd<=p.min){cls='badge-low';label='Estoque baixo';}
-    else{cls='badge-ok';label='Normal';}
-    return `<tr><td><strong>${p.nome}</strong></td><td style="color:var(--text-muted)">${p.sku||'—'}</td><td><strong>${p.qtd}</strong></td><td>${fmt(p.custo)}</td><td>${fmt(p.custo*p.qtd)}</td><td><span class="badge ${cls}">${label}</span></td><td><button class="btn btn-sm" onclick="remover(${p.id})" style="color:var(--red);border-color:rgba(248,113,113,0.3)">🗑</button></td></tr>`;
-  }).join('');
+  document.getElementById('p-save-area').style.display='block';
+  document.getElementById('p-save-msg').textContent='';
+  // Save to history
+  const pNome = `${plat} | Custo ${fmt(custo)}`;
+  logCalcHistory('preco', pNome, { custo, frete, margem, plat, preco_sug: fmt(sug), lucro: fmt(lucro) });
+  renderCalcHistoryPanel('preco','hist-preco');
 }
 
 function remover(id){produtos=produtos.filter(p=>p.id!==id);renderTabela();}
@@ -1560,74 +1597,23 @@ function calcLucro(){
   document.getElementById('l-marg').textContent=margem.toFixed(1)+'%';
   document.getElementById('l-total').textContent=fmt(lucro*qtd);
   document.getElementById('l-result').style.display='grid';
+  logCalcHistory('lucro', `Preço ${fmt(preco)} | ${plat}`, { preco, custo, frete, plat, lucro: fmt(lucroLiq), margem: margem.toFixed(1)+'%' });
+  renderCalcHistoryPanel('lucro','hist-lucro');
 }
 
-function onPrecoComp(){
-  const preco=parseFloat(document.getElementById('c-preco').value)||0;
-  const altoCPF=document.getElementById('c-vendedor').value==='cpf';
-  if(preco>0){const f=getShopeeFaixa(preco,altoCPF);document.getElementById('c-shopee-txt').textContent=`Shopee 2026 · Faixa ${faixaLabel(preco)}: ${f.perc}% + R$${f.fixa},00 fixo/item.`;}
-}
-
-function calcComparador(){
-  const preco=parseFloat(document.getElementById('c-preco').value)||0;
-  const custo=parseFloat(document.getElementById('c-custo').value)||0;
-  const frete=parseFloat(document.getElementById('c-frete').value)||0;
-  const imposto=parseFloat(document.getElementById('c-imposto').value)||0;
-  const altoCPF=document.getElementById('c-vendedor').value==='cpf';
-  const mlPerc=parseFloat(document.getElementById('c-ml-cat').value)||12;
-  if(!preco){alert('Informe o preço de venda.');return;}
-  const impostoV=preco*imposto/100;
-  const outros=custo+frete+impostoV;
-  const mlTaxa=preco*mlPerc/100;
-  const mlLucro=preco-mlTaxa-outros;
-  const mlMarg=preco>0?(mlLucro/preco*100):0;
-  const shF=getShopeeFaixa(preco,altoCPF);
-  const shTaxa=preco*shF.perc/100;
-  const shLucro=preco-shTaxa-shF.fixa-outros;
-  const shMarg=preco>0?(shLucro/preco*100):0;
-  document.getElementById('c-ml-comissao').textContent=mlPerc+'%';
-  document.getElementById('c-ml-taxa').textContent=fmt(mlTaxa);
-  document.getElementById('c-ml-fixa').textContent='—';
-  document.getElementById('c-ml-outros').textContent=fmt(outros);
-  document.getElementById('c-ml-repasse').textContent=fmt(preco-mlTaxa);
-  document.getElementById('c-ml-marg').textContent=mlMarg.toFixed(1)+'%';
-  document.getElementById('c-sh-comissao').textContent=shF.perc+'% · '+faixaLabel(preco);
-  document.getElementById('c-sh-taxa').textContent=fmt(shTaxa);
-  document.getElementById('c-sh-fixa').textContent=fmt(shF.fixa);
-  document.getElementById('c-sh-outros').textContent=fmt(outros);
-  document.getElementById('c-sh-repasse').textContent=fmt(preco-shTaxa-shF.fixa);
-  document.getElementById('c-sh-marg').textContent=shMarg.toFixed(1)+'%';
-  const mlWin=mlLucro>=shLucro;
-  const diff=Math.abs(mlLucro-shLucro);
-  const elML=document.getElementById('c-ml-lucro');
-  elML.textContent=fmt(mlLucro); elML.style.color=mlLucro>=0?'var(--green-400)':'var(--red)';
-  const elSH=document.getElementById('c-sh-lucro');
-  elSH.textContent=fmt(shLucro); elSH.style.color=shLucro>=0?'var(--green-400)':'var(--red)';
-  document.getElementById('c-ml-badge').textContent=mlWin?'✓ Mais lucrativo':'Menos lucrativo';
-  document.getElementById('c-ml-badge').className=mlWin?'comp-badge-win':'comp-badge-lose';
-  document.getElementById('c-ml-card').className='comp-card'+(mlWin?' winner':'');
-  document.getElementById('c-sh-badge').textContent=!mlWin?'✓ Mais lucrativo':'Menos lucrativo';
-  document.getElementById('c-sh-badge').className=!mlWin?'comp-badge-win':'comp-badge-lose';
-  document.getElementById('c-sh-card').className='comp-card'+(!mlWin?' winner':'');
-  document.getElementById('c-veredito-txt').textContent=(mlWin?'Mercado Livre':'Shopee')+' deixa '+fmt(diff)+' a mais de lucro por unidade.';
-  document.getElementById('c-result').style.display='block';
-}
-
-async function gerarDescricao(){
+  async function gerarDescricao() {
   const nome=document.getElementById('d-nome').value.trim();
   const carac=document.getElementById('d-carac').value.trim();
+  const publico=document.getElementById('d-publico').value.trim();
   const plat=document.getElementById('d-plat').value;
   const tom=document.getElementById('d-tom').value;
-  const publico=document.getElementById('d-publico').value.trim();
-  if(!nome){alert('Informe o nome do produto.');return;}
   const btn=document.getElementById('d-btn');
   const output=document.getElementById('d-output');
   const actions=document.getElementById('d-actions');
-  btn.disabled=true; btn.textContent='⏳ Gerando...';
-  output.style.display='block'; output.textContent='Gerando descrição com IA, aguarde...';
-  actions.classList.remove('show');
-  const platMap={ambas:'Mercado Livre e Shopee',ml:'Mercado Livre',shopee:'Shopee'};
-  const tomMap={profissional:'profissional e persuasivo',descontraido:'descontraído e amigável',tecnico:'técnico e detalhado'};
+  if (!nome) { alert('Informe o nome do produto.'); return; }
+  btn.disabled=true; btn.textContent='Gerando...'; output.style.display='block'; output.textContent='Aguardando IA...'; actions.classList.remove('show');
+  const platMap={ml_classico:'Mercado Livre Clássico',ml_premium:'Mercado Livre Premium',shopee:'Shopee'};
+  const tomMap={persuasivo:'persuasivo e comercial',informativo:'informativo e técnico',descontraido:'descontraído e próximo',tecnico:'técnico e detalhado'};
   const prompt=`Você é especialista em copywriting para e-commerce brasileiro. Crie uma descrição otimizada para ${platMap[plat]}.\nProduto: ${nome}\nCaracterísticas: ${carac||'não informadas'}\nPúblico-alvo: ${publico||'geral'}\nTom: ${tomMap[tom]}\nEstrutura: 1. Título SEO 2. Descrição (3 parágrafos) 3. Benefícios em tópicos 4. Call to action. Linguagem brasileira natural.`;
   try {
     const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
@@ -2478,7 +2464,7 @@ function copiarDescricao(){
       .select('*, profiles:user_id(username,avatar)')
       .eq('team_id', currentTeam.id)
       .order('created_at', { ascending: true })
-      .limit(100);
+      .limit(1000);
 
     renderMessages(msgs || []);
 
@@ -2688,6 +2674,7 @@ function copiarDescricao(){
     document.getElementById('back-bar').classList.remove('show');
     updateBottomNav('home');
     window.scrollTo({top:0,behavior:'smooth'});
+    pushNavState('home');
   }
 
   function goSection(section) {
@@ -2784,7 +2771,226 @@ function copiarDescricao(){
   function showPanel(id, btn) { showTool(id); }
 
 
+  // ===== SWIPE BACK & HISTORY API =====
+  // Push a state whenever we navigate so browser back = our goBack()
+  function pushNavState(id) {
+    history.pushState({ panel: id }, '', '#' + id);
+  }
+
+  // Intercept browser back (swipe left→right on iPhone, Android back button)
+  window.addEventListener('popstate', function(e) {
+    // Always push a new state to prevent leaving the site
+    history.pushState({ panel: currentSection }, '', '#' + currentSection);
+    // Then call our own back logic
+    if (navHistory.length > 0) {
+      goBack();
+    }
+    // If no history, we're at home - do nothing (stay on site)
+  });
+
+  // Touch swipe from left edge detection (extra support)
+  let touchStartX = 0;
+  let touchStartY = 0;
+
+  document.addEventListener('touchstart', function(e) {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+  }, { passive: true });
+
+  document.addEventListener('touchend', function(e) {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = Math.abs(e.changedTouches[0].clientY - touchStartY);
+    // Swipe from left edge (first 30px) moving right 80px+, not too vertical
+    if (touchStartX < 30 && dx > 80 && dy < 100) {
+      if (navHistory.length > 0) goBack();
+    }
+  }, { passive: true });
+
+  // Initialize history state on load
+  function initHistory() {
+    history.replaceState({ panel: 'home' }, '', '#home');
+  }
+
+
+  // ===== ESTOQUE PESSOAL — SUPABASE =====
+  async function loadUserStock() {
+    if (!currentUser) return;
+    const { data, error } = await sb.from('user_stock')
+      .select('*').eq('user_id', currentUser.id).order('created_at', { ascending: true });
+    if (error) { console.error('loadUserStock:', error.message); return; }
+    produtos = (data || []).map(p => ({
+      id: p.id, nome: p.nome, sku: p.sku||'', qtd: p.qtd,
+      min: p.min_qtd, custo: p.custo, fromDB: true
+    }));
+    renderTabela();
+  }
+
+  async function addProdutoDB() {
+    const nome = document.getElementById('e-nome').value.trim();
+    if (!nome) { alert('Informe o nome do produto.'); return; }
+    const obj = {
+      user_id: currentUser.id, nome,
+      sku: document.getElementById('e-sku').value.trim(),
+      qtd: parseInt(document.getElementById('e-qtd').value)||0,
+      min_qtd: parseInt(document.getElementById('e-min').value)||5,
+      custo: parseFloat(document.getElementById('e-custo').value)||0
+    };
+    const { data, error } = await sb.from('user_stock').insert(obj).select().single();
+    if (error) { alert('Erro ao salvar: '+error.message); return; }
+    produtos.push({ id: data.id, nome: data.nome, sku: data.sku||'', qtd: data.qtd, min: data.min_qtd, custo: data.custo, fromDB: true });
+    renderTabela();
+    ['e-nome','e-sku','e-qtd','e-min','e-custo'].forEach(id => document.getElementById(id).value='');
+    await logCalcHistory('estoque', nome, obj);
+  }
+
+  async function removerDB(id) {
+    const p = produtos.find(x => x.id === id);
+    if (p && p.fromDB) {
+      await sb.from('user_stock').delete().eq('id', id).eq('user_id', currentUser.id);
+    }
+    produtos = produtos.filter(p => p.id !== id);
+    renderTabela();
+  }
+
+  // ===== HISTÓRICO DE CÁLCULOS =====
+  async function logCalcHistory(tipo, nome, dados) {
+    if (!currentUser) return;
+    await sb.from('calc_history').insert({ user_id: currentUser.id, tipo, nome: nome||'', dados });
+  }
+
+  async function loadCalcHistory(tipo) {
+    if (!currentUser) return [];
+    const { data } = await sb.from('calc_history')
+      .select('*').eq('user_id', currentUser.id).eq('tipo', tipo)
+      .order('created_at', { ascending: false }).limit(20);
+    return data || [];
+  }
+
+  function formatHistoryDate(dateStr) {
+    return new Date(dateStr).toLocaleString('pt-BR', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' });
+  }
+
+  async function renderCalcHistoryPanel(tipo, containerId) {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    el.innerHTML = '<div style="font-size:12px;color:var(--text-muted)">Carregando...</div>';
+    const history = await loadCalcHistory(tipo);
+    if (!history.length) { el.innerHTML = '<div style="font-size:12px;color:var(--text-muted)">Nenhum cálculo salvo ainda.</div>'; return; }
+    el.innerHTML = history.map(h => {
+      const d = h.dados;
+      let summary = '';
+      if (tipo === 'preco') summary = `Custo R$${d.custo||0} | Margem ${d.margem||0}% | <strong style="color:var(--green-400)">${d.preco_sug||'—'}</strong>`;
+      else if (tipo === 'lucro') summary = `Preço R$${d.preco||0} | Lucro <strong style="color:var(--green-400)">${d.lucro||'—'}</strong> | Margem ${d.margem||'—'}`;
+      else if (tipo === 'comparador') summary = `Preço R$${d.preco||0} | <strong style="color:var(--green-400)">Melhor: ${d.melhor||'—'}</strong>`;
+      else if (tipo === 'estoque') summary = `SKU: ${d.sku||'—'} | Qtd: ${d.qtd||0} | Custo: R$${d.custo||0}`;
+      return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);gap:10px">
+        <div>
+          <div style="font-size:13px;font-weight:500;color:var(--text-primary)">${h.nome||'Sem nome'}</div>
+          <div style="font-size:11px;color:var(--text-muted)">${summary}</div>
+        </div>
+        <span style="font-size:10px;color:var(--text-muted);flex-shrink:0">${formatHistoryDate(h.created_at)}</span>
+      </div>`;
+    }).join('');
+  }
+
+
+  function calcComparador(){
+    const preco=parseFloat(document.getElementById('c-preco').value)||0;
+    const custo=parseFloat(document.getElementById('c-custo').value)||0;
+    const frete=parseFloat(document.getElementById('c-frete').value)||0;
+    if(!preco){alert('Informe o preço de venda.');return;}
+    const base=custo+frete;
+
+    // ML Clássico rates
+    const mlTax=parseFloat(document.getElementById('c-ml-taxa').value)||12;
+    const mlLucro=preco-base-(preco*mlTax/100);
+    const mlMarg=preco>0?(mlLucro/preco*100):0;
+
+    // Shopee rates (auto)
+    let shTax=0,shFix=0;
+    if(preco<8){shTax=50;}
+    else if(preco<80){shTax=20;shFix=4;}
+    else if(preco<100){shTax=14;shFix=16;}
+    else if(preco<200){shTax=14;shFix=20;}
+    else{shTax=14;shFix=26;}
+    const shLucro=preco-base-(preco*shTax/100)-shFix;
+    const shMarg=preco>0?(shLucro/preco*100):0;
+    const mlWin=mlLucro>=shLucro;
+
+    // Update ML card
+    document.getElementById('c-ml-card').className='comp-card'+(mlWin?' winner':'');
+    document.getElementById('c-ml-badge').className='comp-badge-'+(mlWin?'win':'lose');
+    document.getElementById('c-ml-badge').textContent=mlWin?'✓ Melhor':'';
+    document.getElementById('c-ml-taxa-r').textContent=mlTax+'%';
+    document.getElementById('c-ml-preco').textContent=fmt(preco);
+    document.getElementById('c-ml-base').textContent=fmt(base);
+    document.getElementById('c-ml-taxa-v').textContent=fmt(preco*mlTax/100);
+    document.getElementById('c-ml-lucro').textContent=fmt(mlLucro);
+    document.getElementById('c-ml-lucro').className='comp-lucro-val '+(mlLucro>=0?'positive':'negative');
+    document.getElementById('c-ml-marg').textContent=mlMarg.toFixed(1)+'%';
+
+    // Update Shopee card
+    document.getElementById('c-sh-card').className='comp-card'+(!mlWin?' winner':'');
+    document.getElementById('c-sh-badge').className='comp-badge-'+(!mlWin?'win':'lose');
+    document.getElementById('c-sh-badge').textContent=!mlWin?'✓ Melhor':'';
+    document.getElementById('c-sh-taxa-r').textContent=shTax+'%'+(shFix>0?' +R$'+shFix:'');
+    document.getElementById('c-sh-preco').textContent=fmt(preco);
+    document.getElementById('c-sh-base').textContent=fmt(base);
+    document.getElementById('c-sh-taxa-v').textContent=fmt(preco*shTax/100+shFix);
+    document.getElementById('c-sh-lucro').textContent=fmt(shLucro);
+    document.getElementById('c-sh-lucro').className='comp-lucro-val '+(!mlWin&&shLucro>=0?'positive':'negative');
+    document.getElementById('c-sh-marg').textContent=shMarg.toFixed(1)+'%';
+
+    // Veredito
+    const vEl=document.getElementById('c-veredito');
+    if(vEl){
+      const vantagem=Math.abs(mlLucro-shLucro);
+      vEl.innerHTML=`<div class="veredito-icon">${mlWin?'🟡':'🟠'}</div>
+        <div><div class="veredito-label">Melhor plataforma</div>
+        <div class="veredito-txt"><strong>${mlWin?'Mercado Livre':'Shopee'}</strong> gera R$${fmt(vantagem)} a mais por venda.</div></div>`;
+    }
+    document.getElementById('c-result').style.display='block';
+    const hcc=document.getElementById('hist-comp-card');
+    if(hcc) hcc.style.display='block';
+    logCalcHistory('comparador','Preço '+fmt(preco),{preco,custo,melhor:mlWin?'Mercado Livre':'Shopee',lucroML:fmt(mlLucro),lucroSH:fmt(shLucro)});
+    renderCalcHistoryPanel('comparador','hist-comparador');
+  }
+
+
+  async function salvarPrecificacao() {
+    const nome = document.getElementById('p-save-nome').value.trim();
+    const msg = document.getElementById('p-save-msg');
+    if (!nome) { msg.style.color='var(--red)'; msg.textContent='Informe o nome do produto.'; return; }
+    
+    const sug = document.getElementById('p-sug').textContent;
+    const lucro = document.getElementById('p-lucro').textContent;
+    const taxa = document.getElementById('p-taxa').textContent;
+    const min = document.getElementById('p-min').textContent;
+    const custo = document.getElementById('p-custo').value;
+    const frete = document.getElementById('p-frete').value;
+    const margem = document.getElementById('p-margem').value;
+    const plat = document.getElementById('p-plat').options[document.getElementById('p-plat').selectedIndex].text;
+
+    msg.style.color='var(--text-muted)'; msg.textContent='Salvando...';
+    
+    await logCalcHistory('preco', nome, {
+      custo, frete, margem, plat,
+      preco_sug: sug, lucro, taxa, min
+    });
+    
+    msg.style.color='var(--green-400)';
+    msg.textContent='✅ "'+nome+'" salvo no histórico!';
+    document.getElementById('p-save-nome').value = '';
+    renderCalcHistoryPanel('preco','hist-preco');
+    setTimeout(()=> msg.textContent='', 3000);
+  }
+
+
 init();
 </script>
 </body>
-</html>
+</html
+        <div class="card" id="hist-comp-card" style="margin-top:0">
+          <div class="card-title">🕐 Histórico de comparações</div>
+          <div id="hist-comparador"></div>
+        </div>>
