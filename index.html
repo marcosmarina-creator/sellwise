@@ -559,6 +559,18 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
             <div class="home-card-desc">Chat, dashboard e muito mais</div>
           </div>
 
+          <div class="home-card" id="home-card-solicitar" onclick="showTool('solicitar-equipe')" style="display:none">
+            <div class="home-card-icon" style="background:rgba(59,130,246,0.15)">📋</div>
+            <div class="home-card-title">Solicitar Equipe</div>
+            <div class="home-card-desc">Crie sua equipe e convide membros</div>
+          </div>
+
+          <div class="home-card" id="home-card-minha-equipe" onclick="goSection('equipe-hub')" style="display:none">
+            <div class="home-card-icon" style="background:rgba(59,130,246,0.15)">👥</div>
+            <div class="home-card-title">Minha Equipe</div>
+            <div class="home-card-desc">Chat, estoque e ferramentas da equipe</div>
+          </div>
+
           <div class="home-card full" onclick="goSection('conta')">
             <div class="home-card-icon" style="background:rgba(34,197,94,0.12)">👤</div>
             <div>
@@ -664,6 +676,45 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
               <div class="home-card-desc">Tudo que aconteceu na sua equipe</div>
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- SOLICITAR EQUIPE -->
+      <div id="panel-solicitar-equipe" class="panel">
+        <div class="card">
+          <div class="card-title">📋 Solicitar criação de equipe</div>
+          <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;line-height:1.6">
+            Preencha os dados abaixo. O administrador receberá sua solicitação e aprovará a criação da equipe.
+          </p>
+          <div class="form-grid">
+            <div class="form-group span2">
+              <label>Nome da equipe</label>
+              <input type="text" id="req-team-name" placeholder="Ex: Equipe Vendas Sul" />
+            </div>
+            <div class="form-group span2">
+              <label>Motivo / Descrição (opcional)</label>
+              <textarea id="req-motivo" placeholder="Ex: Time de vendas para região Sul..." rows="3"></textarea>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom:14px">
+            <label>Convidar membros (opcional)</label>
+            <div id="req-members-list" style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px"></div>
+            <div style="display:flex;gap:8px">
+              <select id="req-member-select" style="flex:1">
+                <option value="">Selecionar usuário...</option>
+              </select>
+              <button class="btn btn-sm" onclick="adicionarMembroReq()" style="flex-shrink:0;white-space:nowrap">+ Adicionar</button>
+            </div>
+          </div>
+
+          <button class="btn btn-primary btn-full" onclick="enviarSolicitacao()">📋 Enviar solicitação</button>
+          <div id="req-msg" style="font-size:13px;margin-top:10px;min-height:18px;text-align:center"></div>
+        </div>
+
+        <div class="card" id="req-status-card" style="display:none">
+          <div class="card-title">📊 Status da solicitação</div>
+          <div id="req-status-content"></div>
         </div>
       </div>
 
@@ -774,6 +825,7 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
         </div>
         <div class="card">
           <div class="card-title">Produtos cadastrados</div>
+          <div id="e-summary"></div>
           <div class="table-wrap">
             <table><thead><tr><th>Produto</th><th>SKU</th><th>Qtd</th><th>Custo unit.</th><th>Total</th><th>Status</th><th></th></tr></thead>
             <tbody id="e-tbody"><tr><td colspan="7"><div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zM16 3H8L6 7h12l-2-4z"/></svg><div>Nenhum produto cadastrado ainda.</div></div></td></tr></tbody>
@@ -916,6 +968,10 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
             </div>
           </div>
           <div class="veredito-card"><span class="veredito-icon">🏆</span><div><div class="veredito-label">Melhor plataforma</div><div class="veredito-txt" id="c-veredito-txt">—</div></div></div>
+        </div>
+        <div class="card" id="hist-comp-card" style="display:none">
+          <div class="card-title">🕐 Histórico de comparações</div>
+          <div id="hist-comparador"></div>
         </div>
       </div>
 
@@ -1167,6 +1223,14 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
           <div class="admin-stat"><div class="admin-stat-val" id="admin-ativos">—</div><div class="admin-stat-label">Ativos</div></div>
           <div class="admin-stat"><div class="admin-stat-val" id="admin-inativos">—</div><div class="admin-stat-label">Inativos</div></div>
         </div>
+        <!-- SOLICITAÇÕES PENDENTES -->
+        <div class="card" style="margin-bottom:14px;border-color:rgba(251,191,36,0.3)">
+          <div class="card-title" style="color:#fbbf24">🔔 Solicitações de Equipe</div>
+          <div id="admin-solicitacoes" style="display:flex;flex-direction:column;gap:10px">
+            <div style="font-size:13px;color:var(--text-muted)">Carregando...</div>
+          </div>
+        </div>
+
         <!-- TEAM MANAGEMENT -->
         <div class="card" style="margin-bottom:14px">
           <div class="card-title">👥 Gerenciar Equipes</div>
@@ -1243,6 +1307,8 @@ const ADMIN_H = 'd03411b7e84e579ac402dd01ef17f65528d3299c603657b643d03a864841bc9
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let currentUser = null;
+  let currentTeam = null;
+  let currentTeamMembers = [];
 let currentProfile = null;
 let pinSize = 4;
 let pinEntered = '';
@@ -1276,6 +1342,13 @@ async function loadUserAndShow(user) {
     profile = newProfile;
   }
   currentProfile = profile;
+
+  // ── Block inactive accounts ──
+  if (profile && profile.status === 'inactive') {
+    await sb.auth.signOut();
+    showInativeScreen();
+    return;
+  }
 
   // Check if admin by email hash
   const emailHash = await hashStr(user.email.toLowerCase());
@@ -1534,11 +1607,20 @@ const PANEL_META = {
   comparador:{ title: 'Comparador ML vs Shopee',      sub: 'Veja lado a lado qual plataforma é mais lucrativa' },
   perfil:    { title: 'Meu Perfil',                       sub: 'Edite suas informações, avatar e PIN de acesso' },
   admin:     { title: 'Painel Admin',                     sub: 'Gerencie usuários e permissões do Sellwise' },
+  'solicitar-equipe': { title: 'Solicitar Equipe', sub: 'Envie uma solicitação para criar sua equipe' },
   equipe:    { title: 'Minha Equipe',                     sub: 'Estoque e precificação compartilhados com sua equipe' },
   dashboard: { title: 'Dashboard',                        sub: 'Visão geral das métricas da sua equipe' },
   chat:      { title: 'Chat da Equipe',                   sub: 'Avisos e mensagens em tempo real' },
   notas:     { title: 'Notas & Tarefas',                  sub: 'Anotações e tarefas compartilhadas da equipe' },
-  historico: { title: 'Histórico de Atividades',          sub: 'Tudo que aconteceu na sua equipe' }
+  historico: { title: 'Histórico de Atividades',          sub: 'Tudo que aconteceu na sua equipe' },
+  calculadoras: { title: 'Calculadoras',                   sub: 'Precificação, lucratividade e comparador' },
+  'estoque-hub': { title: 'Estoque',                       sub: 'Controle seus produtos e anúncios' },
+  'equipe-hub': { title: 'Equipe',                         sub: 'Colabore com sua equipe em tempo real' },
+  conta: { title: 'Minha Conta',                           sub: 'Gerencie seu perfil e configurações' },
+  calculadoras: { title: 'Calculadoras', sub: 'Precificação, lucratividade e comparador' },
+  'estoque-hub': { title: 'Estoque', sub: 'Controle seus produtos e anúncios' },
+  'equipe-hub': { title: 'Equipe', sub: 'Ferramentas da sua equipe' },
+  conta: { title: 'Minha Conta', sub: 'Perfil e configurações' }
 };
 
 function showPanel(id, btn) {
@@ -2040,19 +2122,33 @@ function copiarDescricao(){
     const inTeam = data && data.length > 0;
     const isAdminUser = currentProfile?.role === 'admin';
     const show = inTeam || isAdminUser;
-    // Show equipe card on home
-    const homeCard = document.getElementById('home-card-equipe');
-    if (homeCard) homeCard.style.display = show ? 'flex' : 'none';
-    // Show equipe in bottom nav
+
+    // Admin sees old equipe card; members see minha-equipe card
+    const homeCardEquipe = document.getElementById('home-card-equipe');
+    const homeCardMinhaEquipe = document.getElementById('home-card-minha-equipe');
+    const homeCardSolicitar = document.getElementById('home-card-solicitar');
+
+    if (isAdminUser) {
+      if (homeCardEquipe) homeCardEquipe.style.display = 'flex';
+      if (homeCardMinhaEquipe) homeCardMinhaEquipe.style.display = 'none';
+      if (homeCardSolicitar) homeCardSolicitar.style.display = 'none';
+    } else if (inTeam) {
+      if (homeCardEquipe) homeCardEquipe.style.display = 'none';
+      if (homeCardMinhaEquipe) homeCardMinhaEquipe.style.display = 'flex';
+      if (homeCardSolicitar) homeCardSolicitar.style.display = 'none';
+    } else {
+      if (homeCardEquipe) homeCardEquipe.style.display = 'none';
+      if (homeCardMinhaEquipe) homeCardMinhaEquipe.style.display = 'none';
+      if (homeCardSolicitar) homeCardSolicitar.style.display = 'flex';
+    }
+
+    // Bottom nav
     const bnavEq = document.getElementById('bnav-equipe-hub');
     if (bnavEq) bnavEq.style.display = show ? 'flex' : 'none';
     showTeamNavs(show);
   }
 
   // ===== EQUIPE =====
-  let currentTeam = null;
-  let currentTeamMembers = [];
-
   async function initEquipePanel() {
     // Reset visibility first
     const headerCard = document.getElementById('equipe-header-card');
@@ -2929,6 +3025,7 @@ function copiarDescricao(){
     renderTabela();
     ['e-nome','e-sku','e-qtd','e-min','e-custo'].forEach(id => document.getElementById(id).value='');
     await logCalcHistory('estoque', nome, obj);
+    renderCalcHistoryPanel('estoque','hist-estoque');
   }
 
   async function removerDB(id) {
@@ -3136,11 +3233,333 @@ ${details}`;
   }
 
 
+  // ===== ESTOQUE PESSOAL =====
+  function renderTabela() {
+    const tbody = document.getElementById('e-tbody');
+    if (!tbody) return;
+    if (!produtos || !produtos.length) {
+      tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zM16 3H8L6 7h12l-2-4z"/></svg><div>Nenhum produto cadastrado ainda.</div></div></td></tr>';
+      const sumEl = document.getElementById("e-summary");
+      if (sumEl) sumEl.innerHTML = "";
+      return;
+    }
+    const totalValor = produtos.reduce((s,p) => s+(p.custo*p.qtd),0);
+    const semEstoque = produtos.filter(p=>p.qtd===0).length;
+    const baixo = produtos.filter(p=>p.qtd>0&&p.qtd<=p.min).length;
+    const sumEl = document.getElementById("e-summary");
+    if (sumEl) sumEl.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:10px;margin-bottom:14px">
+      <div class="metric"><div class="metric-label">Total</div><div class="metric-value">${produtos.length}</div></div>
+      <div class="metric"><div class="metric-label">Valor total</div><div class="metric-value positive">${fmt(totalValor)}</div></div>
+      <div class="metric"><div class="metric-label">Sem estoque</div><div class="metric-value ${semEstoque?"negative":""}">${semEstoque}</div></div>
+      <div class="metric"><div class="metric-label">Estoque baixo</div><div class="metric-value ${baixo?"negative":""}">${baixo}</div></div>
+    </div>`;
+    tbody.innerHTML = produtos.map(p => {
+      let cls,lbl;
+      if(p.qtd===0){cls="badge-out";lbl="Sem estoque";}
+      else if(p.qtd<=p.min){cls="badge-low";lbl="Estoque baixo";}
+      else{cls="badge-ok";lbl="Normal";}
+      return `<tr>
+        <td><strong>${p.nome}</strong></td>
+        <td style="color:var(--text-muted);font-size:12px">${p.sku||"—"}</td>
+        <td><div style="display:flex;align-items:center;gap:5px">
+          <button onclick="ajustarQtd('${p.id}',-1)" style="width:26px;height:26px;border-radius:50%;background:var(--bg-elevated);border:1px solid var(--border);color:var(--text-primary);cursor:pointer;font-size:16px;line-height:1;display:flex;align-items:center;justify-content:center;flex-shrink:0">−</button>
+          <span style="font-weight:700;min-width:28px;text-align:center;font-size:15px">${p.qtd}</span>
+          <button onclick="ajustarQtd('${p.id}',1)" style="width:26px;height:26px;border-radius:50%;background:var(--bg-elevated);border:1px solid var(--border);color:var(--text-primary);cursor:pointer;font-size:16px;line-height:1;display:flex;align-items:center;justify-content:center;flex-shrink:0">+</button>
+        </div></td>
+        <td>${fmt(p.custo)}</td>
+        <td style="font-weight:500">${fmt(p.custo*p.qtd)}</td>
+        <td><span class="badge ${cls}">${lbl}</span></td>
+        <td><div style="display:flex;gap:4px;flex-wrap:wrap">
+          <button onclick="editarProduto('${p.id}')" title="Editar" style="font-size:12px;padding:4px 8px;background:var(--bg-elevated);color:var(--text-secondary);border:1px solid var(--border);border-radius:6px;cursor:pointer">✏️</button>
+          <button onclick="remover('${p.id}')" title="Remover" style="font-size:12px;padding:4px 8px;background:rgba(248,113,113,0.08);color:var(--red);border:1px solid rgba(248,113,113,0.2);border-radius:6px;cursor:pointer">🗑</button>
+        </div></td>
+      </tr>`;
+    }).join('');
+  }
+
+  function addProduto() { addProdutoDB(); }
+
+  function remover(id) { removerDB(id); }
+
+  async function ajustarQtd(id, delta) {
+    const p = produtos.find(x=>x.id===id);
+    if(!p) return;
+    p.qtd = Math.max(0, p.qtd + delta);
+    if(p.fromDB) {
+      await sb.from('user_stock').update({qtd:p.qtd}).eq('id',id).eq('user_id',currentUser.id);
+    }
+    renderTabela();
+  }
+
+  async function editarProduto(id) {
+    const p = produtos.find(x=>x.id===id);
+    if(!p) return;
+    const nome = prompt('Nome:', p.nome);
+    if(nome===null) return;
+    const sku = prompt('SKU:', p.sku||'');
+    const custo = parseFloat(prompt('Custo (R$):', p.custo));
+    const min = parseInt(prompt('Qtd mínima:', p.min));
+    p.nome = nome||p.nome;
+    p.sku = sku!==null?sku:p.sku;
+    if(!isNaN(custo)) p.custo = custo;
+    if(!isNaN(min)) p.min = min;
+    if(p.fromDB) {
+      await sb.from('user_stock').update({
+        nome:p.nome, sku:p.sku, custo:p.custo, min_qtd:p.min
+      }).eq('id',id).eq('user_id',currentUser.id);
+    }
+    renderTabela();
+  }
+
+
+  async function doSignup() {
+    const email = document.getElementById('signup-email').value.trim();
+    const pass = document.getElementById('signup-pass').value;
+    const user = document.getElementById('signup-user').value.trim();
+    const btn = document.getElementById('signup-btn');
+    if (!email || !pass || !user) { alert('Preencha todos os campos.'); return; }
+    if (pass.length < 6) { alert('Senha mínimo 6 caracteres.'); return; }
+    btn.disabled=true; btn.textContent='Criando conta...';
+    const { data, error } = await sb.auth.signUp({ email, password: pass, options:{data:{username:user}} });
+    if (error) { alert('Erro: '+error.message); btn.disabled=false; btn.textContent='Criar conta'; return; }
+    if (data.user) {
+      await sb.from('profiles').upsert({ id: data.user.id, username: user, role:'user', status:'active' });
+      alert('✅ Conta criada! Verifique seu email para confirmar.');
+      showScreen('screen-login');
+    }
+    btn.disabled=false; btn.textContent='Criar conta';
+  }
+
+
+  // ===== SOLICITAÇÕES DE EQUIPE =====
+  let reqPendingMembers = [];
+  let allUsersForReq = {};
+
+  async function initSolicitarEquipe() {
+    // Load all users for member selection
+    const { data: profiles } = await sb.from('profiles').select('id,username').neq('id', currentUser.id);
+    const sel = document.getElementById('req-member-select');
+    if (sel && profiles) {
+      profiles.forEach(p => { allUsersForReq[p.id] = p.username; });
+      sel.innerHTML = '<option value="">Selecionar usuário...</option>' +
+        profiles.map(p => `<option value="${p.id}">${p.username}</option>`).join('');
+    }
+    reqPendingMembers = [];
+    renderReqMembers();
+    // Check if user already has a pending request
+    await checkUserRequest();
+  }
+
+  function adicionarMembroReq() {
+    const sel = document.getElementById('req-member-select');
+    const id = sel.value;
+    if (!id || reqPendingMembers.find(m => m.id === id)) { sel.value=''; return; }
+    reqPendingMembers.push({ id, name: allUsersForReq[id] || 'Usuário' });
+    sel.value = '';
+    renderReqMembers();
+  }
+
+  function removerMembroReq(id) {
+    reqPendingMembers = reqPendingMembers.filter(m => m.id !== id);
+    renderReqMembers();
+  }
+
+  function renderReqMembers() {
+    const el = document.getElementById('req-members-list');
+    if (!el) return;
+    el.innerHTML = reqPendingMembers.map(m => `
+      <div style="display:flex;align-items:center;justify-content:space-between;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius);padding:7px 12px">
+        <span style="font-size:13px">👤 ${m.name}</span>
+        <button onclick="removerMembroReq('${m.id}')" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:12px">✕</button>
+      </div>`).join('');
+  }
+
+  async function enviarSolicitacao() {
+    const nome = document.getElementById('req-team-name').value.trim();
+    const motivo = document.getElementById('req-motivo').value.trim();
+    const msg = document.getElementById('req-msg');
+    if (!nome) { msg.style.color='var(--red)'; msg.textContent='Informe o nome da equipe.'; return; }
+    msg.style.color='var(--text-muted)'; msg.textContent='Enviando...';
+    const members = reqPendingMembers.map(m => ({ id: m.id, name: m.name }));
+    const { error } = await sb.from('team_requests').insert({
+      team_name: nome,
+      requested_by: currentUser.id,
+      members_requested: JSON.stringify(members),
+      status: 'pending'
+    });
+    if (error) { msg.style.color='var(--red)'; msg.textContent='Erro: '+error.message; return; }
+    msg.style.color='var(--green-400)';
+    msg.textContent='✅ Solicitação enviada! Aguarde a aprovação do admin.';
+    document.getElementById('req-team-name').value='';
+    document.getElementById('req-motivo').value='';
+    reqPendingMembers=[];
+    renderReqMembers();
+    await checkUserRequest();
+  }
+
+  async function checkUserRequest() {
+    const { data: reqs } = await sb.from('team_requests')
+      .select('*').eq('requested_by', currentUser.id)
+      .order('created_at', { ascending: false }).limit(3);
+    const card = document.getElementById('req-status-card');
+    const content = document.getElementById('req-status-content');
+    if (!reqs || !reqs.length) { if(card) card.style.display='none'; return; }
+    if(card) card.style.display='block';
+    if(content) content.innerHTML = reqs.map(r => {
+      const statusColor = r.status==='approved'?'var(--green-400)':r.status==='rejected'?'var(--red)':'#fbbf24';
+      const statusLabel = r.status==='approved'?'✅ Aprovado':r.status==='rejected'?'❌ Recusado':'⏳ Aguardando aprovação';
+      const date = new Date(r.created_at).toLocaleDateString('pt-BR');
+      return `<div style="padding:10px 0;border-bottom:1px solid var(--border)">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+          <div>
+            <div style="font-size:14px;font-weight:600;color:var(--text-primary)">${r.team_name}</div>
+            <div style="font-size:11px;color:var(--text-muted)">${date}</div>
+          </div>
+          <span style="font-size:12px;font-weight:600;color:${statusColor};flex-shrink:0">${statusLabel}</span>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  // ===== ADMIN: GERENCIAR SOLICITAÇÕES =====
+  async function loadAdminSolicitacoes() {
+    const el = document.getElementById('admin-solicitacoes');
+    if (!el) return;
+    const { data: reqs } = await sb.from('team_requests')
+      .select('*').eq('status','pending')
+      .order('created_at', { ascending: true });
+
+    if (!reqs || !reqs.length) {
+      el.innerHTML = '<div style="font-size:13px;color:var(--text-muted)">✅ Nenhuma solicitação pendente.</div>';
+      return;
+    }
+
+    // Load requester usernames
+    const userIds = [...new Set(reqs.map(r => r.requested_by))];
+    const { data: profiles } = await sb.from('profiles').select('id,username').in('id', userIds);
+    const profileMap = {};
+    (profiles||[]).forEach(p => { profileMap[p.id] = p.username; });
+
+    el.innerHTML = reqs.map(r => {
+      let members = [];
+      try { members = JSON.parse(r.members_requested || '[]'); } catch(e){}
+      const requester = profileMap[r.requested_by] || '—';
+      const date = new Date(r.created_at).toLocaleDateString('pt-BR');
+      const membersStr = members.length > 0 ? members.map(m=>m.name).join(', ') : 'Nenhum';
+      return `<div style="background:var(--bg-elevated);border:1px solid rgba(251,191,36,0.25);border-radius:var(--radius-lg);padding:14px 16px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:10px">
+          <div>
+            <div style="font-size:14px;font-weight:700;color:var(--text-primary)">${r.team_name}</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:2px">Solicitado por: <strong>${requester}</strong> · ${date}</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:2px">Membros: ${membersStr}</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-primary btn-sm" onclick="aprovarSolicitacao('${r.id}')" style="flex:1;justify-content:center">
+            ✅ Aprovar
+          </button>
+          <button class="btn btn-sm" onclick="recusarSolicitacao('${r.id}')" style="flex:1;justify-content:center;color:var(--red);border-color:rgba(248,113,113,0.3)">
+            ❌ Recusar
+          </button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  async function aprovarSolicitacao(reqId) {
+    const { data: req } = await sb.from('team_requests').select('*').eq('id', reqId).single();
+    if (!req) return;
+
+    // Create the team
+    const { data: newTeam, error } = await sb.from('teams').insert({
+      name: req.team_name, created_by: req.requested_by
+    }).select().single();
+    if (error) { alert('Erro ao criar equipe: '+error.message); return; }
+
+    // Add requester + requested members
+    let members = [];
+    try { members = JSON.parse(req.members_requested || '[]'); } catch(e){}
+    const memberInserts = [
+      { team_id: newTeam.id, user_id: req.requested_by },
+      ...members.map(m => ({ team_id: newTeam.id, user_id: m.id }))
+    ];
+    // Remove duplicates
+    const unique = memberInserts.filter((m,i,arr) => arr.findIndex(x=>x.user_id===m.user_id)===i);
+    await sb.from('team_members').insert(unique);
+
+    // Mark request as approved
+    await sb.from('team_requests').update({ status: 'approved' }).eq('id', reqId);
+
+    alert(`✅ Equipe "${req.team_name}" criada e aprovada!`);
+    await loadAdminSolicitacoes();
+    await loadAdminTeams();
+  }
+
+  async function recusarSolicitacao(reqId) {
+    if (!confirm('Recusar esta solicitação?')) return;
+    await sb.from('team_requests').update({ status: 'rejected' }).eq('id', reqId);
+    await loadAdminSolicitacoes();
+  }
+
+
+  function showInativeScreen() {
+    // Hide everything else
+    document.getElementById('auth-container').style.display = 'none';
+    document.getElementById('app').classList.remove('visible');
+    // Show or create inative screen
+    let screen = document.getElementById('inative-screen');
+    if (!screen) {
+      screen = document.createElement('div');
+      screen.id = 'inative-screen';
+      screen.innerHTML = `
+        <div style="
+          min-height:100vh; display:flex; align-items:center; justify-content:center;
+          background:var(--bg-base); padding:24px; font-family:'Geist',sans-serif;
+        ">
+          <div style="
+            background:var(--bg-card); border:1px solid rgba(248,113,113,0.3);
+            border-radius:20px; padding:40px 32px; max-width:380px; width:100%;
+            text-align:center; box-shadow:0 8px 40px rgba(0,0,0,0.4);
+          ">
+            <div style="
+              width:72px; height:72px; border-radius:50%;
+              background:rgba(248,113,113,0.12); border:2px solid rgba(248,113,113,0.3);
+              display:flex; align-items:center; justify-content:center;
+              font-size:32px; margin:0 auto 20px;
+            ">🔒</div>
+            <div style="font-size:22px;font-weight:700;color:var(--text-primary);margin-bottom:8px">
+              Conta inativada
+            </div>
+            <div style="font-size:14px;color:var(--text-muted);line-height:1.6;margin-bottom:28px">
+              Ops, desculpe — sua conta foi inativada pelo admin.<br>
+              <span style="color:var(--text-secondary)">Entre em contato para mais informações.</span>
+            </div>
+            <button onclick="voltarLogin()" style="
+              width:100%; padding:13px; border-radius:10px;
+              background:var(--bg-elevated); border:1px solid var(--border-strong);
+              color:var(--text-primary); font-family:'Geist',sans-serif;
+              font-size:14px; font-weight:500; cursor:pointer;
+              transition:all 0.15s;
+            " onmouseover="this.style.borderColor='var(--border-green)'" 
+               onmouseout="this.style.borderColor='var(--border-strong)'">
+              ← Voltar ao login
+            </button>
+          </div>
+        </div>`;
+      document.body.appendChild(screen);
+    }
+    screen.style.display = 'flex';
+  }
+
+  function voltarLogin() {
+    const s = document.getElementById('inative-screen');
+    if (s) s.style.display = 'none';
+    document.getElementById('auth-container').style.display = 'flex';
+    showScreen('screen-login');
+  }
+
+
 init();
 </script>
 </body>
-</html
-        <div class="card" id="hist-comp-card" style="margin-top:0">
-          <div class="card-title">🕐 Histórico de comparações</div>
-          <div id="hist-comparador"></div>
-        </div>>
+</html>
