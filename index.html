@@ -193,14 +193,15 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
 @media (max-width: 768px) {
 
   /* ── AUTH ── */
-  .auth-card { width: 94vw; max-width: 380px; padding: 28px 18px 24px; }
+  .auth-card { width: 94vw; max-width: 400px; padding: 28px 18px 24px; }
   .auth-btn { padding: 14px; font-size: 15px; }
   .auth-input { font-size: 16px; padding: 12px 14px; }
+  .auth-logo-name { font-size: 22px; }
 
   /* ── LAYOUT ── */
   .app-header { padding: 11px 16px; }
   .back-bar { padding: 8px 14px; top: 54px; }
-  .back-bar-title { font-size: 13px; max-width: 50vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .back-bar-title { font-size: 13px; max-width: 45vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .back-bar-tag { font-size: 10px; padding: 2px 8px; }
   .content { padding: 12px 14px; padding-bottom: 90px; }
 
@@ -224,17 +225,15 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
   .form-group.span2 { grid-column: span 1; }
   label { font-size: 11px; }
   input, select, textarea { font-size: 16px; padding: 12px 13px; border-radius: 8px; }
-  input::placeholder { font-size: 14px; }
 
   /* ── BUTTONS ── */
   .btn { width: 100%; justify-content: center; font-size: 15px; padding: 13px 16px; border-radius: 10px; }
   .btn-sm { width: auto; font-size: 12px; padding: 8px 12px; }
-  .btn-primary { font-size: 15px; }
 
-  /* ── SAVE AREA (precificação) ── */
-  #p-save-area { flex-direction: column; }
-  #p-save-area input { width: 100%; }
-  #p-save-area .btn-sm { width: 100%; justify-content: center; }
+  /* ── SAVE AREA ── */
+  #p-save-area > div:first-child { flex-direction: column; }
+  #p-save-area input { width: 100%; min-width: unset; }
+  #p-save-area .btn-sm { width: 100%; justify-content: center; font-size: 14px; padding: 12px; }
 
   /* ── RESULTS ── */
   .result-grid { grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
@@ -244,57 +243,66 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
 
   /* ── COMPARADOR ── */
   .comp-grid { grid-template-columns: 1fr; gap: 12px; }
+  .comp-card { padding: 14px; }
+  .comp-header { flex-wrap: wrap; gap: 8px; }
+  .comp-plat { font-size: 14px; }
+  .comp-row { font-size: 12px; padding: 6px 0; }
+  .comp-row-label { font-size: 11px; }
   .comp-lucro-val { font-size: 20px; }
   .comp-lucro-row { padding: 10px 0 4px; }
-  .veredito-card { flex-direction: column; gap: 10px; text-align: center; }
+  .veredito-card { flex-direction: column; gap: 10px; text-align: center; padding: 14px; }
+  .veredito-icon { font-size: 28px; }
+  .veredito-txt { font-size: 13px; }
+  .info-box { font-size: 12px; padding: 8px 12px; }
+  /* Comparador result logos fit mobile */
+  #c-ml-card .comp-header img,
+  #c-sh-card .comp-header img { width: 34px; height: 34px; }
 
   /* ── TABLES ── */
-  .table-wrap { border-radius: 8px; }
-  .table-wrap::before { content: '← Deslize para ver mais →'; display: block; font-size: 11px; color: var(--text-muted); text-align: center; margin-bottom: 8px; }
+  .table-wrap::before { content: '← Deslize →'; display: block; font-size: 11px; color: var(--text-muted); text-align: center; margin-bottom: 8px; }
   table { min-width: 460px; font-size: 12px; }
   th { padding: 8px 9px; font-size: 9px; }
   td { padding: 10px 9px; }
 
   /* ── CHAT ── */
-  #panel-chat .card {
-    height: calc(100svh - 160px) !important;
-    min-height: 300px !important;
-    border-radius: 14px;
-  }
+  #panel-chat .card { height: calc(100svh - 160px) !important; min-height: 300px !important; border-radius: 14px; }
   #chat-messages { padding: 10px 12px; gap: 8px; }
   #chat-input { font-size: 16px; padding: 10px 12px; }
 
   /* ── DASHBOARD ── */
   #panel-dashboard > div:first-child { grid-template-columns: 1fr 1fr !important; gap: 8px !important; }
-  .admin-stat { padding: 12px; }
-  .admin-stat-val { font-size: 22px; }
 
   /* ── NOTAS ── */
   #panel-notas .form-grid { display: flex; flex-direction: column; gap: 10px; }
   #panel-notas .form-grid > div:last-child { display: flex; gap: 8px; }
   #panel-notas .form-grid .btn { flex: 1; padding: 12px 8px; font-size: 13px; }
 
-  /* ── HISTÓRICO (activity) ── */
+  /* ── HISTÓRICO ATIVIDADES ── */
   #panel-historico .btn-sm { font-size: 11px; padding: 6px 10px; width: auto; }
   #panel-historico > .card > div:nth-child(2) { flex-wrap: wrap; gap: 6px; }
 
-  /* ── HISTORY ITEMS (calc) ── */
-  #hist-preco > div, #hist-lucro > div, #hist-comparador > div {
-    flex-wrap: wrap;
-    gap: 6px;
-  }
+  /* ── HISTÓRICO CÁLCULOS (ações) ── */
   #hist-preco > div > div:last-child,
   #hist-lucro > div > div:last-child,
-  #hist-comparador > div > div:last-child { justify-content: flex-start; }
-
-  /* ── ADMIN ── */
-  .role-badge { font-size: 10px; padding: 2px 6px; }
-  #admin-tbody td { padding: 8px 6px; font-size: 12px; }
-  #admin-tbody .btn-sm { font-size: 10px; padding: 4px 7px; }
+  #hist-comparador > div > div:last-child {
+    max-width: 100%; justify-content: flex-start; flex-wrap: wrap;
+  }
+  #hist-preco > div,
+  #hist-lucro > div,
+  #hist-comparador > div { flex-wrap: wrap; }
 
   /* ── EQUIPE ── */
   #equipe-header-card > div { flex-direction: column; gap: 12px; }
   #equipe-members-col { flex-direction: row !important; flex-wrap: wrap; justify-content: center; min-width: unset !important; width: 100%; }
+  #te-tbody td, #tp-tbody td { font-size: 11px; padding: 8px 6px; }
+
+  /* ── ADMIN ── */
+  .admin-stat { padding: 12px; }
+  .admin-stat-val { font-size: 22px; }
+  .role-badge { font-size: 10px; padding: 2px 6px; }
+  #admin-tbody td { padding: 8px 6px; font-size: 12px; }
+  #admin-tbody .btn-sm { font-size: 10px; padding: 4px 7px; }
+  .admin-stats-grid { grid-template-columns: 1fr 1fr !important; }
 
   /* ── PERFIL ── */
   .profile-avatar-big { width: 56px; height: 56px; font-size: 24px; }
@@ -305,6 +313,13 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
 
   /* ── BADGES ── */
   .badge { font-size: 10px; padding: 2px 6px; }
+
+  /* ── SOLICITAR EQUIPE ── */
+  #panel-solicitar-equipe .btn { margin-top: 4px; }
+
+  /* ── SWIPE BACK AREA ── */
+  body { overflow-x: hidden; }
+
 }
 
 @media (max-width: 380px) {
@@ -1231,7 +1246,10 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
         </div>
         <!-- SOLICITAÇÕES PENDENTES -->
         <div class="card" style="margin-bottom:14px;border-color:rgba(251,191,36,0.3)">
-          <div class="card-title" style="color:#fbbf24">🔔 Solicitações de Equipe</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+            <div class="card-title" style="color:#fbbf24;margin:0">🔔 Solicitações de Equipe</div>
+            <button onclick="loadAdminSolicitacoes()" style="font-size:11px;padding:4px 10px;background:var(--bg-elevated);border:1px solid var(--border);border-radius:6px;cursor:pointer;color:var(--text-secondary)">↻ Atualizar</button>
+          </div>
           <div id="admin-solicitacoes" style="display:flex;flex-direction:column;gap:10px">
             <div style="font-size:13px;color:var(--text-muted)">Carregando...</div>
           </div>
@@ -3429,7 +3447,7 @@ ${details}`;
     const { data: inserted, error } = await sb.from('team_requests').insert({
       team_name: nome,
       requested_by: currentUser.id,
-      members_requested: JSON.stringify(members),
+      members_requested: members,
       status: 'pending'
     }).select();
     if (error) {
@@ -3496,7 +3514,11 @@ ${details}`;
 
     el.innerHTML = reqs.map(r => {
       let members = [];
-      try { members = JSON.parse(r.members_requested || '[]'); } catch(e){}
+      try {
+        if (Array.isArray(r.members_requested)) members = r.members_requested;
+        else if (typeof r.members_requested === 'string') members = JSON.parse(r.members_requested || '[]');
+        else members = [];
+      } catch(e){ members = []; }
       const requester = profileMap[r.requested_by] || '—';
       const date = new Date(r.created_at).toLocaleDateString('pt-BR');
       const membersStr = members.length > 0 ? members.map(m=>m.name).join(', ') : 'Nenhum';
@@ -3532,7 +3554,10 @@ ${details}`;
 
     // Add requester + requested members
     let members = [];
-    try { members = JSON.parse(req.members_requested || '[]'); } catch(e){}
+    try {
+      if (Array.isArray(req.members_requested)) members = req.members_requested;
+      else if (typeof req.members_requested === 'string') members = JSON.parse(req.members_requested || '[]');
+    } catch(e){ members = []; }
     const memberInserts = [
       { team_id: newTeam.id, user_id: req.requested_by },
       ...members.map(m => ({ team_id: newTeam.id, user_id: m.id }))
