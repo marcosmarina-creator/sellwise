@@ -677,6 +677,14 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
             <div class="metric"><div class="metric-label">Lucro líquido</div><div class="metric-value positive" id="p-lucro">—</div></div>
           </div>
         </div>
+
+        <div id="p-save-area" style="display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <input type="text" id="p-save-nome" placeholder="Nome do produto (ex: Camiseta Preta M)..." style="flex:1;min-width:180px" />
+            <button class="btn btn-primary btn-sm" onclick="salvarPrecificacao()" style="white-space:nowrap;flex-shrink:0">💾 Salvar</button>
+          </div>
+          <div id="p-save-msg" style="font-size:12px;min-height:16px;margin-top:6px"></div>
+        </div>
         <div class="card" style="margin-top:0">
           <div class="card-title">🕐 Histórico de precificações</div>
           <div id="hist-preco"></div>
@@ -2460,13 +2468,23 @@ function copiarDescricao(){
       return;
     }
 
-    const { data: msgs } = await sb.from('team_messages')
-      .select('*, profiles:user_id(username,avatar)')
+    // Load messages
+    const { data: msgs, error: msgsErr } = await sb.from('team_messages')
+      .select('id, team_id, user_id, content, created_at')
       .eq('team_id', currentTeam.id)
       .order('created_at', { ascending: true })
       .limit(1000);
 
-    renderMessages(msgs || []);
+    if (msgsErr) {
+      console.error('Chat load error:', msgsErr.message);
+      const el = document.getElementById('chat-messages');
+      if (el) el.innerHTML = `<div class="empty-state" style="color:var(--red)">Erro ao carregar mensagens: ${msgsErr.message}</div>`;
+      return;
+    }
+
+    // Enrich with profile data
+    const enriched = await enrichMsgsWithProfiles(msgs || []);
+    renderMessages(enriched);
 
     // Subscribe to realtime
     if (chatSubscription) sb.removeChannel(chatSubscription);
@@ -2475,10 +2493,12 @@ function copiarDescricao(){
         async (payload) => {
           // Skip messages from current user — already appended immediately
           if (payload.new.user_id === currentUser?.id) return;
-          const { data: msg } = await sb.from('team_messages')
-            .select('*, profiles:user_id(username,avatar)')
-            .eq('id', payload.new.id).single();
-          if (msg) appendMessage(msg);
+          // Enrich with profile
+          const rawMsg = payload.new;
+          const { data: prof } = await sb.from('profiles')
+            .select('username,avatar').eq('id', rawMsg.user_id).single();
+          const enrichedMsg = { ...rawMsg, profiles: prof || { username: '—', avatar: 'av1' } };
+          appendMessage(enrichedMsg);
         }
       ).subscribe();
   }
@@ -2879,18 +2899,65 @@ function copiarDescricao(){
     el.innerHTML = history.map(h => {
       const d = h.dados;
       let summary = '';
-      if (tipo === 'preco') summary = `Custo R$${d.custo||0} | Margem ${d.margem||0}% | <strong style="color:var(--green-400)">${d.preco_sug||'—'}</strong>`;
-      else if (tipo === 'lucro') summary = `Preço R$${d.preco||0} | Lucro <strong style="color:var(--green-400)">${d.lucro||'—'}</strong> | Margem ${d.margem||'—'}`;
-      else if (tipo === 'comparador') summary = `Preço R$${d.preco||0} | <strong style="color:var(--green-400)">Melhor: ${d.melhor||'—'}</strong>`;
-      else if (tipo === 'estoque') summary = `SKU: ${d.sku||'—'} | Qtd: ${d.qtd||0} | Custo: R$${d.custo||0}`;
-      return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);gap:10px">
-        <div>
-          <div style="font-size:13px;font-weight:500;color:var(--text-primary)">${h.nome||'Sem nome'}</div>
-          <div style="font-size:11px;color:var(--text-muted)">${summary}</div>
+      if (tipo === 'preco') summary = `Custo ${d.custo||0} | Margem ${d.margem||0}% | <strong style="color:var(--green-400)">${d.preco_sug||'—'}</strong>`;
+      else if (tipo === 'lucro') summary = `Preço ${d.preco||0} | Lucro <strong style="color:var(--green-400)">${d.lucro||'—'}</strong> | Margem ${d.margem||'—'}`;
+      else if (tipo === 'comparador') summary = `Preço ${d.preco||0} | <strong style="color:var(--green-400)">Melhor: ${d.melhor||'—'}</strong>`;
+      else if (tipo === 'estoque') summary = `SKU: ${d.sku||'—'} | Qtd: ${d.qtd||0} | Custo: ${d.custo||0}`;
+      const hasTeam = !!currentTeam;
+      return `<div id="hist-row-${h.id}" style="padding:10px 0;border-bottom:1px solid var(--border)">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+          <div style="min-width:0;flex:1">
+            <div id="hist-name-${h.id}" style="font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:2px">${h.nome||'Sem nome'}</div>
+            <div style="font-size:11px;color:var(--text-muted)">${summary}</div>
+            <div style="font-size:10px;color:var(--text-muted);margin-top:2px">${formatHistoryDate(h.created_at)}</div>
+          </div>
+          <div style="display:flex;gap:5px;flex-shrink:0;align-items:center;flex-wrap:wrap;justify-content:flex-end">
+            <button onclick="compartilharEquipe('${h.id}','${tipo}')" style="font-size:10px;padding:3px 8px;background:rgba(59,130,246,0.1);color:#60a5fa;border:1px solid rgba(59,130,246,0.25);border-radius:5px;cursor:pointer;white-space:nowrap">👥 Equipe</button>
+            <button onclick="renomearHistorico('${h.id}','${tipo}','${containerId}')" style="font-size:10px;padding:3px 8px;background:var(--bg-elevated);color:var(--text-secondary);border:1px solid var(--border);border-radius:5px;cursor:pointer">✏️</button>
+            <button onclick="deletarHistorico('${h.id}','${tipo}','${containerId}')" style="font-size:10px;padding:3px 8px;background:rgba(248,113,113,0.08);color:var(--red);border:1px solid rgba(248,113,113,0.2);border-radius:5px;cursor:pointer">🗑</button>
+          </div>
         </div>
-        <span style="font-size:10px;color:var(--text-muted);flex-shrink:0">${formatHistoryDate(h.created_at)}</span>
       </div>`;
     }).join('');
+  }
+
+  async function deletarHistorico(id, tipo, containerId) {
+    if (!confirm('Apagar este cálculo do histórico?')) return;
+    await sb.from('calc_history').delete().eq('id', id).eq('user_id', currentUser.id);
+    await renderCalcHistoryPanel(tipo, containerId);
+  }
+
+  async function renomearHistorico(id, tipo, containerId) {
+    const el = document.getElementById('hist-name-' + id);
+    if (!el) return;
+    const oldName = el.textContent;
+    const newName = prompt('Novo nome:', oldName);
+    if (!newName || newName === oldName) return;
+    await sb.from('calc_history').update({ nome: newName }).eq('id', id).eq('user_id', currentUser.id);
+    el.textContent = newName;
+  }
+
+  async function compartilharEquipe(id, tipo) {
+    if (!currentTeam) { await initEquipePanel(); }
+    if (!currentTeam) { alert('Você não está em nenhuma equipe. Peça ao admin para te adicionar.'); return; }
+    const { data: h } = await sb.from('calc_history').select('*').eq('id', id).single();
+    if (!h) return;
+    const msg = `📊 *${h.nome || 'Cálculo'}* compartilhado por ${currentProfile?.username || 'um membro'}:\n${JSON.stringify(h.dados, null, 2)}`;
+    // Build readable message
+    const d = h.dados;
+    let details = '';
+    if (tipo === 'preco') details = `Custo: ${d.custo||'—'} | Frete: ${d.frete||'0'} | Margem: ${d.margem||'—'}% | Plataforma: ${d.plat||'—'} | 💰 Preço sugerido: ${d.preco_sug||'—'} | Lucro: ${d.lucro||'—'}`;
+    else if (tipo === 'lucro') details = `Preço: ${d.preco||'—'} | Custo: ${d.custo||'—'} | Plataforma: ${d.plat||'—'} | 💰 Lucro: ${d.lucro||'—'} | Margem: ${d.margem||'—'}`;
+    else if (tipo === 'comparador') details = `Preço: ${d.preco||'—'} | Custo: ${d.custo||'—'} | 🏆 Melhor: ${d.melhor||'—'} | ML: ${d.lucroML||'—'} | Shopee: ${d.lucroSH||'—'}`;
+    else details = JSON.stringify(d);
+    const msgContent = `📊 ${h.nome || 'Cálculo'}
+${details}`;
+    const { error } = await sb.from('team_messages').insert({
+      team_id: currentTeam.id, user_id: currentUser.id, content: msgContent
+    });
+    if (error) { alert('Erro ao compartilhar: ' + error.message); return; }
+    await logActivity(currentTeam.id, 'compartilhou um cálculo', h.nome || tipo);
+    alert('✅ Cálculo enviado para o chat da equipe!');
   }
 
 
@@ -2983,6 +3050,21 @@ function copiarDescricao(){
     document.getElementById('p-save-nome').value = '';
     renderCalcHistoryPanel('preco','hist-preco');
     setTimeout(()=> msg.textContent='', 3000);
+  }
+
+
+  async function enrichMsgsWithProfiles(msgs) {
+    if (!msgs || !msgs.length) return [];
+    // Get unique user IDs
+    const userIds = [...new Set(msgs.map(m => m.user_id))];
+    const { data: profiles } = await sb.from('profiles')
+      .select('id,username,avatar').in('id', userIds);
+    const profileMap = {};
+    (profiles || []).forEach(p => { profileMap[p.id] = p; });
+    return msgs.map(m => ({
+      ...m,
+      profiles: profileMap[m.user_id] || { username: '—', avatar: 'av1' }
+    }));
   }
 
 
