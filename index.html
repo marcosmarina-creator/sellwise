@@ -595,6 +595,9 @@ tbody tr:hover td { background: var(--bg-elevated); }
                 <div id="avbtn_av1" onclick="selectAvatar('av1')" style="width:48px;height:48px;border-radius:50%;background:#7c3aed;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;border:2px solid transparent;transition:all 0.15s;flex-shrink:0" title="Lobo">🐺</div>
                 <div id="avbtn_av2" onclick="selectAvatar('av2')" style="width:48px;height:48px;border-radius:50%;background:#b45309;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;border:2px solid transparent;transition:all 0.15s;flex-shrink:0" title="Leão">🦁</div>
                 <div id="avbtn_av3" onclick="selectAvatar('av3')" style="width:48px;height:48px;border-radius:50%;background:#0e7490;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;border:2px solid transparent;transition:all 0.15s;flex-shrink:0" title="Águia">🦅</div>
+                <div id="avbtn_av4" onclick="selectAvatar('av4')" style="width:48px;height:48px;border-radius:50%;background:#be185d;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;border:2px solid transparent;transition:all 0.15s;flex-shrink:0" title="Flor">🌸</div>
+                <div id="avbtn_av5" onclick="selectAvatar('av5')" style="width:48px;height:48px;border-radius:50%;background:#047857;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;border:2px solid transparent;transition:all 0.15s;flex-shrink:0" title="Raposa">🦊</div>
+                <div id="avbtn_av6" onclick="selectAvatar('av6')" style="width:48px;height:48px;border-radius:50%;background:#9333ea;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;border:2px solid transparent;transition:all 0.15s;flex-shrink:0" title="Borboleta">🦋</div>
                 <div style="width:1px;height:36px;background:var(--border);flex-shrink:0"></div>
                 <input type="file" id="avatar-upload" accept="image/*" onchange="uploadAvatar(this)" style="display:none" />
                 <button class="btn btn-sm" onclick="document.getElementById('avatar-upload').click()" style="display:inline-flex;align-items:center;gap:6px;flex-shrink:0">📷 Enviar foto</button>
@@ -1203,7 +1206,10 @@ function copiarDescricao(){
   const AVATARS = [
     ['av1','🐺','#7c3aed'],
     ['av2','🦁','#b45309'],
-    ['av3','🦅','#0e7490']
+    ['av3','🦅','#0e7490'],
+    ['av4','🌸','#be185d'],
+    ['av5','🦊','#047857'],
+    ['av6','🦋','#9333ea']
   ];
   let selectedAvatar = 'av1';
   let ppPinSize = 4;
@@ -1243,7 +1249,7 @@ function copiarDescricao(){
   function initAvatarGrid() {
     // Avatars are now static HTML, just highlight the selected one
     const cur = selectedAvatar || 'av1';
-    ['av1','av2','av3'].forEach(k => {
+    ['av1','av2','av3','av4','av5','av6'].forEach(k => {
       const b = document.getElementById('avbtn_' + k);
       if (!b) return;
       if (k === cur) {
@@ -1261,7 +1267,7 @@ function copiarDescricao(){
   function selectAvatar(key) {
     selectedAvatar = key;
     // Reset all avatar buttons
-    ['av1','av2','av3'].forEach(k => {
+    ['av1','av2','av3','av4','av5'].forEach(k => {
       const b = document.getElementById('avbtn_' + k);
       if (b) { b.style.borderColor = 'transparent'; b.style.boxShadow = 'none'; b.style.transform = 'scale(1)'; }
     });
