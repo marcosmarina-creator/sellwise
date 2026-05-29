@@ -362,9 +362,9 @@ tbody tr:hover td { background: var(--bg-elevated); }
       <div class="logo-sub">Painel do Vendedor</div>
     </div>
     <div class="mobile-topbar-avatar" id="mobile-topbar-avatar" style="display:none">
-      <div class="mobile-avatar-wrap" onclick="showPanel('perfil', document.querySelector('[data-panel=perfil]'))">
-        <div class="mobile-avatar-img" id="mobile-avatar-img">😊</div>
-        <div class="online-dot"></div>
+      <div class="mobile-avatar-wrap" onclick="showPanel('perfil', document.querySelector('[data-panel=perfil]'))" style="position:relative;cursor:pointer;width:38px;height:38px">
+        <div id="mobile-avatar-img" style="width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;background:#15803d;border:2px solid rgba(34,197,94,0.5);overflow:hidden;box-shadow:0 0 0 2px rgba(34,197,94,0.15)">😊</div>
+        <div style="position:absolute;bottom:1px;right:1px;width:10px;height:10px;border-radius:50%;background:#22c55e;border:2px solid #111a14;box-shadow:0 0 4px rgba(34,197,94,0.6)"></div>
       </div>
     </div>
     <div class="nav-section">
@@ -1237,11 +1237,14 @@ function copiarDescricao(){
     const mob = document.getElementById('mobile-avatar-img');
     if (mob) {
       if (key.startsWith('http')) {
-        mob.innerHTML = `<img src="${key}" style="width:34px;height:34px;border-radius:50%;object-fit:cover">`;
+        mob.innerHTML = `<img src="${key}" style="width:38px;height:38px;border-radius:50%;object-fit:cover;display:block">`;
         mob.style.background = 'transparent';
+        mob.style.fontSize = '0';
       } else {
         const [,emoji,color] = getAvatarData(key);
-        mob.textContent = emoji; mob.style.background = color;
+        mob.innerHTML = emoji;
+        mob.style.background = color;
+        mob.style.fontSize = '20px';
       }
     }
   }
