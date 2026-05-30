@@ -2250,9 +2250,10 @@ async function gerarDescricao() {
   const tomMap={persuasivo:'persuasivo e comercial',informativo:'informativo e técnico',descontraido:'descontraído e próximo',tecnico:'técnico e detalhado'};
   const prompt=`Você é especialista em copywriting para e-commerce brasileiro. Crie uma descrição otimizada para ${platMap[plat]}.\nProduto: ${nome}\nCaracterísticas: ${carac||'não informadas'}\nPúblico-alvo: ${publico||'geral'}\nTom: ${tomMap[tom]}\nEstrutura: 1. Título SEO 2. Descrição (3 parágrafos) 3. Benefícios em tópicos 4. Call to action. Linguagem brasileira natural.`;
   try {
-    const resp=await fetch('https://hvogaewmntafzbaoywtc.supabase.co/functions/v1/super-worker',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer sb_publishable_9Ml38cIckwmUnjLB0DdGSQ_l4ZCFwr-'},body:JSON.stringify({prompt})});
+    const resp=await fetch('https://hvogaewmntafzbaoywtc.supabase.co/functions/v1/super-worker',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+SUPABASE_KEY,'apikey':SUPABASE_KEY},body:JSON.stringify({prompt})});
     const data=await resp.json();
-    if(data.error){output.textContent='Erro da IA: '+data.error;btn.disabled=false;btn.textContent='✨ Gerar com IA';return;}
+    if(data.error){output.textContent='Erro: '+JSON.stringify(data.error);btn.disabled=false;btn.textContent='✨ Gerar com IA';return;}
+    if(!data.content){output.textContent='Erro inesperado: '+JSON.stringify(data).slice(0,200);btn.disabled=false;btn.textContent='✨ Gerar com IA';return;}
     const texto = data.content?.map(b=>b.text||'').join('') || 'Erro ao gerar.';
     output.textContent=texto;
     actions.classList.add('show');
@@ -2262,7 +2263,7 @@ async function gerarDescricao() {
     const dsn = document.getElementById('d-save-nome'); if(dsn && nome) dsn.value=nome;
     renderCalcHistoryPanel('descricao','hist-descricao');
     const hdc = document.getElementById('hist-desc-card'); if(hdc) hdc.style.display='block';
-  } catch(e){output.textContent='Erro ao conectar com a IA.';}
+  } catch(e){output.textContent='Erro de conexão: '+e.message;}
   btn.disabled=false;btn.textContent='✨ Gerar com IA';
 }
 function copiarDescricao(){navigator.clipboard.writeText(document.getElementById('d-output').textContent).then(()=>{const b=document.getElementById('d-copy');b.textContent='✅ Copiado!';setTimeout(()=>b.textContent='📋 Copiar texto',2000);});}
