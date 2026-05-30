@@ -183,8 +183,22 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
   /* ── AUTH ── */
   .auth-card { width: 94vw; max-width: 400px; padding: 28px 18px 24px; }
   .auth-btn { padding: 14px; font-size: 15px; }
-  .auth-input { font-size: 16px; padding: 12px 14px; }
+  .auth-input { font-size: 16px !important; padding: 12px 14px; }
   .auth-logo-name { font-size: 22px; }
+  /* Save areas stack on mobile */
+  #p-save-area > div, #l-save-area > div, #c-save-area > div, #d-save-area > div {
+    flex-direction: column;
+  }
+  #p-save-area input, #l-save-area input, #c-save-area input, #d-save-area input {
+    min-width: unset; width: 100%;
+  }
+  #p-save-area .btn-sm, #l-save-area .btn-sm, #c-save-area .btn-sm, #d-save-area .btn-sm {
+    width: 100%; justify-content: center; padding: 12px;
+  }
+  /* History action buttons bigger for mobile tap */
+  #hist-preco button, #hist-lucro button, #hist-comparador button, #hist-descricao button {
+    min-height: 32px; min-width: 32px;
+  }
 
   /* ── LAYOUT ── */
   .app-header { padding: 11px 16px; }
@@ -546,7 +560,7 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
   <!-- HEADER -->
   <header class="app-header">
     <div class="header-logo" onclick="goHome()">
-      <div class="header-logo-icon" style="width:34px;height:34px;background:transparent;padding:0;overflow:visible"><svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;width:34px;height:34px;filter:drop-shadow(0 0 4px rgba(34,197,94,0.5))"><rect x="1" y="1" width="30" height="30" rx="7.5" fill="#071a0d" stroke="#22c55e" stroke-width="1"/><rect x="6.5" y="8.5" width="15" height="3.5" rx="1.75" fill="#22c55e"/><rect x="6.5" y="14.25" width="10.5" height="3.5" rx="1.75" fill="#22c55e"/><rect x="6.5" y="20" width="13" height="3.5" rx="1.75" fill="#22c55e"/></svg></div>Sell<span style="color:var(--green-400)">wise</span>
+      <div class="header-logo-icon" style="width:34px;height:34px;background:transparent;padding:0;overflow:visible"><svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;width:34px;height:34px;filter:drop-shadow(0 0 4px rgba(34,197,94,0.5))"><rect x="1" y="1" width="30" height="30" rx="7.5" fill="#071a0d" stroke="#22c55e" stroke-width="1"/><rect x="6.5" y="8.5" width="15" height="3.5" rx="1.75" fill="#22c55e"/><rect x="6.5" y="14.25" width="10.5" height="3.5" rx="1.75" fill="#22c55e"/><rect x="6.5" y="20" width="13" height="3.5" rx="1.75" fill="#22c55e"/></svg></div><span style="letter-spacing:-0.3px">Sell<span style="color:var(--green-400)">wise</span></span>
     </div>
     <div class="header-right">
       <div style="text-align:right;display:none" id="header-user-info">
@@ -948,6 +962,20 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
           <div class="card-title">🕐 Histórico de lucratividade</div>
           <div id="hist-lucro"></div>
         </div>
+
+        <!-- SAVE AREA LUCRO -->
+        <div id="l-save-area" style="display:none;margin-top:4px">
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <input type="text" id="l-save-nome" placeholder="Nome do produto (ex: Camiseta Preta M)..." maxlength="200" style="flex:1;min-width:180px" />
+            <button class="btn btn-primary btn-sm" onclick="salvarLucratividade()" style="white-space:nowrap;flex-shrink:0">💾 Salvar</button>
+          </div>
+          <div id="l-save-msg" style="font-size:12px;margin-top:6px;min-height:16px"></div>
+        </div>
+
+        <div class="card" id="hist-lucro-card" style="display:none">
+          <div class="card-title">🕐 Histórico de lucratividade</div>
+          <div id="hist-lucro"></div>
+        </div>
       </div>
 
       <!-- DESCRIÇÃO IA -->
@@ -967,6 +995,19 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
             <button class="btn btn-sm" id="d-copy" onclick="copiarDescricao()">📋 Copiar texto</button>
             <button class="btn btn-sm" onclick="gerarDescricao()">🔄 Gerar novamente</button>
           </div>
+          <!-- SAVE AREA DESCRICAO -->
+          <div id="d-save-area" style="display:none;margin-top:12px;border-top:1px solid var(--border);padding-top:12px">
+            <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+              <input type="text" id="d-save-nome" placeholder="Nome do produto para salvar..." maxlength="200" style="flex:1;min-width:180px" />
+              <button class="btn btn-primary btn-sm" onclick="salvarDescricao()" style="white-space:nowrap;flex-shrink:0">💾 Salvar</button>
+            </div>
+            <div id="d-save-msg" style="font-size:12px;margin-top:6px;min-height:16px"></div>
+          </div>
+        </div>
+
+        <div class="card" id="hist-desc-card" style="display:none">
+          <div class="card-title">🕐 Descrições salvas</div>
+          <div id="hist-descricao"></div>
         </div>
       </div>
 
@@ -1034,6 +1075,15 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
             <div class="veredito-txt" id="c-veredito-txt">—</div></div>
           </div>
         </div>
+        <!-- SAVE AREA -->
+        <div id="c-save-area" style="display:none;margin-top:4px">
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <input type="text" id="c-save-nome" placeholder="Nome da comparação (ex: Camiseta Preta M)..." maxlength="200" style="flex:1;min-width:180px" />
+            <button class="btn btn-primary btn-sm" onclick="salvarComparador()" style="white-space:nowrap;flex-shrink:0">💾 Salvar</button>
+          </div>
+          <div id="c-save-msg" style="font-size:12px;margin-top:6px;min-height:16px"></div>
+        </div>
+
         <div class="card" id="hist-comp-card" style="display:none">
           <div class="card-title">🕐 Histórico de comparações</div>
           <div id="hist-comparador"></div>
@@ -1690,6 +1740,7 @@ function showTool(id) {
   updateBottomNav(sectionOf[id]||'home'); window.scrollTo({top:0,behavior:'smooth'});
   pushNavState(id);
   if(id==='solicitar-equipe') setTimeout(initSolicitarEquipe,50);
+  if(id==='descricao') setTimeout(()=>renderCalcHistoryPanel('descricao','hist-descricao'),100);
   if(id==='admin'){setTimeout(loadAdminPanel,50);setTimeout(loadAdminTeams,150);setTimeout(initNewTeamForm,250);setTimeout(loadAdminSolicitacoes,100);}
   if(id==='perfil') setTimeout(initPerfilPanel,50);
   if(id==='equipe') setTimeout(initEquipePanel,50);
@@ -1701,6 +1752,11 @@ function showTool(id) {
   if(['preco','lucro','comparador'].includes(id)){
     const tag=document.getElementById('back-bar-tag');
     if(tag) tag.innerHTML='⚡ Taxas 2026';
+    setTimeout(()=>{
+      if(id==='preco')      renderCalcHistoryPanel('preco','hist-preco');
+      if(id==='lucro')      renderCalcHistoryPanel('lucro','hist-lucro');
+      if(id==='comparador') renderCalcHistoryPanel('comparador','hist-comparador');
+    }, 100);
   }
 }
 function goBack() {
@@ -1833,15 +1889,43 @@ async function salvarPerfil() {
 }
 
 async function alterarSenha() {
-  const nova=document.getElementById('perf-nova-senha').value;
-  const conf=document.getElementById('perf-conf-senha').value;
-  if(!nova||nova.length<6){alert('Senha mínimo 6 caracteres.');return;}
-  if(nova!==conf){alert('Senhas não coincidem.');return;}
-  const {error}=await sb.auth.updateUser({password:nova});
-  if(error){alert('Erro: '+error.message);return;}
-  document.getElementById('perf-nova-senha').value='';
-  document.getElementById('perf-conf-senha').value='';
-  alert('✅ Senha alterada com sucesso!');
+  const nova = (document.getElementById('perfil-newpass') || document.getElementById('perf-nova-senha'))?.value || '';
+  const conf = (document.getElementById('perfil-confpass') || document.getElementById('perf-conf-senha'))?.value || '';
+  const msgEl = document.getElementById('pass-msg');
+
+  const showMsg = (txt, color='var(--red)') => {
+    if(msgEl){ msgEl.textContent=txt; msgEl.style.color=color; }
+    else alert(txt);
+  };
+
+  if(!nova || nova.length < 6) { showMsg('Senha mínimo 6 caracteres.'); return; }
+  if(nova !== conf)             { showMsg('As senhas não coincidem.');   return; }
+
+  const btn = document.querySelector('[onclick="alterarSenha()"]');
+  if(btn){ btn.disabled=true; btn.textContent='Alterando...'; }
+
+  const {error} = await sb.auth.updateUser({password: nova});
+
+  if(btn){ btn.disabled=false; btn.textContent='🔒 Alterar senha'; }
+
+  if(error) {
+    // Supabase returns specific error for same password
+    const msg = error.message.toLowerCase();
+    if(msg.includes('same password') || msg.includes('different from') || msg.includes('already been used')) {
+      showMsg('❗ Essa já é a sua senha atual. Escolha uma senha diferente.');
+    } else {
+      showMsg('Erro: ' + error.message);
+    }
+    return;
+  }
+
+  // Clear fields
+  const novaEl = document.getElementById('perfil-newpass') || document.getElementById('perf-nova-senha');
+  const confEl = document.getElementById('perfil-confpass') || document.getElementById('perf-conf-senha');
+  if(novaEl) novaEl.value='';
+  if(confEl) confEl.value='';
+  showMsg('✅ Senha alterada com sucesso!', 'var(--green-400)');
+  setTimeout(()=>{ if(msgEl) msgEl.textContent=''; }, 4000);
 }
 
 async function checkUserTeam(userId) {
@@ -1956,6 +2040,7 @@ async function renderCalcHistoryPanel(tipo,containerId) {
     else if(tipo==='lucro') summary=`Preço ${d.preco||0} | Lucro <strong style="color:var(--green-400)">${d.lucro||'—'}</strong>`;
     else if(tipo==='comparador') summary=`Preço ${d.preco||0} | <strong style="color:var(--green-400)">${d.melhor||'—'}</strong>`;
     else if(tipo==='estoque') summary=`SKU: ${d.sku||'—'} | Qtd: ${d.qtd||0}`;
+    else if(tipo==='descricao') summary=`Plataforma: ${d.plat||'—'} | ${d.texto?d.texto.slice(0,60)+'…':'—'}`;
     const hasTeam=!!currentTeam;
     return `<div id="hist-row-${h.id}" style="padding:10px 0;border-bottom:1px solid var(--border)"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px"><div style="min-width:0;flex:1"><div id="hist-name-${h.id}" style="font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:2px">${escHtml(h.nome||'Sem nome')}</div><div style="font-size:11px;color:var(--text-muted)">${summary}</div><div style="font-size:10px;color:var(--text-muted);margin-top:2px">${formatHistoryDate(h.created_at)}</div></div><div style="display:flex;gap:4px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end;max-width:120px"><button onclick="compartilharEquipe('${h.id}','${tipo}')" style="font-size:10px;padding:3px 8px;background:rgba(59,130,246,0.1);color:#60a5fa;border:1px solid rgba(59,130,246,0.25);border-radius:5px;cursor:pointer;white-space:nowrap">👥 Equipe</button><button onclick="renomearHistorico('${h.id}','${tipo}','${containerId}')" style="font-size:10px;padding:3px 8px;background:var(--bg-elevated);color:var(--text-secondary);border:1px solid var(--border);border-radius:5px;cursor:pointer">✏️</button><button onclick="deletarHistorico('${h.id}','${tipo}','${containerId}')" style="font-size:10px;padding:3px 8px;background:rgba(248,113,113,0.08);color:var(--red);border:1px solid rgba(248,113,113,0.2);border-radius:5px;cursor:pointer">🗑</button></div></div></div>`;
   }).join('');
@@ -2046,7 +2131,7 @@ function calcPreco() {
   document.getElementById('p-result').style.display='grid';
   document.getElementById('p-save-area').style.display='block';
   document.getElementById('p-save-msg').textContent='';
-  logCalcHistory('preco',`${plat} | Custo ${fmt(custo)}`,{custo,frete,margem,plat,preco_sug:fmt(sug),lucro:fmt(lucro)});
+  // Manual save only — user clicks Salvar button
   renderCalcHistoryPanel('preco','hist-preco');
 }
 function onPlatLucro(){const v=document.getElementById('l-plat').value;document.getElementById('l-custom-wrap').style.display=v==='custom'?'flex':'none';if(v!=='shopee')document.getElementById('l-info').classList.remove('show');else onPrecoLucro();}
@@ -2082,7 +2167,12 @@ function calcLucro() {
   document.getElementById('l-marg').textContent=margem.toFixed(1)+'%';
   document.getElementById('l-total').textContent=fmt(lucro*qtd);
   document.getElementById('l-result').style.display='grid';
-  logCalcHistory('lucro',`Preço ${fmt(preco)} | ${plat}`,{preco,custo,frete,plat,lucro:fmt(lucro),margem:margem.toFixed(1)+'%'});
+  document.getElementById('l-save-area').style.display='block';
+  window._lastLucro={preco,custo,frete,plat,lucro:fmt(lucro),margem:margem.toFixed(1)+'%'};
+  const hlc=document.getElementById('hist-lucro-card'); if(hlc) hlc.style.display='block';
+  document.getElementById('l-save-area').style.display='block';
+  window._lastLucro={preco,custo,frete,plat,lucro:fmt(lucro),margem:margem.toFixed(1)+'%'};
+
   renderCalcHistoryPanel('lucro','hist-lucro');
 }
 function onPrecoComp(){
@@ -2140,8 +2230,9 @@ function calcComparador() {
   const vEl=document.getElementById('c-veredito');
   if(vEl){const vantagem=Math.abs(mlLucro-shLucro);vEl.innerHTML=`<div class="veredito-icon">${mlWin?'🟡':'🟠'}</div><div><div class="veredito-label">Melhor plataforma</div><div class="veredito-txt"><strong>${mlWin?'Mercado Livre':'Shopee'}</strong> gera ${fmt(vantagem)} a mais por venda.</div></div>`;}
   document.getElementById('c-result').style.display='block';
-  const hcc=document.getElementById('hist-comp-card'); if(hcc) hcc.style.display='block';
-  logCalcHistory('comparador','Preço '+fmt(preco),{preco,custo,melhor:mlWin?'Mercado Livre':'Shopee',lucroML:fmt(mlLucro),lucroSH:fmt(shLucro)});
+
+  const csa=document.getElementById('c-save-area'); if(csa) csa.style.display='block';
+  window._lastComparador={preco,custo,frete,imposto,mlCat,melhor:mlWin?'Mercado Livre':'Shopee',lucroML:fmt(mlLucro),lucroSH:fmt(shLucro)};  const hcc=document.getElementById('hist-comp-card'); if(hcc) hcc.style.display='block';
   renderCalcHistoryPanel('comparador','hist-comparador');
 }
 async function gerarDescricao() {
@@ -2159,10 +2250,18 @@ async function gerarDescricao() {
   const tomMap={persuasivo:'persuasivo e comercial',informativo:'informativo e técnico',descontraido:'descontraído e próximo',tecnico:'técnico e detalhado'};
   const prompt=`Você é especialista em copywriting para e-commerce brasileiro. Crie uma descrição otimizada para ${platMap[plat]}.\nProduto: ${nome}\nCaracterísticas: ${carac||'não informadas'}\nPúblico-alvo: ${publico||'geral'}\nTom: ${tomMap[tom]}\nEstrutura: 1. Título SEO 2. Descrição (3 parágrafos) 3. Benefícios em tópicos 4. Call to action. Linguagem brasileira natural.`;
   try {
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+    const resp=await fetch('https://hvogaewmntafzbaoywtc.supabase.co/functions/v1/super-worker',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer sb_publishable_9Ml38cIckwmUnjLB0DdGSQ_l4ZCFwr-'},body:JSON.stringify({prompt})});
     const data=await resp.json();
-    output.textContent=data.content?.map(b=>b.text||'').join('')||'Erro ao gerar.';
+    if(data.error){output.textContent='Erro da IA: '+data.error;btn.disabled=false;btn.textContent='✨ Gerar com IA';return;}
+    const texto = data.content?.map(b=>b.text||'').join('') || 'Erro ao gerar.';
+    output.textContent=texto;
     actions.classList.add('show');
+    // Show save area and pre-fill name with product name
+    window._lastDescricao = { nome, carac, plat, texto };
+    const dsa = document.getElementById('d-save-area'); if(dsa) dsa.style.display='block';
+    const dsn = document.getElementById('d-save-nome'); if(dsn && nome) dsn.value=nome;
+    renderCalcHistoryPanel('descricao','hist-descricao');
+    const hdc = document.getElementById('hist-desc-card'); if(hdc) hdc.style.display='block';
   } catch(e){output.textContent='Erro ao conectar com a IA.';}
   btn.disabled=false;btn.textContent='✨ Gerar com IA';
 }
@@ -2678,6 +2777,67 @@ async function checkUserRequest(){
         document.getElementById('login-error').textContent = '✅ Senha alterada! Faça login com a nova senha.';
       }
     }, 1800);
+  }
+
+
+  async function salvarComparador() {
+    const nome = document.getElementById('c-save-nome').value.trim();
+    const msg  = document.getElementById('c-save-msg');
+    if(!nome) { msg.style.color='var(--red)'; msg.textContent='Informe um nome para a comparação.'; return; }
+    if(!window._lastComparador) { msg.style.color='var(--red)'; msg.textContent='Calcule primeiro antes de salvar.'; return; }
+    msg.style.color='var(--text-muted)'; msg.textContent='Salvando...';
+    await logCalcHistory('comparador', nome, window._lastComparador);
+    msg.style.color='var(--green-400)';
+    msg.textContent='✅ "'+nome+'" salvo!';
+    document.getElementById('c-save-nome').value='';
+    renderCalcHistoryPanel('comparador','hist-comparador');
+    const hcc=document.getElementById('hist-comp-card'); if(hcc) hcc.style.display='block';
+    setTimeout(()=>{ if(msg) msg.textContent=''; }, 3000);
+  }
+
+
+  async function salvarLucratividade() {
+    const nome = document.getElementById('l-save-nome').value.trim();
+    const msg  = document.getElementById('l-save-msg');
+    if(!nome) { msg.style.color='var(--red)'; msg.textContent='Informe o nome do produto.'; return; }
+    if(!window._lastLucro) { msg.style.color='var(--red)'; msg.textContent='Calcule primeiro antes de salvar.'; return; }
+    msg.style.color='var(--text-muted)'; msg.textContent='Salvando...';
+    await logCalcHistory('lucro', nome, window._lastLucro);
+    msg.style.color='var(--green-400)'; msg.textContent='✅ "'+nome+'" salvo!';
+    document.getElementById('l-save-nome').value='';
+    renderCalcHistoryPanel('lucro','hist-lucro');
+    const hlcCard=document.getElementById('hist-lucro-card'); if(hlcCard) hlcCard.style.display='block';
+    setTimeout(()=>{ if(msg) msg.textContent=''; }, 3000);
+  }
+
+
+  async function salvarDescricao() {
+    const nome = document.getElementById('d-save-nome').value.trim();
+    const msg  = document.getElementById('d-save-msg');
+    if(!nome) { msg.style.color='var(--red)'; msg.textContent='Informe um nome para salvar.'; return; }
+    if(!window._lastDescricao) { msg.style.color='var(--red)'; msg.textContent='Gere uma descrição primeiro.'; return; }
+    msg.style.color='var(--text-muted)'; msg.textContent='Salvando...';
+    await logCalcHistory('descricao', nome, window._lastDescricao);
+    msg.style.color='var(--green-400)'; msg.textContent='✅ "'+nome+'" salvo!';
+    renderCalcHistoryPanel('descricao','hist-descricao');
+    const hdc=document.getElementById('hist-desc-card'); if(hdc) hdc.style.display='block';
+    setTimeout(()=>{ if(msg) msg.textContent=''; }, 3000);
+  }
+
+  function reuseDescricao(id) {
+    const el = document.getElementById('hist-name-'+id);
+    if(!el) return;
+    // The share/rename/delete buttons are already in renderCalcHistoryPanel
+    // Add a reuse button to load the description back into the output
+    const row = document.getElementById('hist-row-'+id);
+    if(row) {
+      const data = row.dataset.texto;
+      if(data) {
+        document.getElementById('d-output').textContent = data;
+        document.getElementById('d-output').style.display = 'block';
+        document.getElementById('d-actions').classList.add('show');
+      }
+    }
   }
 
 
