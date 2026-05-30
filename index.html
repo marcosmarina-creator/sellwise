@@ -24,9 +24,9 @@
   --green-800:     #166534;
   --green-dim:     rgba(34,197,94,0.08);
   --green-glow:    rgba(34,197,94,0.15);
-  --border:        rgba(255,255,255,0.06);
-  --border-strong: rgba(255,255,255,0.11);
-  --border-green:  rgba(34,197,94,0.25);
+  --border:        rgba(34,197,94,0.18);
+  --border-strong: rgba(34,197,94,0.30);
+  --border-green:  rgba(34,197,94,0.55);
   --text-primary:  #e8f5ec;
   --text-secondary:#8faa97;
   --text-muted:    #4a6352;
@@ -50,7 +50,8 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
 }
 .auth-card {
   width: 100%; max-width: 380px; background: var(--bg-surface);
-  border: 1px solid var(--border-green);
+  border: 1px solid rgba(34,197,94,0.5);
+  box-shadow: 0 0 0 1px rgba(34,197,94,0.08), 0 8px 40px rgba(0,0,0,0.5);
   border-radius: 20px; padding: 36px 28px 32px;
   box-shadow: 0 8px 40px rgba(0,0,0,0.4);
 }
@@ -61,12 +62,13 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
   margin-bottom: 28px;
 }
 .auth-logo-icon {
-  width: 38px; height: 38px; border-radius: 10px;
-  background: var(--green-700); display: flex; align-items: center;
-  justify-content: center; flex-shrink: 0;
+  width: 44px; height: 44px; border-radius: 12px;
+  display: flex; align-items: center;
+  justify-content: center; flex-shrink: 0; overflow: hidden;
 }
-.auth-logo-icon svg { width: 20px; height: 20px; fill: var(--green-300); }
-.auth-logo-name { font-size: 20px; font-weight: 700; color: var(--text-primary); }
+.auth-logo-icon svg { width: 44px; height: 44px; }
+.auth-logo-name { font-size: 22px; font-weight: 800; color: #fff; letter-spacing: -0.5px; }
+.auth-logo-name span { color: #4ade80; font-weight: 800; }
 .auth-logo-tag { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
 .auth-heading { font-size: 22px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
 .auth-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; line-height: 1.5; }
@@ -78,7 +80,7 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
   color: var(--text-primary); font-size: 15px; font-family: 'Geist', sans-serif;
   transition: border-color 0.15s; box-sizing: border-box;
 }
-.auth-input:focus { outline: none; border-color: var(--border-green); box-shadow: 0 0 0 3px var(--green-glow); }
+.auth-input:focus { outline: none; border-color: rgba(34,197,94,0.6); box-shadow: 0 0 0 3px rgba(34,197,94,0.12); }
 .auth-input::placeholder { color: var(--text-muted); }
 .auth-btn {
   width: 100%; padding: 13px; margin-top: 4px;
@@ -105,8 +107,8 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
   padding: 13px 20px; display: flex; align-items: center; justify-content: space-between;
   position: sticky; top: 0; z-index: 50; flex-shrink: 0;
 }
-.header-logo { font-size: 19px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.5px; cursor: pointer; display: flex; align-items: center; gap: 9px; }
-.header-logo-icon { width: 30px; height: 30px; background: var(--green-700); border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.header-logo { font-size: 19px; font-weight: 700; color: #ffffff; letter-spacing: -0.5px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+.header-logo-icon { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; }
 .header-logo-icon svg { width: 15px; height: 15px; fill: #fff; }
 .header-logo span { color: var(--green-500); }
 .header-right { display: flex; align-items: center; gap: 10px; }
@@ -137,14 +139,14 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
 .section-welcome-sub { font-size: 13px; color: var(--text-muted); }
 .home-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 13px; }
 .home-card {
-  background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px;
+  background: var(--bg-card); border: 1px solid rgba(34,197,94,0.28); border-radius: 16px; box-shadow: 0 0 10px rgba(34,197,94,0.05);
   padding: 22px 18px; cursor: pointer; transition: all 0.18s;
   display: flex; flex-direction: column; align-items: center;
   text-align: center; gap: 10px; user-select: none; -webkit-tap-highlight-color: transparent;
 }
-.home-card:hover { border-color: var(--border-green); background: rgba(34,197,94,0.03); transform: translateY(-1px); }
-.home-card:active { transform: scale(0.96); }
-.home-card-icon { width: 54px; height: 54px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0; }
+.home-card:hover { border-color: rgba(34,197,94,0.7); background: rgba(34,197,94,0.05); transform: translateY(-2px); box-shadow: 0 0 18px rgba(34,197,94,0.14), 0 4px 20px rgba(34,197,94,0.08); }
+.home-card:active { transform: scale(0.97); border-color: rgba(34,197,94,0.7); background: rgba(34,197,94,0.05); box-shadow: 0 0 18px rgba(34,197,94,0.14); }
+.home-card-icon { width: 54px; height: 54px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0; border: 1px solid rgba(34,197,94,0.2); }
 .home-card-title { font-size: 14px; font-weight: 700; color: var(--text-primary); line-height: 1.3; }
 .home-card-desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
 .home-card.full { grid-column: span 2; flex-direction: row; text-align: left; padding: 16px 18px; gap: 14px; }
@@ -310,7 +312,7 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
 }
 
   /* ===== COMPONENTS ===== */
-  .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px 20px; margin-bottom: 14px; }
+  .card { background: var(--bg-card); border: 1px solid rgba(34,197,94,0.22); box-shadow: 0 0 8px rgba(34,197,94,0.04); border-radius: var(--radius-lg); padding: 18px 20px; margin-bottom: 14px; }
   .card-title { font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 14px; display: flex; align-items: center; gap: 7px; }
   .card-title::before { content: ''; display: block; width: 3px; height: 11px; background: var(--green-500); border-radius: 2px; flex-shrink: 0; }
   .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 14px; }
@@ -398,13 +400,10 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
 <div id="auth-container">
   <div class="auth-card">
     <div class="auth-logo">
-      <div class="auth-logo-icon"><svg viewBox="0 0 24 24"><path d="M3 3h18v4H3zM3 10h11v4H3zM3 17h14v4H3z"/></svg></div>
-      <span class="auth-logo-name">Sell<span>wise</span></span>
+      <div class="auth-logo-icon" style="width:44px;height:44px;background:transparent;padding:0;overflow:visible"><svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;filter:drop-shadow(0 0 6px rgba(34,197,94,0.6))"><rect x="1.5" y="1.5" width="41" height="41" rx="10.5" fill="#071a0d" stroke="#22c55e" stroke-width="1.5"/><rect x="9" y="12" width="20" height="4.5" rx="2.25" fill="#22c55e"/><rect x="9" y="19.75" width="14" height="4.5" rx="2.25" fill="#22c55e"/><rect x="9" y="27.5" width="17" height="4.5" rx="2.25" fill="#22c55e"/></svg></div>
+      <div><span class="auth-logo-name">Sell<span>wise</span><div class="auth-logo-tag">Gestão para ML &amp; Shopee</div></div>
     </div>
-    <div style="display:flex;gap:8px;align-items:center;margin-bottom:20px;opacity:0.7">
-      
-      <span style="font-size:11px;color:var(--text-muted)">Gestão para ML & Shopee</span>
-    </div>
+    
 
     <!-- LOGIN -->
     <div class="auth-screen active" id="screen-login">
@@ -514,18 +513,25 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
 </div>
     <!-- RESET PASSWORD -->
     <div class="auth-screen" id="screen-reset">
-      <div class="auth-heading">Nova senha</div>
-      <div class="auth-sub">Digite sua nova senha para acessar o Sellwise</div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+        <div style="width:44px;height:44px;border-radius:50%;background:rgba(34,197,94,0.12);border:2px solid rgba(34,197,94,0.3);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">🔑</div>
+        <div>
+          <div class="auth-heading" style="margin-bottom:2px">Redefinir senha</div>
+          <div class="auth-sub" style="margin-bottom:0">Link validado ✓ Crie sua nova senha</div>
+        </div>
+      </div>
       <div class="auth-field">
         <label class="auth-label">Nova senha</label>
-        <input class="auth-input" type="password" id="reset-pass" placeholder="Mín. 6 caracteres" />
+        <input class="auth-input" type="password" id="reset-pass" placeholder="Mín. 6 caracteres" oninput="checarForcaSenha(this.value)" />
+        <div id="reset-forca" style="height:4px;border-radius:2px;margin-top:6px;background:var(--border);transition:all 0.3s;overflow:hidden"><div id="reset-forca-bar" style="height:100%;width:0%;border-radius:2px;transition:all 0.3s"></div></div>
+        <div id="reset-forca-txt" style="font-size:10px;color:var(--text-muted);margin-top:3px"></div>
       </div>
       <div class="auth-field">
         <label class="auth-label">Confirmar nova senha</label>
         <input class="auth-input" type="password" id="reset-conf" placeholder="Repita a nova senha" onkeydown="if(event.key==='Enter')confirmarNovaSenha()" />
       </div>
       <div class="auth-error" id="reset-msg"></div>
-      <button class="auth-btn" onclick="confirmarNovaSenha()">✅ Salvar nova senha</button>
+      <button class="auth-btn" id="reset-btn" onclick="confirmarNovaSenha()">🔒 Salvar nova senha</button>
     </div>
 
 
@@ -535,8 +541,7 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
   <!-- HEADER -->
   <header class="app-header">
     <div class="header-logo" onclick="goHome()">
-      <div class="header-logo-icon"><svg viewBox="0 0 24 24" fill="white"><path d="M3 3h18v4H3zM3 10h11v4H3zM3 17h14v4H3z"/></svg></div>
-      Sell<span>wise</span>
+      <div class="header-logo-icon" style="width:34px;height:34px;background:transparent;padding:0;overflow:visible"><svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;width:34px;height:34px;filter:drop-shadow(0 0 4px rgba(34,197,94,0.5))"><rect x="1" y="1" width="30" height="30" rx="7.5" fill="#071a0d" stroke="#22c55e" stroke-width="1"/><rect x="6.5" y="8.5" width="15" height="3.5" rx="1.75" fill="#22c55e"/><rect x="6.5" y="14.25" width="10.5" height="3.5" rx="1.75" fill="#22c55e"/><rect x="6.5" y="20" width="13" height="3.5" rx="1.75" fill="#22c55e"/></svg></div>Sell<span style="color:var(--green-400)">wise</span>
     </div>
     <div class="header-right">
       <div style="text-align:right;display:none" id="header-user-info">
@@ -1507,32 +1512,55 @@ async function recuperarPorEmail() {
 }
 
 async function recuperarPorWhatsapp() {
-  const email=document.getElementById('rec-wa-email').value.trim();
-  const ddi=document.getElementById('rec-wa-ddi').value;
-  const phoneRaw=document.getElementById('rec-wa-phone').value.trim();
-  const msg=document.getElementById('rec-wa-msg');
-  msg.textContent=''; msg.style.color='var(--red)';
-  if(!email){msg.textContent='Informe seu email.';return;}
-  if(!phoneRaw){msg.textContent='Informe seu celular.';return;}
-  const phone=ddi+phoneRaw.replace(/\D/g,'');
-  const btn=event.target; btn.disabled=true; btn.textContent='Verificando...';
-  // Verify email + phone match in profiles
-  const {data:profiles}=await sb.from('profiles').select('id,phone').limit(100);
-  // Find by matching email in auth (we can only check phone in profiles)
-  // Get all profiles and filter by phone
-  const match=profiles&&profiles.find(p=>p.phone&&p.phone.replace(/\D/g,'').endsWith(phone.replace(/\D/g,'').slice(-8)));
-  if(!match){msg.textContent='Celular não encontrado para este email. Tente recuperar por email.';btn.disabled=false;btn.textContent='📱 Recuperar via WhatsApp';return;}
-  // Send password reset email as fallback (WhatsApp requires Twilio/API integration)
-  const redirectTo='https://sellwise-nine.vercel.app/';
-  const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo});
-  if(error){msg.textContent='Erro: '+error.message;}
-  else{
-    const wa=phone.replace('+','');
-    const waMsg=encodeURIComponent('Olá! Você solicitou a recuperação da sua senha no Sellwise. Acesse seu email '+email+' para encontrar o link de redefinição de senha que acabamos de enviar.');
-    msg.style.color='var(--green-400)';
-    msg.innerHTML=`✅ Celular confirmado! Enviamos o link para <strong>${email}</strong>. <br><br><a href="https://wa.me/${wa}?text=${waMsg}" target="_blank" style="color:#25d366;text-decoration:none;font-weight:600">📱 Abrir WhatsApp para ver instruções</a>`;
+  const email   = document.getElementById('rec-wa-email').value.trim();
+  const ddi     = document.getElementById('rec-wa-ddi').value;
+  const rawPhone = document.getElementById('rec-wa-phone').value.trim();
+  const msg     = document.getElementById('rec-wa-msg');
+  msg.textContent = ''; msg.style.color = 'var(--red)';
+  if(!email)    { msg.textContent = 'Informe o email da conta.'; return; }
+  if(!rawPhone) { msg.textContent = 'Informe o celular cadastrado.'; return; }
+  const phone = (ddi + rawPhone.replace(/\D/g, '')).replace('+', '');
+  const btn = event.target; btn.disabled = true; btn.textContent = 'Verificando...';
+
+  // Check if phone matches any profile
+  const { data: profiles } = await sb.from('profiles').select('id, phone');
+  const cleanedPhone = phone.replace(/\D/g, '');
+  const match = profiles && profiles.find(p => {
+    if(!p.phone) return false;
+    const pClean = p.phone.replace(/\D/g, '');
+    return pClean.endsWith(cleanedPhone.slice(-9)) || cleanedPhone.endsWith(pClean.slice(-9));
+  });
+
+  if(!match) {
+    msg.textContent = 'Celular não encontrado. Certifique-se de usar o número cadastrado ou recupere por email.';
+    btn.disabled = false; btn.textContent = '📱 Recuperar via WhatsApp'; return;
   }
-  btn.disabled=false; btn.textContent='📱 Recuperar via WhatsApp';
+
+  // Send reset email
+  const redirectTo = 'https://sellwise-nine.vercel.app/?type=recovery';
+  const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo });
+  if(error) {
+    msg.textContent = 'Erro ao enviar email: ' + error.message;
+    btn.disabled = false; btn.textContent = '📱 Recuperar via WhatsApp'; return;
+  }
+
+  // Open WhatsApp with instructions
+  const waText = encodeURIComponent(
+    `Olá! Você solicitou recuperação de senha no Sellwise.
+
+` +
+    `Enviamos um email para *${email}* com o link de redefinição.
+
+` +
+    `Abra o email, clique no link e crie uma nova senha. ✅`
+  );
+  const waUrl = `https://wa.me/${phone}?text=${waText}`;
+
+  msg.style.color = 'var(--green-400)';
+  msg.innerHTML = `✅ Número confirmado! Link enviado para <strong>${email}</strong>.<br><br>` +
+    `<a href="${waUrl}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;background:#25d366;color:#fff;padding:8px 14px;border-radius:8px;text-decoration:none;font-weight:600;font-size:13px;margin-top:4px">` +
+    `📱 Ver instruções no WhatsApp</a>`;
+  btn.disabled = false; btn.textContent = '📱 Recuperar via WhatsApp';
 }
 
 async function doRecuperar(){recuperarPorEmail();}
@@ -1576,34 +1604,66 @@ async function loadUserAndShow(user) {
 }
 
 async function init() {
-  // Handle password recovery redirect (Supabase adds tokens to URL hash)
-  const hash = window.location.hash;
-  if(hash.includes('type=recovery') || hash.includes('access_token')) {
-    // Parse tokens from hash
-    const params = new URLSearchParams(hash.replace('#',''));
-    const accessToken = params.get('access_token');
-    const refreshToken = params.get('refresh_token');
-    if(accessToken) {
-      await sb.auth.setSession({ access_token: accessToken, refresh_token: refreshToken||'' });
-      document.getElementById('auth-container').style.display='flex';
-      document.getElementById('app').classList.remove('visible');
-      showScreen('screen-reset');
-      // Clean URL
-      history.replaceState(null,'',window.location.pathname);
-      return;
-    }
-  }
-  // Handle auth state changes (e.g. PASSWORD_RECOVERY)
+  // ── STEP 1: Register auth state listener FIRST (catches PASSWORD_RECOVERY) ──
   sb.auth.onAuthStateChange(async (event, session) => {
     if(event === 'PASSWORD_RECOVERY') {
-      document.getElementById('auth-container').style.display='flex';
+      // User came from a recovery email — show reset form
+      document.getElementById('auth-container').style.display = 'flex';
       document.getElementById('app').classList.remove('visible');
       showScreen('screen-reset');
+      history.replaceState(null, '', window.location.pathname);
     }
   });
-  const {data:{session}}=await sb.auth.getSession();
-  if(session){await loadUserAndShow(session.user);}
-  else{showScreen('screen-login');}
+
+  // ── STEP 2: Check URL for hash-based recovery (#access_token&type=recovery) ──
+  const hash = window.location.hash;
+  if(hash.includes('type=recovery') || hash.includes('access_token')) {
+    const params = new URLSearchParams(hash.replace(/^#/, ''));
+    const accessToken  = params.get('access_token');
+    const refreshToken = params.get('refresh_token');
+    const type         = params.get('type');
+    if(accessToken && (type === 'recovery' || hash.includes('type=recovery'))) {
+      const { error } = await sb.auth.setSession({
+        access_token: accessToken,
+        refresh_token: refreshToken || ''
+      });
+      if(!error) {
+        document.getElementById('auth-container').style.display = 'flex';
+        document.getElementById('app').classList.remove('visible');
+        showScreen('screen-reset');
+        history.replaceState(null, '', window.location.pathname);
+        return;
+      }
+    }
+  }
+
+  // ── STEP 3: Check URL for PKCE code (?code= — newer Supabase) ──
+  const urlParams = new URLSearchParams(window.location.search);
+  const code = urlParams.get('code');
+  const urlType = urlParams.get('type');
+  if(code) {
+    try {
+      const { data, error } = await sb.auth.exchangeCodeForSession(code);
+      history.replaceState(null, '', window.location.pathname);
+      if(!error && data.session) {
+        if(urlType === 'recovery' || urlParams.has('type')) {
+          // It was a password recovery link
+          document.getElementById('auth-container').style.display = 'flex';
+          document.getElementById('app').classList.remove('visible');
+          showScreen('screen-reset');
+          return;
+        }
+        // Regular sign-in via email confirmation
+        await loadUserAndShow(data.session.user);
+        return;
+      }
+    } catch(e) { /* not a valid code */ }
+  }
+
+  // ── STEP 4: Normal session check ──
+  const { data: { session } } = await sb.auth.getSession();
+  if(session) { await loadUserAndShow(session.user); }
+  else { showScreen('screen-login'); }
 }
 
 // ── NAVIGATION ──
@@ -1718,17 +1778,19 @@ function initPerfilPanel() {
   }
   const un=getEl('perf-username','perfil-username'); if(un) un.value=p.username||'';
   const em=getEl('perf-email','perfil-email'); if(em) em.value=currentUser.email||'';
-  // Load phone
-  const phone=p.phone||'';
-  const phoneEl=getEl('perf-phone','perfil-phone');
-  if(phoneEl&&phone){
-    // Extract DDI and number
-    const ddiEl=getEl('perf-ddi','perfil-ddi');
-    const ddis=['+55','+1','+351','+34'];
-    const ddi=ddis.find(d=>phone.startsWith(d))||'+55';
-    if(ddiEl) ddiEl.value=ddi;
-    phoneEl.value=phone.slice(ddi.length);
-  }
+  // Load phone — fetch fresh from DB to ensure latest value
+  sb.from('profiles').select('phone').eq('id', currentUser.id).single().then(({ data }) => {
+    const phone = data?.phone || p.phone || '';
+    if(phone) currentProfile.phone = phone;
+    const phoneEl = getEl('perf-phone','perfil-phone');
+    const ddiEl   = getEl('perf-ddi','perfil-ddi');
+    if(phoneEl && phone) {
+      const ddis = ['+55','+1','+351','+34'];
+      const ddi  = ddis.find(d => phone.startsWith(d)) || '+55';
+      if(ddiEl) ddiEl.value = ddi;
+      phoneEl.value = phone.slice(ddi.length);
+    }
+  });
   initAvatarGrid();
   const cur=p.avatar||'av1';
   if(!cur.startsWith('http')) setTimeout(()=>selectAvatar(cur),50);
@@ -2547,13 +2609,25 @@ async function checkUserRequest(){
 }
 
   // ── PHONE BANNER ──
-  function checkPhoneBanner() {
-    if(!currentProfile) return;
+  async function checkPhoneBanner() {
+    if(!currentProfile || !currentUser) return;
     const dismissed = localStorage.getItem('sw_phone_banner_' + currentUser.id);
-    if(dismissed) return;
-    if(currentProfile.phone) return; // already has phone
+    if(dismissed) { hideBanner(); return; }
+    // Reload profile fresh to get latest phone value
+    const { data: freshProfile } = await sb.from('profiles')
+      .select('phone').eq('id', currentUser.id).single();
+    const phone = freshProfile?.phone || currentProfile.phone || '';
+    if(phone && phone.length > 4) {
+      currentProfile.phone = phone; // update in memory
+      hideBanner(); return;
+    }
     const banner = document.getElementById('phone-banner');
     if(banner) banner.style.display = 'flex';
+  }
+
+  function hideBanner() {
+    const banner = document.getElementById('phone-banner');
+    if(banner) banner.style.display = 'none';
   }
 
   function fecharBanner() {
@@ -2568,28 +2642,55 @@ async function checkUserRequest(){
   }
 
   // ── RESET PASSWORD (from email link) ──
+  function checarForcaSenha(v) {
+    const bar = document.getElementById('reset-forca-bar');
+    const txt = document.getElementById('reset-forca-txt');
+    if(!bar) return;
+    let score = 0;
+    if(v.length >= 6) score++;
+    if(v.length >= 10) score++;
+    if(/[A-Z]/.test(v)) score++;
+    if(/[0-9]/.test(v)) score++;
+    if(/[^A-Za-z0-9]/.test(v)) score++;
+    const colors = ['#ef4444','#f97316','#eab308','#22c55e','#16a34a'];
+    const labels = ['Muito fraca','Fraca','Regular','Boa','Forte'];
+    bar.style.width = (score * 20) + '%';
+    bar.style.background = colors[score-1] || '#ef4444';
+    txt.textContent = v.length > 0 ? labels[score-1] || 'Muito fraca' : '';
+    txt.style.color = colors[score-1] || '#ef4444';
+  }
+
   async function confirmarNovaSenha() {
     const pass = document.getElementById('reset-pass').value;
     const conf = document.getElementById('reset-conf').value;
     const msg  = document.getElementById('reset-msg');
+    const btn  = document.getElementById('reset-btn');
     msg.textContent = ''; msg.style.color = 'var(--red)';
-    if(pass.length < 6) { msg.textContent = 'Senha mínimo 6 caracteres.'; return; }
-    if(pass !== conf)   { msg.textContent = 'As senhas não coincidem.'; return; }
-    const btn = event.target; btn.disabled = true; btn.textContent = 'Salvando...';
+    if(pass.length < 6) { msg.textContent = 'A senha precisa ter no mínimo 6 caracteres.'; return; }
+    if(pass !== conf)   { msg.textContent = 'As senhas não coincidem. Verifique e tente novamente.'; return; }
+    btn.disabled = true; btn.textContent = 'Salvando nova senha...';
     const { error } = await sb.auth.updateUser({ password: pass });
     if(error) {
-      msg.textContent = 'Erro: ' + error.message;
-      btn.disabled = false; btn.textContent = '✅ Salvar nova senha';
+      msg.style.color = 'var(--red)';
+      msg.textContent = 'Erro ao salvar: ' + error.message;
+      btn.disabled = false; btn.textContent = '🔒 Salvar nova senha';
       return;
     }
+    // Success!
     msg.style.color = 'var(--green-400)';
-    msg.textContent = '✅ Senha alterada com sucesso!';
+    msg.textContent = '✅ Senha alterada com sucesso! Entrando...';
+    btn.textContent = '✅ Senha salva!';
+    // Sign out and back in cleanly
     setTimeout(async () => {
       const { data: { session } } = await sb.auth.getSession();
-      if(session) await loadUserAndShow(session.user);
-      else showScreen('screen-login');
-    }, 1500);
-    btn.disabled = false; btn.textContent = '✅ Salvar nova senha';
+      if(session) {
+        await loadUserAndShow(session.user);
+      } else {
+        showScreen('screen-login');
+        document.getElementById('login-error').style.color = 'var(--green-400)';
+        document.getElementById('login-error').textContent = '✅ Senha alterada! Faça login com a nova senha.';
+      }
+    }, 1800);
   }
 
 
