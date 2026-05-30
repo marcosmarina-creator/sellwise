@@ -506,14 +506,8 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
       </div>
 
       <div class="auth-link" onclick="showScreen('screen-login')" style="margin-top:16px">← Voltar para o <span>login</span></div>
-    </div></div>
+    </div>
 
-    
-
-    
-
-  </div>
-</div>
     <!-- RESET PASSWORD -->
     <div class="auth-screen" id="screen-reset">
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
@@ -535,7 +529,15 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
       </div>
       <div class="auth-error" id="reset-msg"></div>
       <button class="auth-btn" id="reset-btn" onclick="confirmarNovaSenha()">🔒 Salvar nova senha</button>
-    </div>
+    </div></div>
+
+    
+
+    
+
+  </div>
+</div>
+
 
 
 <!-- ===== APP ===== -->
@@ -1607,56 +1609,45 @@ async function loadUserAndShow(user) {
 }
 
 async function init() {
-  console.log("Sellwise v2.1 - " + new Date().toISOString());
-  // ── Detect recovery BEFORE anything else runs ──
-  const _hash   = window.location.hash;
-  const _params = new URLSearchParams(window.location.search);
-  const _isRecovery = (
-    _params.get('type') === 'recovery' ||
-    _hash.includes('type=recovery') ||
-    (_hash.includes('access_token') && _hash.includes('type=recovery'))
-  );
+  const params = new URLSearchParams(window.location.search);
+  const hash   = window.location.hash;
 
-  function _showReset() {
+  // ── RECOVERY FLOW ──
+  // Detect recovery link: ?type=recovery (PKCE) or #type=recovery (Implicit)
+  const isRecovery = params.get('type') === 'recovery' || hash.includes('type=recovery');
+
+  if(isRecovery) {
+    // Implicit flow: token is in hash
+    if(hash.includes('access_token')) {
+      const hp = new URLSearchParams(hash.replace(/^#/, ''));
+      await sb.auth.setSession({
+        access_token:  hp.get('access_token')  || '',
+        refresh_token: hp.get('refresh_token') || ''
+      });
+    } else {
+      // PKCE flow: Supabase already exchanged the code on createClient()
+      // Wait briefly to ensure session is established
+      await new Promise(r => setTimeout(r, 600));
+    }
+    // Clean URL and show reset form
+    history.replaceState(null, '', window.location.pathname);
     document.getElementById('auth-container').style.display = 'flex';
     document.getElementById('app').classList.remove('visible');
     showScreen('screen-reset');
-    history.replaceState(null, '', window.location.pathname);
+    return;
   }
 
-  // ── Auth state listener — handles PASSWORD_RECOVERY event ──
-  sb.auth.onAuthStateChange(async (event, session) => {
+  // ── NORMAL FLOW ──
+  // Backup: catch PASSWORD_RECOVERY fired by Supabase (e.g. auto-detected code)
+  sb.auth.onAuthStateChange(async (event) => {
     if(event === 'PASSWORD_RECOVERY') {
-      _showReset();
+      history.replaceState(null, '', window.location.pathname);
+      document.getElementById('auth-container').style.display = 'flex';
+      document.getElementById('app').classList.remove('visible');
+      showScreen('screen-reset');
     }
-    // Note: SIGNED_IN is handled directly by doLogin()/doRegister()
-    // to avoid double-calls and race conditions
   });
 
-  // ── If recovery URL detected, handle it and STOP — don't load app ──
-  if(_isRecovery) {
-    // Hash-based (Implicit flow): manually set session from token
-    if(_hash.includes('access_token')) {
-      const hp = new URLSearchParams(_hash.replace(/^#/, ''));
-      const at = hp.get('access_token');
-      const rt = hp.get('refresh_token');
-      if(at) {
-        const { error } = await sb.auth.setSession({ access_token: at, refresh_token: rt || '' });
-        if(!error) { _showReset(); return; }
-      }
-    }
-    // PKCE flow: Supabase client auto-exchanges the code, then fires PASSWORD_RECOVERY
-    // Just wait — onAuthStateChange will call _showReset()
-    // Add a safety fallback: if PASSWORD_RECOVERY doesn't fire in 3s, show reset anyway
-    setTimeout(async () => {
-      const { data: { session } } = await sb.auth.getSession();
-      if(session) _showReset();
-      else showScreen('screen-login');
-    }, 3000);
-    return; // ← STOP HERE, don't fall through to normal login
-  }
-
-  // ── Normal flow: check for existing session ──
   const { data: { session } } = await sb.auth.getSession();
   if(session) { await loadUserAndShow(session.user); }
   else { showScreen('screen-login'); }
