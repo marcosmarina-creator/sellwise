@@ -2,6 +2,9 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Sellwise — Painel do Vendedor</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -1445,13 +1448,13 @@ async function doLogin() {
   if(!email){err.textContent='Informe seu email.';return;}
   if(!pass){err.textContent='Informe sua senha.';return;}
   btn.disabled=true; btn.textContent='Entrando...';
-  try {
-    const {data,error}=await sb.auth.signInWithPassword({email,password:pass});
-    if(error){err.textContent='Email ou senha incorretos.';btn.disabled=false;btn.textContent='Entrar';return;}
-    await loadUserAndShow(data.user);
-  } catch(e) {
-    err.textContent='Erro de conexão. Verifique sua internet.';
+  const {data,error}=await sb.auth.signInWithPassword({email,password:pass});
+  if(error){
+    err.textContent='Email ou senha incorretos.';
+    btn.disabled=false; btn.textContent='Entrar';
+    return;
   }
+  await loadUserAndShow(data.user);
   btn.disabled=false; btn.textContent='Entrar';
 }
 
@@ -1604,63 +1607,56 @@ async function loadUserAndShow(user) {
 }
 
 async function init() {
-  // ── STEP 1: Register auth state listener FIRST (catches PASSWORD_RECOVERY) ──
+  console.log("Sellwise v2.1 - " + new Date().toISOString());
+  // ── Detect recovery BEFORE anything else runs ──
+  const _hash   = window.location.hash;
+  const _params = new URLSearchParams(window.location.search);
+  const _isRecovery = (
+    _params.get('type') === 'recovery' ||
+    _hash.includes('type=recovery') ||
+    (_hash.includes('access_token') && _hash.includes('type=recovery'))
+  );
+
+  function _showReset() {
+    document.getElementById('auth-container').style.display = 'flex';
+    document.getElementById('app').classList.remove('visible');
+    showScreen('screen-reset');
+    history.replaceState(null, '', window.location.pathname);
+  }
+
+  // ── Auth state listener — handles PASSWORD_RECOVERY event ──
   sb.auth.onAuthStateChange(async (event, session) => {
     if(event === 'PASSWORD_RECOVERY') {
-      // User came from a recovery email — show reset form
-      document.getElementById('auth-container').style.display = 'flex';
-      document.getElementById('app').classList.remove('visible');
-      showScreen('screen-reset');
-      history.replaceState(null, '', window.location.pathname);
+      _showReset();
     }
+    // Note: SIGNED_IN is handled directly by doLogin()/doRegister()
+    // to avoid double-calls and race conditions
   });
 
-  // ── STEP 2: Check URL for hash-based recovery (#access_token&type=recovery) ──
-  const hash = window.location.hash;
-  if(hash.includes('type=recovery') || hash.includes('access_token')) {
-    const params = new URLSearchParams(hash.replace(/^#/, ''));
-    const accessToken  = params.get('access_token');
-    const refreshToken = params.get('refresh_token');
-    const type         = params.get('type');
-    if(accessToken && (type === 'recovery' || hash.includes('type=recovery'))) {
-      const { error } = await sb.auth.setSession({
-        access_token: accessToken,
-        refresh_token: refreshToken || ''
-      });
-      if(!error) {
-        document.getElementById('auth-container').style.display = 'flex';
-        document.getElementById('app').classList.remove('visible');
-        showScreen('screen-reset');
-        history.replaceState(null, '', window.location.pathname);
-        return;
+  // ── If recovery URL detected, handle it and STOP — don't load app ──
+  if(_isRecovery) {
+    // Hash-based (Implicit flow): manually set session from token
+    if(_hash.includes('access_token')) {
+      const hp = new URLSearchParams(_hash.replace(/^#/, ''));
+      const at = hp.get('access_token');
+      const rt = hp.get('refresh_token');
+      if(at) {
+        const { error } = await sb.auth.setSession({ access_token: at, refresh_token: rt || '' });
+        if(!error) { _showReset(); return; }
       }
     }
+    // PKCE flow: Supabase client auto-exchanges the code, then fires PASSWORD_RECOVERY
+    // Just wait — onAuthStateChange will call _showReset()
+    // Add a safety fallback: if PASSWORD_RECOVERY doesn't fire in 3s, show reset anyway
+    setTimeout(async () => {
+      const { data: { session } } = await sb.auth.getSession();
+      if(session) _showReset();
+      else showScreen('screen-login');
+    }, 3000);
+    return; // ← STOP HERE, don't fall through to normal login
   }
 
-  // ── STEP 3: Check URL for PKCE code (?code= — newer Supabase) ──
-  const urlParams = new URLSearchParams(window.location.search);
-  const code = urlParams.get('code');
-  const urlType = urlParams.get('type');
-  if(code) {
-    try {
-      const { data, error } = await sb.auth.exchangeCodeForSession(code);
-      history.replaceState(null, '', window.location.pathname);
-      if(!error && data.session) {
-        if(urlType === 'recovery' || urlParams.has('type')) {
-          // It was a password recovery link
-          document.getElementById('auth-container').style.display = 'flex';
-          document.getElementById('app').classList.remove('visible');
-          showScreen('screen-reset');
-          return;
-        }
-        // Regular sign-in via email confirmation
-        await loadUserAndShow(data.session.user);
-        return;
-      }
-    } catch(e) { /* not a valid code */ }
-  }
-
-  // ── STEP 4: Normal session check ──
+  // ── Normal flow: check for existing session ──
   const { data: { session } } = await sb.auth.getSession();
   if(session) { await loadUserAndShow(session.user); }
   else { showScreen('screen-login'); }
