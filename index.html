@@ -60,39 +60,26 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
   to   { opacity: 1; }
 }
 
+/* Login card — entra suavemente */
 .auth-card {
   animation: fadeInUp 0.85s cubic-bezier(0.22,1,0.36,1) both;
-  will-change: opacity, transform;
 }
+
+/* App inteiro ao entrar */
 #app.visible {
-  animation: fadeIn 0.6s ease both;
-  will-change: opacity;
+  animation: fadeIn 0.5s ease both;
 }
-.app-header {
-  animation: fadeInUp 0.6s cubic-bezier(0.22,1,0.36,1) both;
-  will-change: opacity, transform;
-}
-.home-card {
+
+/* Cards da home — escalonados */
+.home-grid .home-card {
   animation: fadeInUp 0.75s cubic-bezier(0.22,1,0.36,1) both;
-  will-change: opacity, transform;
 }
-.home-card:nth-child(1) { animation-delay: 0.08s; }
-.home-card:nth-child(2) { animation-delay: 0.16s; }
-.home-card:nth-child(3) { animation-delay: 0.24s; }
-.home-card:nth-child(4) { animation-delay: 0.32s; }
-.home-card:nth-child(5) { animation-delay: 0.40s; }
-.home-card:nth-child(6) { animation-delay: 0.48s; }
-.panel.active > .card,
-.panel.active > .home-grid,
-.panel.active > .section-welcome {
-  animation: fadeInUp 0.7s cubic-bezier(0.22,1,0.36,1) both;
-}
-.panel.active > .section-welcome { animation-delay: 0s; }
-.panel.active > .home-grid      { animation-delay: 0.10s; }
-.panel.active > .card:nth-child(1) { animation-delay: 0.08s; }
-.panel.active > .card:nth-child(2) { animation-delay: 0.18s; }
-.panel.active > .card:nth-child(3) { animation-delay: 0.28s; }
-.panel.active > .card:nth-child(4) { animation-delay: 0.38s; }
+.home-grid .home-card:nth-child(1) { animation-delay: 0.05s; }
+.home-grid .home-card:nth-child(2) { animation-delay: 0.12s; }
+.home-grid .home-card:nth-child(3) { animation-delay: 0.19s; }
+.home-grid .home-card:nth-child(4) { animation-delay: 0.26s; }
+.home-grid .home-card:nth-child(5) { animation-delay: 0.33s; }
+.home-grid .home-card:nth-child(6) { animation-delay: 0.40s; }
 
 /* ===== AUTH ===== */
 #auth-container {
@@ -218,30 +205,25 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
 .back-btn { background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 5px; padding: 4px 0; font-family: 'Geist', sans-serif; transition: color 0.15s; }
 .back-btn:hover { color: var(--green-400); }
 .back-bar-title { font-size: 14px; font-weight: 600; color: var(--text-primary); }
-.back-bar-tag { font-size: 11px; font-weight: 600; padding: 3px 9px; background: var(--green-dim); color: var(--green-400); border: 1px solid var(--border-green); border-radius: 20px; margin-left: auto; flex-shrink: 0; position: relative; cursor: pointer; }
-.back-bar-tag .tag-tooltip {
+.back-bar-tag { font-size: 11px; font-weight: 600; padding: 3px 9px; background: var(--green-dim); color: var(--green-400); border: 1px solid var(--border-green); border-radius: 20px; margin-left: auto; flex-shrink: 0; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; }
+#tax-tooltip-popup {
   display: none;
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
-  left: auto;
+  position: fixed;
   background: var(--bg-elevated);
   border: 1px solid var(--border-green);
   border-radius: 10px;
   padding: 12px 14px;
   font-size: 12px;
-  font-weight: 400;
   color: var(--text-secondary);
   line-height: 1.6;
-  white-space: normal;
   width: 260px;
-  z-index: 9999;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-  text-align: left;
+  z-index: 999999;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+  pointer-events: none;
 }
-.back-bar-tag:hover .tag-tooltip,
-.back-bar-tag.tooltip-open .tag-tooltip { display: block; }
-.back-bar-tag .tag-tooltip strong { color: var(--green-400); }
+#tax-tooltip-popup strong { color: var(--green-400); }
+#tax-tooltip-popup.show { display: block; }
+
 
 .main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
 .content { padding: 20px; max-width: 860px; margin: 0 auto; width: 100%; padding-bottom: 90px; }
@@ -518,9 +500,6 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
   .hidden { display: none !important; }
   .home-card.full .home-card-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
 
-
-  /* Tooltip mobile */
-  .back-bar-tag .tag-tooltip { width: 220px; font-size: 11px; padding: 10px 12px; }
 </style>
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta http-equiv="X-Frame-Options" content="DENY">
@@ -528,8 +507,21 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
   <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=()">
 </head>
 <body>
+<div id="tax-tooltip-popup"><strong>Mercado Livre (mar/2026)</strong><br>Clássico: 10–14% | Premium: 15–19%<br>Abaixo R$79: + custo fixo/variável por item<br><br><strong>Shopee (mar/2026)</strong><br>&lt;R$8: 50% | R$8–R$79: 20%+R$4<br>R$80–R$99: 14%+R$16 | R$100–R$199: 14%+R$20<br>R$200+: 14%+R$26 | CPF alto vol.: +R$3</div>
+
+
+<div id="tax-tooltip-popup"><strong>Mercado Livre (mar/2026)</strong><br>Clássico: 10–14% | Premium: 15–19%<br>Abaixo R$79: + custo fixo/variável por item<br><br><strong>Shopee (mar/2026)</strong><br>&lt;R$8: 50% | R$8–R$79: 20%+R$4<br>R$80–R$99: 14%+R$16 | R$100–R$199: 14%+R$20<br>R$200+: 14%+R$26 | CPF alto vol.: +R$3</div>
 
 <!-- ===== AUTH ===== -->
+<div id="tax-tooltip-popup">
+  <strong>Mercado Livre (mar/2026)</strong><br>
+  Clássico: 10–14% | Premium: 15–19%<br>
+  Abaixo R$79: + custo fixo/variável por item<br><br>
+  <strong>Shopee (mar/2026)</strong><br>
+  &lt;R$8: 50% | R$8–R$79: 20%+R$4<br>
+  R$80–R$99: 14%+R$16 | R$100–R$199: 14%+R$20<br>
+  R$200+: 14%+R$26 | CPF alto vol.: +R$3
+</div>
 <div id="auth-container">
   <div class="auth-card">
     <div class="auth-logo">
@@ -703,7 +695,7 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
   <div class="back-bar" id="back-bar">
     <button class="back-btn" id="back-btn" onclick="goBack()">← Voltar</button>
     <span class="back-bar-title" id="back-bar-title"></span>
-    <span class="back-bar-tag">⚡ Taxas 2026 · jun/26<div class="tag-tooltip"><strong>Mercado Livre (mar/2026)</strong><br>Clássico: 10–14% | Premium: 15–19%<br>Abaixo R$79: + custo fixo/variável por item<br><br><strong>Shopee (mar/2026)</strong><br>&lt;R$8: 50% | R$8–R$79: 20%+R$4<br>R$80–R$99: 14%+R$16 | R$100–R$199: 14%+R$20<br>R$200+: 14%+R$26 | CPF alto vol.: +R$3</div></span>
+    <span class="back-bar-tag tax-badge">⚡ Taxas 2026 · jun/26</span>
   </div>
 
   <!-- MAIN -->
@@ -715,7 +707,7 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
         <div class="section-welcome">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:4px">
             <div class="section-welcome-title" id="home-welcome">Olá! 👋</div>
-            <span class="back-bar-tag" style="margin-left:0">⚡ Taxas 2026 · jun/26<div class="tag-tooltip"><strong>Mercado Livre (mar/2026)</strong><br>Clássico: 10–14% | Premium: 15–19%<br>Abaixo R$79: + custo fixo/variável por item<br><br><strong>Shopee (mar/2026)</strong><br>&lt;R$8: 50% | R$8–R$79: 20%+R$4<br>R$80–R$99: 14%+R$16 | R$100–R$199: 14%+R$20<br>R$200+: 14%+R$26 | CPF alto vol.: +R$3</div></span>
+            <span class="back-bar-tag tax-badge" style="margin-left:0">⚡ Taxas 2026 · jun/26</span>
           </div>
           <div class="section-welcome-sub">O que você quer fazer hoje?</div>
         </div>
@@ -1529,6 +1521,7 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ── STATE ──
 let currentUser = null, currentProfile = null;
+let selectedAvatar = 'av1';
 let currentTeam = null, currentTeamMembers = [];
 let navHistory = [], currentSection = 'home';
 let produtos = [];
@@ -1904,10 +1897,25 @@ function initAvatarGrid() {
   grid.innerHTML=avs.map(([k,e,c])=>`<div id="avbtn_${k}" onclick="selectAvatar('${k}')" style="width:48px;height:48px;border-radius:50%;background:${c};display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;border:2px solid transparent;transition:all 0.15s;flex-shrink:0">${e}</div>`).join('');
 }
 function selectAvatar(key) {
-  document.querySelectorAll('[id^="avbtn_"]').forEach(b=>{b.style.borderColor='transparent';b.style.boxShadow='none';});
-  const btn=document.getElementById('avbtn_'+key);
-  if(btn){btn.style.borderColor='var(--green-500)';btn.style.boxShadow='0 0 0 3px var(--green-glow)';}
-  if(typeof selectedAvatar!=='undefined') selectedAvatar=key;
+  selectedAvatar = key;
+  document.querySelectorAll('[id^="avbtn_"]').forEach(b => {
+    b.style.borderColor = 'transparent';
+    b.style.boxShadow = 'none';
+    b.style.transform = 'scale(1)';
+  });
+  const btn = document.getElementById('avbtn_' + key);
+  if(btn) {
+    btn.style.borderColor = 'var(--green-500)';
+    btn.style.boxShadow = '0 0 0 3px var(--green-glow)';
+    btn.style.transform = 'scale(1.12)';
+  }
+  // Update preview
+  const avEl = document.getElementById('profile-avatar-display');
+  if(avEl) {
+    const [,e,c] = getAvatarData(key);
+    avEl.textContent = e;
+    avEl.style.background = c;
+  }
 }
 
 // ── PROFILE ──
@@ -1936,33 +1944,55 @@ function initPerfilPanel() {
       phoneEl.value = phone.slice(ddi.length);
     }
   });
-  initAvatarGrid();
-  const cur=p.avatar||'av1';
-  if(!cur.startsWith('http')) setTimeout(()=>selectAvatar(cur),50);
+  // Avatar grid is inline HTML — just select the current one
+  const cur = p.avatar || 'av1';
+  selectedAvatar = cur.startsWith('http') ? cur : cur;
+  if(!cur.startsWith('http')) setTimeout(() => selectAvatar(cur), 50);
 }
 
-async function uploadAvatar() {
-  const inp=document.getElementById('perf-avatar-file');
-  if(!inp||!inp.files||!inp.files[0]) return;
-  const file=inp.files[0];
-  if(file.size>2*1024*1024){alert('Imagem muito grande. Max 2MB.');return;}
-  const ext=file.name.split('.').pop();
-  const path=`${currentUser.id}.${ext}`;
-  const {error}=await sb.storage.from('avatars').upload(path,file,{upsert:true});
-  if(error){alert('Erro: '+error.message);return;}
-  const {data}=sb.storage.from('avatars').getPublicUrl(path);
-  await sb.from('profiles').update({avatar:data.publicUrl}).eq('id',currentUser.id);
-  currentProfile.avatar=data.publicUrl;
+async function uploadAvatar(inputEl) {
+  const inp = inputEl || document.getElementById('avatar-upload');
+  if(!inp || !inp.files || !inp.files[0]) return;
+  const file = inp.files[0];
+  if(file.size > 2*1024*1024) { alert('Imagem muito grande. Máximo 2MB.'); return; }
+  const msg = document.getElementById('avatar-msg');
+  if(msg) { msg.style.color='var(--text-muted)'; msg.textContent='Enviando...'; }
+  const ext = file.name.split('.').pop();
+  const path = `${currentUser.id}.${ext}`;
+  const {error} = await sb.storage.from('avatars').upload(path, file, {upsert:true});
+  if(error) {
+    // If storage not configured, save as base64 directly
+    const reader = new FileReader();
+    reader.onload = async function(e) {
+      const b64 = e.target.result;
+      await sb.from('profiles').update({avatar: b64}).eq('id', currentUser.id);
+      currentProfile.avatar = b64;
+      updateHeaderAvatar();
+      const avEl = document.getElementById('profile-avatar-display');
+      if(avEl) { avEl.innerHTML=`<img src="${b64}" style="width:64px;height:64px;border-radius:50%;object-fit:cover">`; avEl.style.background='transparent'; }
+      if(msg) { msg.style.color='var(--green-400)'; msg.textContent='✅ Foto salva!'; setTimeout(()=>msg.textContent='',3000); }
+    };
+    reader.readAsDataURL(file);
+    return;
+  }
+  const {data} = sb.storage.from('avatars').getPublicUrl(path);
+  await sb.from('profiles').update({avatar: data.publicUrl}).eq('id', currentUser.id);
+  currentProfile.avatar = data.publicUrl;
   updateHeaderAvatar();
-  initPerfilPanel();
+  const avEl = document.getElementById('profile-avatar-display');
+  if(avEl) { avEl.innerHTML=`<img src="${data.publicUrl}" style="width:64px;height:64px;border-radius:50%;object-fit:cover">`; avEl.style.background='transparent'; }
+  if(msg) { msg.style.color='var(--green-400)'; msg.textContent='✅ Foto salva!'; setTimeout(()=>msg.textContent='',3000); }
 }
 
 async function salvarAvatar() {
-  if(typeof selectedAvatar==='undefined') return;
-  await sb.from('profiles').update({avatar:selectedAvatar}).eq('id',currentUser.id);
-  currentProfile.avatar=selectedAvatar;
+  if(!selectedAvatar) { alert('Selecione um avatar primeiro.'); return; }
+  const {error} = await sb.from('profiles').update({avatar: selectedAvatar}).eq('id', currentUser.id);
+  if(error) { alert('Erro ao salvar: ' + error.message); return; }
+  currentProfile.avatar = selectedAvatar;
   updateHeaderAvatar();
-  alert('✅ Avatar salvo!');
+  const msg = document.getElementById('avatar-msg');
+  if(msg) { msg.style.color='var(--green-400)'; msg.textContent='✅ Avatar salvo!'; setTimeout(()=>msg.textContent='',3000); }
+  else alert('✅ Avatar salvo!');
 }
 
 async function salvarPerfil() {
@@ -2959,23 +2989,43 @@ async function checkUserRequest(){
   }
 
 
-// ── REMOVE will-change AFTER ANIMATION ──
-document.addEventListener('animationend', function(e) {
-  e.target.style.willChange = 'auto';
-}, true);
+// ── TOOLTIP TAXAS (body-level, sem z-index issues) ──
+(function() {
+  const popup = document.getElementById('tax-tooltip-popup');
+  let open = false;
 
-// ── TOOLTIP MOBILE CLICK ──
-document.querySelectorAll('.back-bar-tag').forEach(tag => {
-  tag.addEventListener('click', function(e) {
-    e.stopPropagation();
-    const isOpen = this.classList.contains('tooltip-open');
-    document.querySelectorAll('.back-bar-tag').forEach(t => t.classList.remove('tooltip-open'));
-    if(!isOpen) this.classList.add('tooltip-open');
+  function showTooltip(badge) {
+    const rect = badge.getBoundingClientRect();
+    const pw = 260;
+    let left = rect.right - pw;
+    if(left < 8) left = 8;
+    let top = rect.bottom + 8;
+    if(top + 200 > window.innerHeight) top = rect.top - 210;
+    popup.style.left = left + 'px';
+    popup.style.top = top + 'px';
+    popup.classList.add('show');
+    open = true;
+  }
+
+  function hideTooltip() {
+    popup.classList.remove('show');
+    open = false;
+  }
+
+  document.querySelectorAll('.tax-badge').forEach(badge => {
+    // Desktop: hover
+    badge.addEventListener('mouseenter', () => showTooltip(badge));
+    badge.addEventListener('mouseleave', hideTooltip);
+    // Mobile: click toggle
+    badge.addEventListener('click', function(e) {
+      e.stopPropagation();
+      if(open) hideTooltip(); else showTooltip(badge);
+    });
   });
-});
-document.addEventListener('click', function() {
-  document.querySelectorAll('.back-bar-tag').forEach(t => t.classList.remove('tooltip-open'));
-});
+
+  document.addEventListener('click', hideTooltip);
+  document.addEventListener('scroll', hideTooltip, true);
+})();
 
 init();
 </script>
