@@ -1954,7 +1954,7 @@ async function uploadAvatar(inputEl) {
   const inp = inputEl || document.getElementById('avatar-upload');
   if(!inp || !inp.files || !inp.files[0]) return;
   const file = inp.files[0];
-  if(file.size > 2*1024*1024) { alert('Imagem muito grande. Máximo 2MB.'); return; }
+  if(file.size > 10*1024*1024) { alert('Imagem muito grande. Máximo 10MB.'); return; }
   const msg = document.getElementById('avatar-msg');
   if(msg) { msg.style.color='var(--text-muted)'; msg.textContent='Enviando...'; }
   const ext = file.name.split('.').pop();
