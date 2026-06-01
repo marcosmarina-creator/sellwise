@@ -46,11 +46,7 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
   background: var(--bg-base);
   display: flex; align-items: center; justify-content: center;
 }
-/* ===== AUTH ===== */
-#auth-container {
-  min-height: 100vh; display: flex; align-items: center; justify-content: center;
-  background: var(--bg-base); padding: 20px;
-}
+
 .auth-card {
   width: 100%; max-width: 380px; background: var(--bg-surface);
   border: 1px solid rgba(34,197,94,0.5);
@@ -186,17 +182,17 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
   .auth-input { font-size: 16px !important; padding: 12px 14px; }
   .auth-logo-name { font-size: 22px; }
   /* Save areas stack on mobile */
-  #p-save-area > div, #l-save-area > div, #c-save-area > div, #d-save-area > div {
+  #p-save-area > div, #l-save-area > div, #c-save-area > div {
     flex-direction: column;
   }
-  #p-save-area input, #l-save-area input, #c-save-area input, #d-save-area input {
+  #p-save-area input, #l-save-area input, #c-save-area input {
     min-width: unset; width: 100%;
   }
-  #p-save-area .btn-sm, #l-save-area .btn-sm, #c-save-area .btn-sm, #d-save-area .btn-sm {
+  #p-save-area .btn-sm, #l-save-area .btn-sm, #c-save-area .btn-sm {
     width: 100%; justify-content: center; padding: 12px;
   }
   /* History action buttons bigger for mobile tap */
-  #hist-preco button, #hist-lucro button, #hist-comparador button, #hist-descricao button {
+  #hist-preco button, #hist-lucro button, #hist-comparador button {
     min-height: 32px; min-width: 32px;
   }
 
@@ -418,7 +414,7 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
   <div class="auth-card">
     <div class="auth-logo">
       <div class="auth-logo-icon" style="width:44px;height:44px;background:transparent;padding:0;overflow:visible"><svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;filter:drop-shadow(0 0 6px rgba(34,197,94,0.6))"><rect x="1.5" y="1.5" width="41" height="41" rx="10.5" fill="#071a0d" stroke="#22c55e" stroke-width="1.5"/><rect x="9" y="12" width="20" height="4.5" rx="2.25" fill="#22c55e"/><rect x="9" y="19.75" width="14" height="4.5" rx="2.25" fill="#22c55e"/><rect x="9" y="27.5" width="17" height="4.5" rx="2.25" fill="#22c55e"/></svg></div>
-      <div><span class="auth-logo-name">Sell<span>wise</span><div class="auth-logo-tag">Gestão para ML &amp; Shopee</div></div>
+      <div><span class="auth-logo-name">Sell<span>wise</span></span><div class="auth-logo-tag">Gestão para ML &amp; Shopee</div></div>
     </div>
     
 
@@ -543,11 +539,7 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
       </div>
       <div class="auth-error" id="reset-msg"></div>
       <button class="auth-btn" id="reset-btn" onclick="confirmarNovaSenha()">🔒 Salvar nova senha</button>
-    </div></div>
-
-    
-
-    
+    </div>
 
   </div>
 </div>
@@ -575,7 +567,7 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
   </header>
 
   <!-- PHONE BANNER (one-time) -->
-  <div id="phone-banner" style="display:none;background:linear-gradient(135deg,rgba(34,197,94,0.12),rgba(34,197,94,0.06));border-bottom:1px solid rgba(34,197,94,0.25);padding:10px 18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+  <div id="phone-banner" style="display:none;background:linear-gradient(135deg,rgba(34,197,94,0.12),rgba(34,197,94,0.06));border-bottom:1px solid rgba(34,197,94,0.25);padding:10px 18px;align-items:center;gap:12px;flex-wrap:wrap">
     <div style="font-size:18px;flex-shrink:0">📱</div>
     <div style="flex:1;min-width:0">
       <div style="font-size:13px;font-weight:600;color:var(--green-400)">Adicione seu celular para recuperação de senha</div>
@@ -620,10 +612,10 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
             
           </div>
 
-          <div class="home-card" onclick="showTool('descricao')">
-            <div class="home-card-icon" style="background:rgba(168,85,247,0.15)">✨</div>
-            <div class="home-card-title">Descrição IA</div>
-            <div class="home-card-desc">Gere textos de anúncio com IA</div>
+          <div class="home-card" onclick="showTool('comparador')">
+            <div class="home-card-icon" style="background:rgba(251,191,36,0.15)">⚖️</div>
+            <div class="home-card-title">Comparador</div>
+            <div class="home-card-desc">ML vs Shopee — melhor plataforma</div>
           </div>
 
           <div class="home-card" id="home-card-equipe" onclick="goSection('equipe-hub')" style="display:none">
@@ -705,13 +697,7 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
               <div class="home-card-desc">Cadastre produtos e monitore quantidades</div>
             </div>
           </div>
-          <div class="home-card full" onclick="showTool('descricao')">
-            <div class="home-card-icon" style="background:rgba(168,85,247,0.15)">✨</div>
-            <div>
-              <div class="home-card-title">Descrição IA</div>
-              <div class="home-card-desc">Gere textos de anúncio otimizados</div>
-            </div>
-          </div>
+
         </div>
       </div>
 
@@ -958,11 +944,6 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
             <div class="metric"><div class="metric-label">Lucro total (qtd)</div><div class="metric-value positive" id="l-total">—</div></div>
           </div>
         </div>
-        <div class="card" style="margin-top:0">
-          <div class="card-title">🕐 Histórico de lucratividade</div>
-          <div id="hist-lucro"></div>
-        </div>
-
         <!-- SAVE AREA LUCRO -->
         <div id="l-save-area" style="display:none;margin-top:4px">
           <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
@@ -978,38 +959,8 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
         </div>
       </div>
 
-      <!-- DESCRIÇÃO IA -->
-      <div id="panel-descricao" class="panel">
-        <div class="card">
-          <div class="card-title">Informações do produto</div>
-          <div class="form-grid">
-            <div class="form-group span2"><label>Nome do produto</label><input type="text" id="d-nome" placeholder="Ex: Tênis Esportivo Masculino Running" /></div>
-            <div class="form-group span2"><label>Características e diferenciais</label><textarea id="d-carac" placeholder="Ex: solado antiderrapante, material respirável, tamanhos 38 ao 44..."></textarea></div>
-            <div class="form-group"><label>Plataforma</label><select id="d-plat"><option value="ambas">Mercado Livre e Shopee</option><option value="ml">Somente Mercado Livre</option><option value="shopee">Somente Shopee</option></select></div>
-            <div class="form-group"><label>Tom</label><select id="d-tom"><option value="profissional">Profissional e persuasivo</option><option value="descontraido">Descontraído e amigável</option><option value="tecnico">Técnico e detalhado</option></select></div>
-            <div class="form-group"><label>Público-alvo</label><input type="text" id="d-publico" placeholder="Ex: homens de 20 a 40 anos" /></div>
-          </div>
-          <button class="btn btn-primary" id="d-btn" onclick="gerarDescricao()">✨ Gerar com IA</button>
-          <div class="ai-output" id="d-output"></div>
-          <div class="ai-actions" id="d-actions">
-            <button class="btn btn-sm" id="d-copy" onclick="copiarDescricao()">📋 Copiar texto</button>
-            <button class="btn btn-sm" onclick="gerarDescricao()">🔄 Gerar novamente</button>
-          </div>
-          <!-- SAVE AREA DESCRICAO -->
-          <div id="d-save-area" style="display:none;margin-top:12px;border-top:1px solid var(--border);padding-top:12px">
-            <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-              <input type="text" id="d-save-nome" placeholder="Nome do produto para salvar..." maxlength="200" style="flex:1;min-width:180px" />
-              <button class="btn btn-primary btn-sm" onclick="salvarDescricao()" style="white-space:nowrap;flex-shrink:0">💾 Salvar</button>
-            </div>
-            <div id="d-save-msg" style="font-size:12px;margin-top:6px;min-height:16px"></div>
-          </div>
-        </div>
 
-        <div class="card" id="hist-desc-card" style="display:none">
-          <div class="card-title">🕐 Descrições salvas</div>
-          <div id="hist-descricao"></div>
-        </div>
-      </div>
+
 
       <!-- COMPARADOR -->
       <div id="panel-comparador" class="panel">
@@ -1208,15 +1159,13 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
       <div id="panel-notas" class="panel">
         <div class="card">
           <div class="card-title">📝 Nova nota / tarefa</div>
-          <div class="form-grid" style="grid-template-columns:1fr auto">
-            <div class="form-group">
-              <input type="text" id="nota-input" placeholder="Digite uma nota ou tarefa..." onkeydown="if(event.key==='Enter')adicionarNota(false)" />
+          <div style="display:flex;flex-direction:column;gap:10px">
+              <input type="text" id="nota-input" placeholder="Digite uma nota ou tarefa..." onkeydown="if(event.key==='Enter')adicionarNota(false)" style="width:100%;padding:12px 14px;background:var(--bg-elevated);border:1px solid var(--border-strong);border-radius:var(--radius);color:var(--text-primary);font-size:15px;font-family:'Geist',sans-serif;" />
+              <div style="display:flex;gap:8px">
+                <button class="btn btn-sm" onclick="adicionarNota(false)" style="flex:1;justify-content:center;font-size:14px;padding:12px">📝 Salvar Nota</button>
+                <button class="btn btn-primary btn-sm" onclick="adicionarNota(true)" style="flex:1;justify-content:center;font-size:14px;padding:12px">✅ Salvar Tarefa</button>
+              </div>
             </div>
-            <div style="display:flex;gap:8px;align-items:flex-end">
-              <button class="btn btn-sm" onclick="adicionarNota(false)" style="white-space:nowrap">📝 Nota</button>
-              <button class="btn btn-primary btn-sm" onclick="adicionarNota(true)" style="white-space:nowrap">✅ Tarefa</button>
-            </div>
-          </div>
         </div>
 
         <div class="card">
@@ -1311,7 +1260,7 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
             <div class="form-group"><label>Custo (R$)</label><input type="number" id="tp-custo" placeholder="0,00" step="0.01" /></div>
             <div class="form-group"><label>Frete (R$)</label><input type="number" id="tp-frete" placeholder="0,00" step="0.01" /></div>
             <div class="form-group"><label>Margem (%)</label><input type="number" id="tp-margem" placeholder="20" /></div>
-            
+            <div class="form-group"><label>Plataforma</label><select id="tp-plat"><option value="ml_12">ML Clássico (12%)</option><option value="ml_17">ML Premium (17%)</option><option value="shopee">Shopee</option></select></div>
           </div>
           <button class="btn btn-primary" onclick="addTeamPricing()">🧮 Calcular e salvar</button>
           <div style="margin-top:16px">
@@ -1393,23 +1342,12 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
         </div>
       </div>
 
-      </div><!-- /panel-admin -->
-
     </div><!-- /content -->
   </div><!-- /main -->
 
   <!-- BOTTOM NAV -->
   <nav class="bottom-nav" id="bottom-nav">
     <button class="bottom-nav-item" onclick="goHome()" id="bnav-home" data-panel="home"><span class="bnav-icon">🏠</span><span class="bnav-label">Início</span></button>
-    <button class="bottom-nav-item" onclick="goSection('calculadoras')" id="bnav-calc" data-panel="calculadoras"><span class="bnav-icon">🧮</span><span class="bnav-label">Calculadoras</span></button>
-    <button class="bottom-nav-item" onclick="goSection('estoque-hub')" id="bnav-estoque" data-panel="estoque-hub"><span class="bnav-icon">📦</span><span class="bnav-label">Estoque</span></button>
-    <button class="bottom-nav-item" id="bnav-equipe-hub" onclick="goSection('equipe-hub')" data-panel="equipe-hub" style="display:none"><span class="bnav-icon">👥</span><span class="bnav-label">Equipe</span></button>
-    <button class="bottom-nav-item" onclick="goSection('conta')" id="bnav-conta" data-panel="conta"><span class="bnav-icon">👤</span><span class="bnav-label">Conta</span></button>
-  </nav>
-
-  <!-- BOTTOM NAV -->
-  <nav class="bottom-nav">
-    <button class="bottom-nav-item active" onclick="goHome()" id="bnav-home" data-panel="home"><span class="bnav-icon">🏠</span><span class="bnav-label">Início</span></button>
     <button class="bottom-nav-item" onclick="goSection('calculadoras')" id="bnav-calc" data-panel="calculadoras"><span class="bnav-icon">🧮</span><span class="bnav-label">Calculadoras</span></button>
     <button class="bottom-nav-item" onclick="goSection('estoque-hub')" id="bnav-estoque" data-panel="estoque-hub"><span class="bnav-icon">📦</span><span class="bnav-label">Estoque</span></button>
     <button class="bottom-nav-item" id="bnav-equipe-hub" onclick="goSection('equipe-hub')" data-panel="equipe-hub" style="display:none"><span class="bnav-icon">👥</span><span class="bnav-label">Equipe</span></button>
@@ -1733,20 +1671,19 @@ function goSection(s) {
   pushNavState(s);
 }
 function showTool(id) {
-  const sectionOf={preco:'calculadoras',lucro:'calculadoras',comparador:'calculadoras',estoque:'estoque-hub',descricao:'estoque-hub',dashboard:'equipe-hub',chat:'equipe-hub',equipe:'equipe-hub',notas:'equipe-hub',historico:'equipe-hub',perfil:'conta',admin:'conta'};
-  const titles={preco:'Precificação',lucro:'Lucratividade',comparador:'Comparador ML vs Shopee',estoque:'Controle de Estoque',descricao:'Descrição IA',dashboard:'Dashboard',chat:'Chat da Equipe',equipe:'Minha Equipe',notas:'Notas & Tarefas',historico:'Histórico',perfil:'Meu Perfil',admin:'Painel Admin'};
+  const sectionOf={preco:'calculadoras',lucro:'calculadoras',comparador:'calculadoras',estoque:'estoque-hub',dashboard:'equipe-hub',chat:'equipe-hub',equipe:'equipe-hub',notas:'equipe-hub',historico:'equipe-hub',perfil:'conta',admin:'conta'};
+  const titles={preco:'Precificação',lucro:'Lucratividade',comparador:'Comparador ML vs Shopee',estoque:'Controle de Estoque',dashboard:'Dashboard',chat:'Chat da Equipe',equipe:'Minha Equipe',notas:'Notas & Tarefas',historico:'Histórico',perfil:'Meu Perfil',admin:'Painel Admin'};
   if(!navHistory.includes(currentSection)) navHistory.push(currentSection);
   currentSection=id; activatePanel(id); showBackBar(titles[id]||id);
   updateBottomNav(sectionOf[id]||'home'); window.scrollTo({top:0,behavior:'smooth'});
   pushNavState(id);
   if(id==='solicitar-equipe') setTimeout(initSolicitarEquipe,50);
-  if(id==='descricao') setTimeout(()=>renderCalcHistoryPanel('descricao','hist-descricao'),100);
   if(id==='admin'){setTimeout(loadAdminPanel,50);setTimeout(loadAdminTeams,150);setTimeout(initNewTeamForm,250);setTimeout(loadAdminSolicitacoes,100);}
   if(id==='perfil') setTimeout(initPerfilPanel,50);
   if(id==='equipe') setTimeout(initEquipePanel,50);
   if(id==='dashboard') setTimeout(loadDashboard,50);
   if(id==='chat') setTimeout(loadChat,50);
-  if(id==='notas') setTimeout(loadNotas,50);
+  if(id==='notas') setTimeout(async()=>{if(!currentTeam)await initEquipePanel();loadNotas();},50);
   if(id==='historico') setTimeout(loadHistorico,50);
   if(id==='estoque'){loadUserStock().then(()=>renderCalcHistoryPanel('estoque','hist-estoque'));}
   if(['preco','lucro','comparador'].includes(id)){
@@ -1779,7 +1716,7 @@ function showBackBar(title) {
   if(titleEl&&title) titleEl.textContent=title;
 }
 function updateBottomNav(activeId) {
-  const map={home:'home',calculadoras:'calc',preco:'calc',lucro:'calc',comparador:'calc','estoque-hub':'estoque',estoque:'estoque',descricao:'estoque','equipe-hub':'equipe-hub',dashboard:'equipe-hub',chat:'equipe-hub',equipe:'equipe-hub',notas:'equipe-hub',historico:'equipe-hub',conta:'conta',perfil:'conta',admin:'conta'};
+  const map={home:'home',calculadoras:'calc',preco:'calc',lucro:'calc',comparador:'calc','estoque-hub':'estoque',estoque:'estoque','equipe-hub':'equipe-hub',dashboard:'equipe-hub',chat:'equipe-hub',equipe:'equipe-hub',notas:'equipe-hub',historico:'equipe-hub',conta:'conta',perfil:'conta',admin:'conta'};
   document.querySelectorAll('.bottom-nav-item').forEach(b=>b.classList.remove('active'));
   const el=document.getElementById('bnav-'+(map[activeId]||'home'));
   if(el) el.classList.add('active');
@@ -2040,7 +1977,6 @@ async function renderCalcHistoryPanel(tipo,containerId) {
     else if(tipo==='lucro') summary=`Preço ${d.preco||0} | Lucro <strong style="color:var(--green-400)">${d.lucro||'—'}</strong>`;
     else if(tipo==='comparador') summary=`Preço ${d.preco||0} | <strong style="color:var(--green-400)">${d.melhor||'—'}</strong>`;
     else if(tipo==='estoque') summary=`SKU: ${d.sku||'—'} | Qtd: ${d.qtd||0}`;
-    else if(tipo==='descricao') summary=`Plataforma: ${d.plat||'—'} | ${d.texto?d.texto.slice(0,60)+'…':'—'}`;
     const hasTeam=!!currentTeam;
     return `<div id="hist-row-${h.id}" style="padding:10px 0;border-bottom:1px solid var(--border)"><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px"><div style="min-width:0;flex:1"><div id="hist-name-${h.id}" style="font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:2px">${escHtml(h.nome||'Sem nome')}</div><div style="font-size:11px;color:var(--text-muted)">${summary}</div><div style="font-size:10px;color:var(--text-muted);margin-top:2px">${formatHistoryDate(h.created_at)}</div></div><div style="display:flex;gap:4px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end;max-width:120px"><button onclick="compartilharEquipe('${h.id}','${tipo}')" style="font-size:10px;padding:3px 8px;background:rgba(59,130,246,0.1);color:#60a5fa;border:1px solid rgba(59,130,246,0.25);border-radius:5px;cursor:pointer;white-space:nowrap">👥 Equipe</button><button onclick="renomearHistorico('${h.id}','${tipo}','${containerId}')" style="font-size:10px;padding:3px 8px;background:var(--bg-elevated);color:var(--text-secondary);border:1px solid var(--border);border-radius:5px;cursor:pointer">✏️</button><button onclick="deletarHistorico('${h.id}','${tipo}','${containerId}')" style="font-size:10px;padding:3px 8px;background:rgba(248,113,113,0.08);color:var(--red);border:1px solid rgba(248,113,113,0.2);border-radius:5px;cursor:pointer">🗑</button></div></div></div>`;
   }).join('');
@@ -2170,8 +2106,6 @@ function calcLucro() {
   document.getElementById('l-save-area').style.display='block';
   window._lastLucro={preco,custo,frete,plat,lucro:fmt(lucro),margem:margem.toFixed(1)+'%'};
   const hlc=document.getElementById('hist-lucro-card'); if(hlc) hlc.style.display='block';
-  document.getElementById('l-save-area').style.display='block';
-  window._lastLucro={preco,custo,frete,plat,lucro:fmt(lucro),margem:margem.toFixed(1)+'%'};
 
   renderCalcHistoryPanel('lucro','hist-lucro');
 }
@@ -2234,44 +2168,6 @@ function calcComparador() {
   const csa=document.getElementById('c-save-area'); if(csa) csa.style.display='block';
   window._lastComparador={preco,custo,frete,imposto,mlCat,melhor:mlWin?'Mercado Livre':'Shopee',lucroML:fmt(mlLucro),lucroSH:fmt(shLucro)};  const hcc=document.getElementById('hist-comp-card'); if(hcc) hcc.style.display='block';
   renderCalcHistoryPanel('comparador','hist-comparador');
-}
-async function gerarDescricao() {
-  const nome=document.getElementById('d-nome').value.trim();
-  const carac=document.getElementById('d-carac').value.trim();
-  const publico=document.getElementById('d-publico').value.trim();
-  const plat=document.getElementById('d-plat').value;
-  const tom=document.getElementById('d-tom').value;
-  const btn=document.getElementById('d-btn');
-  const output=document.getElementById('d-output');
-  const actions=document.getElementById('d-actions');
-  if(!nome){alert('Informe o nome do produto.');return;}
-  btn.disabled=true;btn.textContent='Gerando...';output.style.display='block';output.textContent='Aguardando IA...';actions.classList.remove('show');
-  const platMap={ml_classico:'Mercado Livre Clássico',ml_premium:'Mercado Livre Premium',shopee:'Shopee'};
-  const tomMap={persuasivo:'persuasivo e comercial',informativo:'informativo e técnico',descontraido:'descontraído e próximo',tecnico:'técnico e detalhado'};
-  const prompt=`Você é especialista em copywriting para e-commerce brasileiro. Crie uma descrição otimizada para ${platMap[plat]}.\nProduto: ${nome}\nCaracterísticas: ${carac||'não informadas'}\nPúblico-alvo: ${publico||'geral'}\nTom: ${tomMap[tom]}\nEstrutura: 1. Título SEO 2. Descrição (3 parágrafos) 3. Benefícios em tópicos 4. Call to action. Linguagem brasileira natural.`;
-  try {
-    const resp=await fetch('https://hvogaewmntafzbaoywtc.supabase.co/functions/v1/super-worker',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+SUPABASE_KEY,'apikey':SUPABASE_KEY},body:JSON.stringify({prompt})});
-    const data=await resp.json();
-    if(data.error){output.textContent='Erro: '+JSON.stringify(data.error);btn.disabled=false;btn.textContent='✨ Gerar com IA';return;}
-    if(!data.content){output.textContent='Erro inesperado: '+JSON.stringify(data).slice(0,200);btn.disabled=false;btn.textContent='✨ Gerar com IA';return;}
-    const texto = data.content?.map(b=>b.text||'').join('') || 'Erro ao gerar.';
-    output.textContent=texto;
-    actions.classList.add('show');
-    // Show save area and pre-fill name with product name
-    window._lastDescricao = { nome, carac, plat, texto };
-    const dsa = document.getElementById('d-save-area'); if(dsa) dsa.style.display='block';
-    const dsn = document.getElementById('d-save-nome'); if(dsn && nome) dsn.value=nome;
-    renderCalcHistoryPanel('descricao','hist-descricao');
-    const hdc = document.getElementById('hist-desc-card'); if(hdc) hdc.style.display='block';
-  } catch(e){output.textContent='Erro de conexão: '+e.message;}
-  btn.disabled=false;btn.textContent='✨ Gerar com IA';
-}
-function copiarDescricao(){navigator.clipboard.writeText(document.getElementById('d-output').textContent).then(()=>{const b=document.getElementById('d-copy');b.textContent='✅ Copiado!';setTimeout(()=>b.textContent='📋 Copiar texto',2000);});}
-
-// ── EQUIPE ──
-async function logActivity(teamId,action,details) {
-  if(!teamId||!currentUser) return;
-  await sb.from('team_activity').insert({team_id:teamId,user_id:currentUser.id,action,details});
 }
 async function initEquipePanel() {
   const headerCard=document.getElementById('equipe-header-card');
@@ -2438,22 +2334,39 @@ async function enviarMensagem() {
 // ── NOTAS ──
 async function loadNotas() {
   if(!currentTeam){await initEquipePanel();}
-  if(!currentTeam) return;
+  if(!currentTeam) {
+    const te=document.getElementById('notas-tarefas');
+    const ne=document.getElementById('notas-notas');
+    if(te) te.innerHTML='<div class="empty-state">⚠️ Você precisa estar em uma equipe para usar notas.</div>';
+    if(ne) ne.innerHTML='';
+    return;
+  }
   const {data:notas}=await sb.from('team_notes').select('*, profiles:user_id(username)').eq('team_id',currentTeam.id).order('created_at',{ascending:false});
   const tarefas=(notas||[]).filter(n=>n.is_task);
   const simples=(notas||[]).filter(n=>!n.is_task);
   const te=document.getElementById('notas-tarefas');
   const ne=document.getElementById('notas-notas');
-  te.innerHTML=tarefas.length?tarefas.map(n=>`<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius);${n.done?'opacity:0.6':''}"><input type="checkbox" ${n.done?'checked':''} onchange="toggleTarefa('${n.id}',this.checked)" style="width:16px;height:16px;accent-color:var(--green-500);cursor:pointer;flex-shrink:0"><span style="flex:1;font-size:13px;${n.done?'text-decoration:line-through':''}">${escHtml(n.content)}</span><span style="font-size:10px;color:var(--text-muted)">${n.profiles?.username||'—'}</span><button onclick="deletarNota('${n.id}')" style="font-size:12px;color:var(--red);background:none;border:none;cursor:pointer">✕</button></div>`).join(''):'<div class="empty-state">Nenhuma tarefa ainda.</div>';
-  ne.innerHTML=simples.length?simples.map(n=>`<div style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius)"><span style="font-size:13px;color:var(--text-primary);flex:1;line-height:1.5">${escHtml(n.content)}</span><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0"><span style="font-size:10px;color:var(--text-muted)">${n.profiles?.username||'—'}</span><span style="font-size:10px;color:var(--text-muted)">${timeAgo(n.created_at)}</span></div><button onclick="deletarNota('${n.id}')" style="font-size:12px;color:var(--red);background:none;border:none;cursor:pointer;flex-shrink:0">✕</button></div>`).join(''):'<div class="empty-state">Nenhuma nota ainda.</div>';
+  te.innerHTML=tarefas.length?tarefas.map(n=>`<div style="padding:10px 12px;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:6px;${n.done?'opacity:0.6':''}"><div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><input type="checkbox" ${n.done?'checked':''} onchange="toggleTarefa('${n.id}',this.checked)" style="width:16px;height:16px;accent-color:var(--green-500);cursor:pointer;flex-shrink:0"><span style="flex:1;font-size:13px;${n.done?'text-decoration:line-through':''}">${escHtml(n.content)}</span><button onclick="deletarNota('${n.id}')" style="font-size:12px;color:var(--red);background:none;border:none;cursor:pointer;flex-shrink:0">✕</button></div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-left:26px"><span style="font-size:10px;color:var(--text-muted)">${n.profiles?.username||'—'}</span><button onclick="compartilharNota('${n.id}',${JSON.stringify(n.content)})" style="font-size:10px;padding:2px 8px;background:rgba(59,130,246,0.1);color:#60a5fa;border:1px solid rgba(59,130,246,0.25);border-radius:4px;cursor:pointer">👥 Equipe</button></div></div>`).join(''):'<div class="empty-state">Nenhuma tarefa ainda.</div>';
+  ne.innerHTML=simples.length?simples.map(n=>`<div style="padding:10px 12px;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:6px"><div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px"><span style="font-size:13px;color:var(--text-primary);flex:1;line-height:1.5">${escHtml(n.content)}</span><button onclick="deletarNota('${n.id}')" style="font-size:12px;color:var(--red);background:none;border:none;cursor:pointer;flex-shrink:0;padding:2px 6px">✕</button></div><div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span style="font-size:10px;color:var(--text-muted)">${n.profiles?.username||'—'} · ${timeAgo(n.created_at)}</span><button onclick="renomearNota('${n.id}',${JSON.stringify(n.content)})" style="font-size:10px;padding:2px 8px;background:var(--bg-card);color:var(--text-secondary);border:1px solid var(--border);border-radius:4px;cursor:pointer">✏️ Editar</button><button onclick="compartilharNota('${n.id}',${JSON.stringify(n.content)})" style="font-size:10px;padding:2px 8px;background:rgba(59,130,246,0.1);color:#60a5fa;border:1px solid rgba(59,130,246,0.25);border-radius:4px;cursor:pointer">👥 Equipe</button></div></div>`).join(''):'<div class="empty-state">Nenhuma nota ainda.</div>';
 }
 async function adicionarNota(isTask) {
-  const input=document.getElementById('nota-input');
-  const content=input.value.trim();
-  if(!content||!currentTeam) return;
-  input.value='';
-  await sb.from('team_notes').insert({team_id:currentTeam.id,user_id:currentUser.id,content,is_task:isTask,done:false});
-  await logActivity(currentTeam.id,isTask?'adicionou uma tarefa':'adicionou uma nota',content.slice(0,60));
+  const input = document.getElementById('nota-input');
+  const text = input.value.trim();
+  if(!text) { alert('Digite o conteúdo da nota.'); return; }
+  if(!currentTeam) {
+    await initEquipePanel();
+    if(!currentTeam) { alert('Você precisa estar em uma equipe para usar notas.'); return; }
+  }
+  input.value = '';
+  const {error} = await sb.from('team_notes').insert({
+    team_id: currentTeam.id,
+    user_id: currentUser.id,
+    content: text,
+    is_task: isTask,
+    done: false
+  });
+  if(error) { alert('Erro ao salvar nota: ' + error.message); input.value = text; return; }
+  await logActivity(currentTeam.id, isTask ? 'adicionou uma tarefa' : 'adicionou uma nota', text.slice(0,60));
   await loadNotas();
 }
 async function toggleTarefa(id,done){await sb.from('team_notes').update({done}).eq('id',id);await loadNotas();}
@@ -2812,33 +2725,23 @@ async function checkUserRequest(){
   }
 
 
-  async function salvarDescricao() {
-    const nome = document.getElementById('d-save-nome').value.trim();
-    const msg  = document.getElementById('d-save-msg');
-    if(!nome) { msg.style.color='var(--red)'; msg.textContent='Informe um nome para salvar.'; return; }
-    if(!window._lastDescricao) { msg.style.color='var(--red)'; msg.textContent='Gere uma descrição primeiro.'; return; }
-    msg.style.color='var(--text-muted)'; msg.textContent='Salvando...';
-    await logCalcHistory('descricao', nome, window._lastDescricao);
-    msg.style.color='var(--green-400)'; msg.textContent='✅ "'+nome+'" salvo!';
-    renderCalcHistoryPanel('descricao','hist-descricao');
-    const hdc=document.getElementById('hist-desc-card'); if(hdc) hdc.style.display='block';
-    setTimeout(()=>{ if(msg) msg.textContent=''; }, 3000);
+  async function renomearNota(id, textoAtual) {
+    const novo = prompt('Editar nota:', textoAtual);
+    if(!novo || novo === textoAtual) return;
+    const {error} = await sb.from('team_notes').update({content: novo}).eq('id', id);
+    if(error){alert('Erro: '+error.message);return;}
+    await loadNotas();
   }
 
-  function reuseDescricao(id) {
-    const el = document.getElementById('hist-name-'+id);
-    if(!el) return;
-    // The share/rename/delete buttons are already in renderCalcHistoryPanel
-    // Add a reuse button to load the description back into the output
-    const row = document.getElementById('hist-row-'+id);
-    if(row) {
-      const data = row.dataset.texto;
-      if(data) {
-        document.getElementById('d-output').textContent = data;
-        document.getElementById('d-output').style.display = 'block';
-        document.getElementById('d-actions').classList.add('show');
-      }
-    }
+  async function compartilharNota(id, texto) {
+    if(!currentTeam){alert('Você precisa estar em uma equipe.');return;}
+    const {error} = await sb.from('team_messages').insert({
+      team_id: currentTeam.id, user_id: currentUser.id,
+      content: '📝 Nota: ' + texto
+    });
+    if(error){alert('Erro: '+error.message);return;}
+    await logActivity(currentTeam.id,'compartilhou uma nota',texto.slice(0,60));
+    alert('✅ Nota enviada para o chat da equipe!');
   }
 
 
