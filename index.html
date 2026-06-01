@@ -1887,7 +1887,7 @@ function updateHeaderAvatar() {
   const key=currentProfile.avatar||'av1';
   const el=document.getElementById('header-avatar');
   if(!el) return;
-  if(key.startsWith('http')){el.innerHTML=`<img src="${key}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;display:block">`;el.style.background='transparent';el.style.fontSize='0';}
+  if(key.startsWith('http')||key.startsWith('data:')){el.innerHTML=`<img src="${key}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;display:block">`;el.style.background='transparent';el.style.fontSize='0';}
   else{const [,e,c]=getAvatarData(key);el.innerHTML=e;el.style.background=c;el.style.fontSize='18px';}
 }
 function updateSidebarAvatar(){updateHeaderAvatar();}
@@ -1926,7 +1926,7 @@ function initPerfilPanel() {
   const getEl=(id1,id2)=>document.getElementById(id1)||document.getElementById(id2);
   const avEl=getEl('perf-avatar-preview','profile-avatar-display');
   if(avEl){
-    if(p.avatar?.startsWith('http')){avEl.innerHTML=`<img src="${p.avatar}" style="width:64px;height:64px;border-radius:50%;object-fit:cover">`;avEl.style.background='transparent';}
+    if(p.avatar?.startsWith('http')||p.avatar?.startsWith('data:')){avEl.innerHTML=`<img src="${p.avatar}" style="width:64px;height:64px;border-radius:50%;object-fit:cover">`;avEl.style.background='transparent';}
     else{const [,e,c]=getAvatarData(p.avatar||'av1');avEl.textContent=e;avEl.style.background=c;}
   }
   const un=getEl('perf-username','perfil-username'); if(un) un.value=p.username||'';
@@ -1946,8 +1946,8 @@ function initPerfilPanel() {
   });
   // Avatar grid is inline HTML — just select the current one
   const cur = p.avatar || 'av1';
-  selectedAvatar = cur.startsWith('http') ? cur : cur;
-  if(!cur.startsWith('http')) setTimeout(() => selectAvatar(cur), 50);
+  selectedAvatar = cur;
+  if(!cur.startsWith('http') && !cur.startsWith('data:')) setTimeout(() => selectAvatar(cur), 50);
 }
 
 async function uploadAvatar(inputEl) {
@@ -2449,7 +2449,7 @@ function renderMemberAvatars(profiles) {
   col.innerHTML='';
   profiles.forEach(p=>{
     const avKey=p.avatar||'av1'; let inner;
-    if(avKey.startsWith('http')) inner=`<img src="${avKey}" style="width:44px;height:44px;border-radius:50%;object-fit:cover">`;
+    if(avKey.startsWith('http')||avKey.startsWith('data:')) inner=`<img src="${avKey}" style="width:44px;height:44px;border-radius:50%;object-fit:cover">`;
     else{const[,e,c]=getAvatarData(avKey);inner=`<div style="width:44px;height:44px;border-radius:50%;background:${c};display:flex;align-items:center;justify-content:center;font-size:20px">${e}</div>`;}
     const isMe=p.id===currentUser?.id;
     col.innerHTML+=`<div style="position:relative;display:flex;flex-direction:column;align-items:center;gap:3px"><div style="width:44px;height:44px;border-radius:50%;overflow:hidden;border:2px solid ${isMe?'#22c55e':'rgba(34,197,94,0.25)'}">${inner}</div>${isMe?'<div style="position:absolute;bottom:2px;right:2px;width:10px;height:10px;border-radius:50%;background:#22c55e;border:2px solid #111a14"></div>':''}<div style="font-size:9px;color:var(--text-muted);text-align:center;max-width:48px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(p.username||'—')}</div></div>`;
@@ -2554,7 +2554,7 @@ function chatBubble(m) {
   const fullName=m.profiles?.username||'—';
   const uname=fullName.length>8?fullName.slice(0,7)+'…':fullName;
   let avHtml;
-  if(avKey.startsWith('http')) avHtml=`<img src="${avKey}" style="width:34px;height:34px;border-radius:50%;object-fit:cover;flex-shrink:0">`;
+  if(avKey.startsWith('http')||avKey.startsWith('data:')) avHtml=`<img src="${avKey}" style="width:34px;height:34px;border-radius:50%;object-fit:cover;flex-shrink:0">`;
   else{const[,e,c]=getAvatarData(avKey);avHtml=`<div style="width:34px;height:34px;border-radius:50%;background:${c};display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">${e}</div>`;}
   const time=new Date(m.created_at).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
   return `<div style="display:flex;gap:8px;align-items:flex-start;${isMe?'flex-direction:row-reverse;':''}"><div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex-shrink:0;width:36px">${avHtml}<span style="font-size:9px;color:var(--text-muted);text-align:center;max-width:36px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500">${escHtml(uname)}</span></div><div style="max-width:72%"><div style="background:${isMe?'var(--green-700)':'var(--bg-elevated)'};color:${isMe?'#fff':'var(--text-primary)'};border-radius:${isMe?'12px 4px 12px 12px':'4px 12px 12px 12px'};padding:8px 12px;font-size:13px;line-height:1.5">${escHtml(m.content)}</div><div style="font-size:10px;color:var(--text-muted);margin-top:3px;${isMe?'text-align:right':''}">${time}</div></div></div>`;
@@ -2656,7 +2656,7 @@ async function loadDashboard() {
   else alertCard.style.display='none';
   const actEl=document.getElementById('dash-activity');
   if(!activities.length){actEl.innerHTML='<div class="empty-state">Nenhuma atividade ainda.</div>';}
-  else{actEl.innerHTML=activities.map(a=>{const avKey=a.profiles?.avatar||'av1';const uname=a.profiles?.username||'—';let avHtml;if(avKey.startsWith('http'))avHtml=`<img src="${avKey}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0">`;else{const[,e,c]=getAvatarData(avKey);avHtml=`<div style="width:28px;height:28px;border-radius:50%;background:${c};display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0">${e}</div>`;}return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">${avHtml}<div style="flex:1;min-width:0"><div style="font-size:13px;color:var(--text-primary)">${activityIcon(a.action)} <strong>${escHtml(uname)}</strong> ${escHtml(a.action)}</div>${a.details?`<div style="font-size:11px;color:var(--text-muted);margin-top:2px">${escHtml(a.details)}</div>`:''}</div><span style="font-size:11px;color:var(--text-muted);flex-shrink:0">${timeAgo(a.created_at)}</span></div>`;}).join('');}
+  else{actEl.innerHTML=activities.map(a=>{const avKey=a.profiles?.avatar||'av1';const uname=a.profiles?.username||'—';let avHtml;if(avKey.startsWith('http')||avKey.startsWith('data:'))avHtml=`<img src="${avKey}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0">`;else{const[,e,c]=getAvatarData(avKey);avHtml=`<div style="width:28px;height:28px;border-radius:50%;background:${c};display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0">${e}</div>`;}return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">${avHtml}<div style="flex:1;min-width:0"><div style="font-size:13px;color:var(--text-primary)">${activityIcon(a.action)} <strong>${escHtml(uname)}</strong> ${escHtml(a.action)}</div>${a.details?`<div style="font-size:11px;color:var(--text-muted);margin-top:2px">${escHtml(a.details)}</div>`:''}</div><span style="font-size:11px;color:var(--text-muted);flex-shrink:0">${timeAgo(a.created_at)}</span></div>`;}).join('');}
 }
 
 // ── HISTÓRICO ──
@@ -2680,7 +2680,7 @@ function renderHistorico() {
   let items=allActivities;
   if(currentFilter!=='all'){const map={stock:'estoque',pricing:'precific',chat:'mensagem',team:'membro'};items=items.filter(a=>a.action.includes(map[currentFilter]));}
   if(!items.length){el.innerHTML='<div class="empty-state">Nenhuma atividade encontrada.</div>';return;}
-  el.innerHTML=items.map(a=>{const avKey=a.profiles?.avatar||'av1';const uname=a.profiles?.username||'—';let avHtml;if(avKey.startsWith('http'))avHtml=`<img src="${avKey}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0">`;else{const[,e,c]=getAvatarData(avKey);avHtml=`<div style="width:32px;height:32px;border-radius:50%;background:${c};display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0">${e}</div>`;}const date=new Date(a.created_at).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});return `<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">${avHtml}<div style="flex:1;min-width:0"><div style="font-size:13px;color:var(--text-primary)">${activityIcon(a.action)} <strong>${escHtml(uname)}</strong> ${escHtml(a.action)}</div>${a.details?`<div style="font-size:11px;color:var(--text-muted);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(a.details)}</div>`:''}</div><span style="font-size:11px;color:var(--text-muted);flex-shrink:0">${date}</span></div>`;}).join('');
+  el.innerHTML=items.map(a=>{const avKey=a.profiles?.avatar||'av1';const uname=a.profiles?.username||'—';let avHtml;if(avKey.startsWith('http')||avKey.startsWith('data:'))avHtml=`<img src="${avKey}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0">`;else{const[,e,c]=getAvatarData(avKey);avHtml=`<div style="width:32px;height:32px;border-radius:50%;background:${c};display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0">${e}</div>`;}const date=new Date(a.created_at).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});return `<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">${avHtml}<div style="flex:1;min-width:0"><div style="font-size:13px;color:var(--text-primary)">${activityIcon(a.action)} <strong>${escHtml(uname)}</strong> ${escHtml(a.action)}</div>${a.details?`<div style="font-size:11px;color:var(--text-muted);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(a.details)}</div>`:''}</div><span style="font-size:11px;color:var(--text-muted);flex-shrink:0">${date}</span></div>`;}).join('');
 }
 
 // ── ADMIN ──
@@ -2698,7 +2698,7 @@ async function loadAdminPanel() {
   document.getElementById('admin-inativos').textContent=inativos;
   tbody.innerHTML=profiles.map(p=>{
     const avKey=p.avatar||'av1';let avHtml;
-    if(avKey.startsWith('http'))avHtml=`<img src="${avKey}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0">`;
+    if(avKey.startsWith('http')||avKey.startsWith('data:'))avHtml=`<img src="${avKey}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;flex-shrink:0">`;
     else{const[,e,c]=getAvatarData(avKey);avHtml=`<div style="width:32px;height:32px;border-radius:50%;background:${c};display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">${e}</div>`;}
     const isMe=currentUser&&p.id===currentUser.id;
     const roleClass=p.role==='admin'?'role-admin':'role-user';
