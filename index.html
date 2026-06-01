@@ -108,7 +108,7 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
   padding: 13px 20px; display: flex; align-items: center; justify-content: space-between;
   position: sticky; top: 0; z-index: 50; flex-shrink: 0;
 }
-.header-logo { font-size: 19px; font-weight: 700; color: #ffffff; letter-spacing: -0.5px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+.header-logo { font-size: 22px; font-weight: 700; color: #ffffff; letter-spacing: -0.5px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
 .header-logo-text {
   position: relative;
   background: linear-gradient(
@@ -130,6 +130,24 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
 @keyframes logoShimmer {
   0%   { background-position: 200% center; }
   100% { background-position: -100% center; }
+}
+.username-shimmer {
+  background: linear-gradient(
+    90deg,
+    #22c55e 0%,
+    #22c55e 30%,
+    #4ade80 44%,
+    #86efac 50%,
+    #4ade80 56%,
+    #22c55e 70%,
+    #22c55e 100%
+  );
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: logoShimmer 10s ease-in-out infinite;
+  font-weight: 700;
 }
 .header-logo-icon { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; }
 .header-logo-icon svg { width: 15px; height: 15px; fill: #fff; }
@@ -1611,7 +1629,7 @@ async function loadUserAndShow(user) {
   const hAvatar=document.getElementById('header-avatar');
   if(hAvatar){hAvatar.textContent=username[0].toUpperCase();hAvatar.style.background='var(--green-700)';}
   const hw=document.getElementById('home-welcome');
-  if(hw) hw.textContent='Olá, '+username+'! 👋';
+  if(hw) hw.innerHTML='Olá, <span class="username-shimmer">'+escHtml(username)+'!</span> 👋';
   if(isAdmin){['home-card-admin','conta-card-admin'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='flex';});}
   checkUserTeam(user.id);
   setTimeout(updateHeaderAvatar,300);
@@ -1844,7 +1862,7 @@ async function salvarPerfil() {
     localStorage.setItem('sw_phone_banner_'+currentUser.id,'1');
   }
   const hw=document.getElementById('home-welcome');
-  if(hw) hw.textContent='Olá, '+username+'! 👋';
+  if(hw) hw.innerHTML='Olá, <span class="username-shimmer">'+escHtml(username)+'!</span> 👋';
   updateHeaderAvatar();
   alert('✅ Perfil atualizado!');
 }
