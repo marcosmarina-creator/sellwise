@@ -1980,10 +1980,13 @@ async function uploadAvatar(inputEl) {
     });
   }
 
-  const b64 = await resizeImage(file, 200);
+  const b64 = await resizeImage(file, 150);
+  // Save directly — don't need "Salvar" button for photos
+  selectedAvatar = b64;
   const {error} = await sb.from('profiles').update({avatar: b64}).eq('id', currentUser.id);
   if(error) {
-    if(msg) { msg.style.color='var(--red)'; msg.textContent='Erro: ' + error.message; }
+    if(msg) { msg.style.color='var(--red)'; msg.textContent='Erro ao salvar: ' + error.message; }
+    console.error('Avatar save error:', error);
     return;
   }
   currentProfile.avatar = b64;
@@ -1993,7 +1996,7 @@ async function uploadAvatar(inputEl) {
     avEl.innerHTML = `<img src="${b64}" style="width:64px;height:64px;border-radius:50%;object-fit:cover">`;
     avEl.style.background = 'transparent';
   }
-  if(msg) { msg.style.color='var(--green-400)'; msg.textContent='✅ Foto salva!'; setTimeout(()=>msg.textContent='',3000); }
+  if(msg) { msg.style.color='var(--green-400)'; msg.textContent='✅ Foto salva automaticamente!'; setTimeout(()=>msg.textContent='',3000); }
 }
 
 async function salvarAvatar() {
