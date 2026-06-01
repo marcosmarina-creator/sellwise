@@ -1956,31 +1956,43 @@ async function uploadAvatar(inputEl) {
   const file = inp.files[0];
   if(file.size > 10*1024*1024) { alert('Imagem muito grande. Máximo 10MB.'); return; }
   const msg = document.getElementById('avatar-msg');
-  if(msg) { msg.style.color='var(--text-muted)'; msg.textContent='Enviando...'; }
-  const ext = file.name.split('.').pop();
-  const path = `${currentUser.id}.${ext}`;
-  const {error} = await sb.storage.from('avatars').upload(path, file, {upsert:true});
+  if(msg) { msg.style.color='var(--text-muted)'; msg.textContent='Processando...'; }
+
+  // Resize image to max 200x200 using Canvas before saving
+  function resizeImage(file, maxSize) {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+          const canvas = document.createElement('canvas');
+          let w = img.width, h = img.height;
+          if(w > h) { if(w > maxSize) { h = h*(maxSize/w); w = maxSize; } }
+          else { if(h > maxSize) { w = w*(maxSize/h); h = maxSize; } }
+          canvas.width = w; canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          resolve(canvas.toDataURL('image/jpeg', 0.85));
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  const b64 = await resizeImage(file, 200);
+  const {error} = await sb.from('profiles').update({avatar: b64}).eq('id', currentUser.id);
   if(error) {
-    // If storage not configured, save as base64 directly
-    const reader = new FileReader();
-    reader.onload = async function(e) {
-      const b64 = e.target.result;
-      await sb.from('profiles').update({avatar: b64}).eq('id', currentUser.id);
-      currentProfile.avatar = b64;
-      updateHeaderAvatar();
-      const avEl = document.getElementById('profile-avatar-display');
-      if(avEl) { avEl.innerHTML=`<img src="${b64}" style="width:64px;height:64px;border-radius:50%;object-fit:cover">`; avEl.style.background='transparent'; }
-      if(msg) { msg.style.color='var(--green-400)'; msg.textContent='✅ Foto salva!'; setTimeout(()=>msg.textContent='',3000); }
-    };
-    reader.readAsDataURL(file);
+    if(msg) { msg.style.color='var(--red)'; msg.textContent='Erro: ' + error.message; }
     return;
   }
-  const {data} = sb.storage.from('avatars').getPublicUrl(path);
-  await sb.from('profiles').update({avatar: data.publicUrl}).eq('id', currentUser.id);
-  currentProfile.avatar = data.publicUrl;
+  currentProfile.avatar = b64;
   updateHeaderAvatar();
   const avEl = document.getElementById('profile-avatar-display');
-  if(avEl) { avEl.innerHTML=`<img src="${data.publicUrl}" style="width:64px;height:64px;border-radius:50%;object-fit:cover">`; avEl.style.background='transparent'; }
+  if(avEl) {
+    avEl.innerHTML = `<img src="${b64}" style="width:64px;height:64px;border-radius:50%;object-fit:cover">`;
+    avEl.style.background = 'transparent';
+  }
   if(msg) { msg.style.color='var(--green-400)'; msg.textContent='✅ Foto salva!'; setTimeout(()=>msg.textContent='',3000); }
 }
 
