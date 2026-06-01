@@ -759,6 +759,14 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
             </div>
           </div>
 
+          <div class="home-card full" onclick="showTool('planilha')">
+            <div class="home-card-icon" style="background:rgba(34,197,94,0.12)">📊</div>
+            <div class="home-card-text">
+              <div class="home-card-title">Planilha de Produtos</div>
+              <div class="home-card-desc">Preços, margens e SKUs dos seus produtos</div>
+            </div>
+          </div>
+
           <div class="home-card full" id="home-card-admin" onclick="showTool('admin')" style="display:none">
             <div class="home-card-icon" style="background:rgba(239,68,68,0.12)">⚙️</div>
             <div>
@@ -853,6 +861,63 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
         </div>
       </div>
 
+
+      <!-- PLANILHA -->
+      <div id="panel-planilha" class="panel">
+        <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.35);border-radius:10px;padding:12px 16px;margin-bottom:14px;font-size:12px;line-height:1.6;color:#fca5a5">
+          ⚠️ <strong>Atenção:</strong> Todos os valores sugeridos contemplam desconto de 10%. Os preços são cheios — aplicar desconto de <strong>10% no máximo</strong> por anúncio.
+        </div>
+        <div style="display:flex;gap:10px;margin-bottom:12px">
+          <input type="text" id="planilha-search" placeholder="🔍 Buscar produto, SKU ou observação..." oninput="filtrarPlanilha()" style="flex:1;padding:11px 14px;background:var(--bg-elevated);border:1px solid var(--border-strong);border-radius:var(--radius);color:var(--text-primary);font-size:14px;font-family:'Geist',sans-serif" />
+          <button onclick="abrirFormPlanilha()" style="padding:11px 16px;background:var(--green-700);color:#fff;border:none;border-radius:var(--radius);font-size:14px;font-weight:600;cursor:pointer;font-family:'Geist',sans-serif;white-space:nowrap;display:flex;align-items:center;gap:6px">+ Produto</button>
+        </div>
+
+        <!-- FORM ADICIONAR PRODUTO -->
+        <div id="planilha-form" style="display:none;background:var(--bg-card);border:1px solid var(--border-green);border-radius:12px;padding:16px;margin-bottom:14px">
+          <div style="font-size:13px;font-weight:700;color:var(--green-400);margin-bottom:14px">➕ Novo Produto</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+            <div>
+              <label style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;display:block;margin-bottom:4px">SKU</label>
+              <input type="text" id="pf-sku" placeholder="Ex: ML-PROD-001" style="width:100%;padding:9px 12px;background:var(--bg-elevated);border:1px solid var(--border-strong);border-radius:var(--radius);color:var(--text-primary);font-size:13px;font-family:'Geist',sans-serif" />
+            </div>
+            <div>
+              <label style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;display:block;margin-bottom:4px">Nome do Produto</label>
+              <input type="text" id="pf-nome" placeholder="Ex: Suporte de Celular" style="width:100%;padding:9px 12px;background:var(--bg-elevated);border:1px solid var(--border-strong);border-radius:var(--radius);color:var(--text-primary);font-size:13px;font-family:'Geist',sans-serif" />
+            </div>
+            <div>
+              <label style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;display:block;margin-bottom:4px">Custo (R$)</label>
+              <input type="text" id="pf-custo" placeholder="Ex: R$ 25,00" style="width:100%;padding:9px 12px;background:var(--bg-elevated);border:1px solid var(--border-strong);border-radius:var(--radius);color:var(--text-primary);font-size:13px;font-family:'Geist',sans-serif" />
+            </div>
+            <div>
+              <label style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;display:block;margin-bottom:4px">ML Clássico (R$)</label>
+              <input type="text" id="pf-mlc" placeholder="Ex: R$ 49,90" style="width:100%;padding:9px 12px;background:var(--bg-elevated);border:1px solid var(--border-strong);border-radius:var(--radius);color:var(--text-primary);font-size:13px;font-family:'Geist',sans-serif" />
+            </div>
+            <div>
+              <label style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;display:block;margin-bottom:4px">ML Premium (R$)</label>
+              <input type="text" id="pf-mlp" placeholder="Ex: R$ 52,90" style="width:100%;padding:9px 12px;background:var(--bg-elevated);border:1px solid var(--border-strong);border-radius:var(--radius);color:var(--text-primary);font-size:13px;font-family:'Geist',sans-serif" />
+            </div>
+            <div>
+              <label style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;display:block;margin-bottom:4px">Shopee (R$)</label>
+              <input type="text" id="pf-shopee" placeholder="Ex: R$ 48,00" style="width:100%;padding:9px 12px;background:var(--bg-elevated);border:1px solid var(--border-strong);border-radius:var(--radius);color:var(--text-primary);font-size:13px;font-family:'Geist',sans-serif" />
+            </div>
+            <div>
+              <label style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;display:block;margin-bottom:4px">Margem líquida (%)</label>
+              <input type="number" id="pf-margem" placeholder="Ex: 20" min="0" max="100" style="width:100%;padding:9px 12px;background:var(--bg-elevated);border:1px solid var(--border-strong);border-radius:var(--radius);color:var(--text-primary);font-size:13px;font-family:'Geist',sans-serif" />
+            </div>
+            <div>
+              <label style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;display:block;margin-bottom:4px">Observações</label>
+              <input type="text" id="pf-obs" placeholder="Ex: Chegou em Janeiro 2025" style="width:100%;padding:9px 12px;background:var(--bg-elevated);border:1px solid var(--border-strong);border-radius:var(--radius);color:var(--text-primary);font-size:13px;font-family:'Geist',sans-serif" />
+            </div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button onclick="adicionarProdutoPlanilha()" style="flex:1;padding:11px;background:var(--green-700);color:#fff;border:none;border-radius:var(--radius);font-size:14px;font-weight:600;cursor:pointer;font-family:'Geist',sans-serif">💾 Salvar Produto</button>
+            <button onclick="fecharFormPlanilha()" style="padding:11px 16px;background:var(--bg-elevated);color:var(--text-secondary);border:1px solid var(--border);border-radius:var(--radius);font-size:14px;cursor:pointer;font-family:'Geist',sans-serif">Cancelar</button>
+          </div>
+          <div id="pf-msg" style="font-size:12px;margin-top:8px;min-height:16px"></div>
+        </div>
+
+        <div id="planilha-tbody" style="display:flex;flex-direction:column;gap:10px"></div>
+      </div>
       <!-- SOLICITAR EQUIPE -->
       <div id="panel-solicitar-equipe" class="panel">
         <div class="card">
@@ -1829,13 +1894,14 @@ function goSection(s) {
   pushNavState(s);
 }
 function showTool(id) {
-  const sectionOf={preco:'calculadoras',lucro:'calculadoras',comparador:'calculadoras',estoque:'estoque-hub',dashboard:'equipe-hub',chat:'equipe-hub',equipe:'equipe-hub',notas:'equipe-hub',historico:'equipe-hub',perfil:'conta',admin:'conta'};
-  const titles={preco:'Precificação',lucro:'Lucratividade',comparador:'Comparador ML vs Shopee',estoque:'Controle de Estoque',dashboard:'Dashboard',chat:'Chat da Equipe',equipe:'Minha Equipe',notas:'Notas & Tarefas',historico:'Histórico',perfil:'Meu Perfil',admin:'Painel Admin'};
+  const sectionOf={preco:'calculadoras',lucro:'calculadoras',comparador:'calculadoras',estoque:'estoque-hub',dashboard:'equipe-hub',chat:'equipe-hub',equipe:'equipe-hub',notas:'equipe-hub',historico:'equipe-hub',perfil:'conta',admin:'conta',planilha:'home'};
+  const titles={preco:'Precificação',lucro:'Lucratividade',comparador:'Comparador ML vs Shopee',estoque:'Controle de Estoque',dashboard:'Dashboard',chat:'Chat da Equipe',equipe:'Minha Equipe',notas:'Notas & Tarefas',historico:'Histórico',perfil:'Meu Perfil',admin:'Painel Admin',planilha:'📊 Planilha de Produtos'};
   if(!navHistory.includes(currentSection)) navHistory.push(currentSection);
   currentSection=id; activatePanel(id); showBackBar(titles[id]||id);
   updateBottomNav(sectionOf[id]||'home'); window.scrollTo({top:0,behavior:'smooth'});
   pushNavState(id);
   if(id==='solicitar-equipe') setTimeout(initSolicitarEquipe,50);
+  if(id==='planilha') setTimeout(loadPlanilha,50);
   if(id==='admin'){setTimeout(loadAdminPanel,50);setTimeout(loadAdminTeams,150);setTimeout(initNewTeamForm,250);setTimeout(loadAdminSolicitacoes,100);}
   if(id==='perfil') setTimeout(initPerfilPanel,50);
   if(id==='equipe') setTimeout(initEquipePanel,50);
@@ -3041,6 +3107,178 @@ async function checkUserRequest(){
   document.addEventListener('click', hideTooltip);
   document.addEventListener('scroll', hideTooltip, true);
 })();
+
+  // ── PLANILHA ──
+  const PLANILHA_DATA = [
+    {sku:'ML-SUPORT-BANHO',nome:'Suporte de banho em pé para bebê',custo:'R$ 165,00',ml_c:'R$ 352,20',ml_p:'R$ 373,00',shopee:'R$ 303,00',margem:'20%',obs:'Chegou em Agosto 2025',margem_raw:20},
+    {sku:'ML-TROC-FRALD-UN',nome:'Trocador de fraldas',custo:'R$ 37,00',ml_c:'R$ 73,80',ml_p:'R$ 78,00',shopee:'R$ 77,70',margem:'30%',obs:'Chegou em Agosto 2025',margem_raw:30},
+    {sku:'ML-CARR-MOTO-UN',nome:'Carregador de Cel para motocicletas',custo:'R$ 23,00',ml_c:'R$ 36,00',ml_p:'R$ 38,10',shopee:'R$ 36,90',margem:'0%',obs:'Chegou em Julho 2025',margem_raw:0},
+    {sku:'ML-MINI-IMPRESSO',nome:'Impressora Portátil 12,7mm',custo:'R$ 534,03',ml_c:'R$ 971,40',ml_p:'R$ 1.029,60',shopee:'R$ 1.044,00',margem:'30%',obs:'Chegou em Julho 2025',margem_raw:30},
+    {sku:'ML-CARTU-TINT-IMP',nome:'Cartucho Tinta 12,7mm',custo:'R$ 266,00',ml_c:'R$ 499,20',ml_p:'R$ 528,90',shopee:'R$ 522,90',margem:'30%',obs:'Chegou em Julho 2025',margem_raw:30},
+    {sku:'ML-CEL-SUPORT-BRA',nome:'Suporte de Celular',custo:'R$ 18,65',ml_c:'R$ 34,20',ml_p:'R$ 36,00',shopee:'R$ 38,10',margem:'0%',obs:'Chegou em Julho e Setembro 2025',margem_raw:0},
+    {sku:'ML-GAME-GATI-UNI',nome:'Gatilho Gamer SaraFox + Luvinha',custo:'R$ 29,24',ml_c:'R$ 60,00',ml_p:'R$ 63,60',shopee:'R$ 62,70',margem:'30%',obs:'Chegou em Janeiro 2025',margem_raw:30},
+    {sku:'ML-HOME-SORV-110',nome:'Máquina de Sorvete Basen',custo:'R$ 90,00',ml_c:'—',ml_p:'—',shopee:'R$ 205,80',margem:'50%',obs:'Chegou em Março 2025',margem_raw:50},
+    {sku:'ML-TORRE-RGB-LED',nome:'Barra LED',custo:'R$ 47,40',ml_c:'R$ 81,90',ml_p:'R$ 86,70',shopee:'R$ 86,70',margem:'13%',obs:'—',margem_raw:13},
+    {sku:'ML-HOME-BENJA-KIT',nome:'Benjamin (Kit c/ 2 unidades)',custo:'R$ 5,36',ml_c:'R$ 19,00',ml_p:'R$ 19,00',shopee:'—',margem:'58%',obs:'⚠️ NÃO APLICAR DESCONTO. VALOR FIXO R$19',margem_raw:58,alerta:true},
+    {sku:'—',nome:'Toca de banho Little Joys',custo:'R$ 8,70',ml_c:'R$ 20,70',ml_p:'R$ 24,30',shopee:'R$ 21,30',margem:'20%',obs:'Chegou em Setembro 2025',margem_raw:20},
+    {sku:'ML-SUPORT-BANHO',nome:'Suporte de banho em pé para bebê (v2)',custo:'R$ 150,00',ml_c:'R$ 362,20',ml_p:'R$ 369,00',shopee:'R$ 349,00',margem:'19%',obs:'—',margem_raw:19},
+    {sku:'ML-HOME-SORV-110',nome:'Máquina de Sorvete Basen (v2)',custo:'R$ 85,00',ml_c:'—',ml_p:'—',shopee:'R$ 229,00',margem:'29%',obs:'—',margem_raw:29},
+    {sku:'ML-TROC-FRALD-UN',nome:'Trocador de fraldas (fev/2026)',custo:'R$ 30,60',ml_c:'R$ 73,80',ml_p:'R$ 78,00',shopee:'R$ 77,70',margem:'30%',obs:'fev/2026',margem_raw:30},
+  ];
+
+  function margemCor(v) {
+    if(v === 0) return 'var(--red)';
+    if(v < 15)  return '#f97316';
+    if(v < 25)  return '#fbbf24';
+    return 'var(--green-400)';
+  }
+
+  let _planilhaCache = [];
+
+  async function loadPlanilha() {
+    const {data, error} = await sb.from('planilha_produtos').select('*').order('created_at', {ascending: true});
+    if(error) { console.error('loadPlanilha error:', error); return; }
+    if(data && data.length > 0) {
+      _planilhaCache = data.map(r => ({
+        id: r.id,
+        sku: r.sku || '—',
+        nome: r.nome,
+        custo: r.custo || '—',
+        ml_c: r.ml_c || '—',
+        ml_p: r.ml_p || '—',
+        shopee: r.shopee || '—',
+        margem: (r.margem_raw || 0) + '%',
+        margem_raw: r.margem_raw || 0,
+        obs: r.obs || '—',
+        alerta: r.alerta || false
+      }));
+    } else {
+      // First load: seed with default data
+      _planilhaCache = PLANILHA_DATA;
+      await seedPlanilha();
+    }
+    renderPlanilha();
+  }
+
+  async function seedPlanilha() {
+    const rows = PLANILHA_DATA.map(r => ({
+      sku: r.sku, nome: r.nome, custo: r.custo,
+      ml_c: r.ml_c, ml_p: r.ml_p, shopee: r.shopee,
+      margem_raw: r.margem_raw, obs: r.obs, alerta: r.alerta || false
+    }));
+    await sb.from('planilha_produtos').insert(rows);
+  }
+
+  function renderPlanilha(filtro) {
+    const el = document.getElementById('planilha-tbody');
+    if(!el) return;
+    const source = _planilhaCache.length ? _planilhaCache : PLANILHA_DATA;
+    const q = (filtro || document.getElementById('planilha-search')?.value || '').toLowerCase();
+    const dados = q
+      ? source.filter(r =>
+          (r.sku||'').toLowerCase().includes(q) ||
+          r.nome.toLowerCase().includes(q) ||
+          (r.obs||'').toLowerCase().includes(q))
+      : source;
+
+    if(!dados.length) {
+      el.innerHTML = '<div class="empty-state">Nenhum produto encontrado.</div>';
+      return;
+    }
+    el.innerHTML = dados.map(r => `
+      <div style="background:var(--bg-card);border:1px solid ${r.alerta ? 'rgba(251,191,36,0.4)' : 'rgba(34,197,94,0.18)'};border-radius:12px;padding:14px 16px;${r.alerta ? 'background:rgba(251,191,36,0.04);' : ''}">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px">
+          <div style="flex:1;min-width:0">
+            <div style="font-size:15px;font-weight:700;color:var(--text-primary);margin-bottom:3px">${escHtml(r.nome)}</div>
+            <div style="font-size:11px;color:var(--text-muted);font-family:monospace">${escHtml(r.sku)}</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0">
+            <div style="font-size:20px;font-weight:800;color:${margemCor(r.margem_raw)}">${escHtml(r.margem)}</div>
+            <div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em">margem</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:${r.obs && r.obs !== '—' ? '10px' : '0'}">
+          <div style="background:var(--bg-elevated);border-radius:8px;padding:8px 10px">
+            <div style="font-size:10px;color:var(--text-muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:0.05em">Custo</div>
+            <div style="font-size:13px;font-weight:600;color:var(--text-secondary)">${escHtml(r.custo)}</div>
+          </div>
+          <div style="background:var(--bg-elevated);border-radius:8px;padding:8px 10px">
+            <div style="font-size:10px;color:var(--text-muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:0.05em">ML Clás.</div>
+            <div style="font-size:13px;font-weight:600;color:var(--green-300)">${escHtml(r.ml_c)}</div>
+          </div>
+          <div style="background:var(--bg-elevated);border-radius:8px;padding:8px 10px">
+            <div style="font-size:10px;color:var(--text-muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:0.05em">ML Prem.</div>
+            <div style="font-size:13px;font-weight:600;color:var(--green-400)">${escHtml(r.ml_p)}</div>
+          </div>
+          <div style="background:var(--bg-elevated);border-radius:8px;padding:8px 10px">
+            <div style="font-size:10px;color:var(--text-muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:0.05em">Shopee</div>
+            <div style="font-size:13px;font-weight:600;color:#60a5fa">${escHtml(r.shopee)}</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding-top:8px;border-top:1px solid var(--border)">
+          ${r.obs && r.obs !== '—' ? `<span style="font-size:12px;color:${r.alerta ? '#fbbf24' : 'var(--text-muted)'}">📌 ${escHtml(r.obs)}</span>` : '<span></span>'}
+          ${r.id ? `<button onclick="deletarProdutoPlanilha('${r.id}')" style="font-size:11px;padding:3px 9px;background:rgba(248,113,113,0.08);color:var(--red);border:1px solid rgba(248,113,113,0.25);border-radius:5px;cursor:pointer;flex-shrink:0">🗑 Remover</button>` : ''}
+        </div>
+      </div>`).join('');
+  }
+
+  function filtrarPlanilha() {
+    const q = document.getElementById('planilha-search')?.value || '';
+    renderPlanilha(q);
+  }
+
+  async function deletarProdutoPlanilha(id) {
+    if(!confirm('Apagar este produto da planilha?')) return;
+    await sb.from('planilha_produtos').delete().eq('id', id);
+    _planilhaCache = _planilhaCache.filter(r => r.id !== id);
+    renderPlanilha();
+  }
+
+  function abrirFormPlanilha() {
+    const form = document.getElementById('planilha-form');
+    if(form) { form.style.display = form.style.display === 'none' ? 'block' : 'none'; }
+  }
+
+  function fecharFormPlanilha() {
+    const form = document.getElementById('planilha-form');
+    if(form) form.style.display = 'none';
+    ['pf-sku','pf-nome','pf-custo','pf-mlc','pf-mlp','pf-shopee','pf-margem','pf-obs'].forEach(id => {
+      const el = document.getElementById(id); if(el) el.value = '';
+    });
+    const msg = document.getElementById('pf-msg'); if(msg) msg.textContent = '';
+  }
+
+  async function adicionarProdutoPlanilha() {
+    const sku    = document.getElementById('pf-sku')?.value.trim() || '—';
+    const nome   = document.getElementById('pf-nome')?.value.trim();
+    const custo  = document.getElementById('pf-custo')?.value.trim() || '—';
+    const mlc    = document.getElementById('pf-mlc')?.value.trim() || '—';
+    const mlp    = document.getElementById('pf-mlp')?.value.trim() || '—';
+    const shopee = document.getElementById('pf-shopee')?.value.trim() || '—';
+    const margem_raw = parseInt(document.getElementById('pf-margem')?.value) || 0;
+    const obs    = document.getElementById('pf-obs')?.value.trim() || '—';
+    const msg    = document.getElementById('pf-msg');
+
+    if(!nome) {
+      if(msg) { msg.style.color='var(--red)'; msg.textContent='Informe o nome do produto.'; }
+      return;
+    }
+    if(msg) { msg.style.color='var(--text-muted)'; msg.textContent='Salvando...'; }
+
+    const fmt = v => (!v || v==='—') ? '—' : (v.startsWith('R$') ? v : 'R$ '+v);
+    const row = { sku, nome, custo:fmt(custo), ml_c:fmt(mlc), ml_p:fmt(mlp),
+                  shopee:fmt(shopee), margem_raw, obs, alerta:false };
+
+    const {data, error} = await sb.from('planilha_produtos').insert(row).select().single();
+    if(error) {
+      if(msg) { msg.style.color='var(--red)'; msg.textContent='Erro: '+error.message; }
+      return;
+    }
+    _planilhaCache.push({...row, id:data.id, margem:margem_raw+'%'});
+    if(msg) { msg.style.color='var(--green-400)'; msg.textContent='✅ Produto salvo!'; }
+    setTimeout(() => { fecharFormPlanilha(); renderPlanilha(); }, 700);
+  }
+
 
 init();
 </script>
