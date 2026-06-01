@@ -7,8 +7,13 @@
   <meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Sellwise — Painel do Vendedor</title>
+<meta name="theme-color" content="#071a0d">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Sellwise">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg viewBox='0 0 44 44' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='44' height='44' rx='10' fill='%23071a0d'/%3E%3Crect x='1.5' y='1.5' width='41' height='41' rx='9' fill='%23071a0d' stroke='%2322c55e' stroke-width='1.5'/%3E%3Crect x='9' y='12' width='20' height='4.5' rx='2.25' fill='%2322c55e'/%3E%3Crect x='9' y='19.75' width='14' height='4.5' rx='2.25' fill='%2322c55e'/%3E%3Crect x='9' y='27.5' width='17' height='4.5' rx='2.25' fill='%2322c55e'/%3E%3C/svg%3E" />
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg viewBox='0 0 44 44' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='44' height='44' rx='10' fill='%23071a0d'/%3E%3Crect x='1.5' y='1.5' width='41' height='41' rx='9' fill='%23071a0d' stroke='%2322c55e' stroke-width='1.5'/%3E%3Crect x='9' y='12' width='20' height='4.5' rx='2.25' fill='%2322c55e'/%3E%3Crect x='9' y='19.75' width='14' height='4.5' rx='2.25' fill='%2322c55e'/%3E%3Crect x='9' y='27.5' width='17' height='4.5' rx='2.25' fill='%2322c55e'/%3E%3C/svg%3E" />
+<link rel="apple-touch-icon" sizes="180x180" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAYAAAA9zQYyAAAE/klEQVR4nO3dPXLjRhCAUVDlWzjba+gUDpzu4ZQ68Cn2Gsp8jnWgwhbJBYgZ/Pb0vBeqJFIAv+pqEZB0Gy707cf3n1c+P8f4fP+4XfXcpz2xePt2VuSHPomImXJk3Ic8sJApcUTYuz5gbcj//f3vnk9PEH/+81fV5+8Z9i4PVBqygPtUGvgeYW9+gKWYRcy9pbi3Rr3pi1/FLGReeRX2lqhXfaGQ2cveYVd/wVzMQmaLubBro36r+WQxc5S5hmrfOSsOWswcbY+oi8b51AMKmSNNrSAl68fihBYzV5hqrGRSV+3Qc08ER1jT2sug3ZNBNEtNzgZt1SCC2tVjMmgxE0lN1EU7tJi5WmmDvwVtb6YVU60uTmjTmShKWnwI2nSmNc/NvpzQpjPRLDX5K2jTmVbdtzs7oU1nonrVZvWlb4jsbRisG7RvbHhyQls3iG6uUSsHqQiaVARNKrfnHwjtz7Tk+Ve1TGhSETSpCJpUBE0qgiYVQZOKoElF0KQiaFIRNKkImlQETSqCJhVBk4qgSUXQpCJoUvnj6m+gRu0/Re+B3zB61ETQQp43nhthfwkdtJDLCftL2B1azOv0ft7CBg1rhAy69ymzVc/nL2TQsFa4oHueLnvq9TyGCxq2EDSpCJpUBE0q4YLu/UrXXno9j+GChi1CBt3rdNlLz+cvZNCwVtige54yW/R+3kLfPjq+OL1e9arRe8ij0EGPhD1PyI+aCHrkxWNJ2B0a1hA0qQiaVARNKoImFUGTiqBJRdCkImhSETSpCJpUmrqXo8Wbk9x/cq4mgm4x5JG/Cnqu8CtHyzHfy3Ic0YUOOlsE2Y4norBBZ33xsx5XFCGDzv6iZz++K4UMGtYKF3Qv06uX4zxbuKBhC0GTiqBJRdCkImhSCRd0L/c89HKcZwsXNGwRMujs0yv78V0pZNDDkPdFz3pcUYQNehjyvfjZjiei0EEPQ54IshxHdE38xkrLfx9ayOdqIuiROFgSfuWAGoImFUGTiqBJRdCkImhSETSpCJpUBE0qgiYVQZNKU/dytHhzUi33q2zTRNA9hDzy96S3CR10TyE/E/Y6YXfonmO+5zzUCRs0rBEyaFPpkfNRLmTQsFa4oE2jac5LmXBBwxaCJhVBk4qgSSVc0K6MTXNeyoQLGrYIGbRp9Mj5KBcyaFgrbNCm0hfnoU7o20db/qujWwl5ndBBj3oKW8jbNBH0yIvNkrA7NKwhaFIRNKkImlQETSqCJhVBk4qgSUXQpCJoUhE0qQiaVARNKoImFUGTiqBJRdCk8vb5/nG7/0APv+ZEDs+tfr5/3ExoUhE0qQiaVCaDtkcT3Vyjb8PwtUyf+t3AzsaGrRykMhu0tYOoXrX5K2hrB626b/flymFKE81Skw9Bm9K05rnZxR8KTWmiKGnxt6BNaVox1WrR23amNFcrbXAy6KnyRc1Vptqb2yRmJ7SoiaAm5mFYWDns00Sz1GT1pW9TmrOsaW0xaKsHV6hdNUbFK8W3H99/Tn3cP/JhT3PDsnT9LV455h7QtGYvW2MehsodWtQcZY+Yh6Fi5bg3t34MgxWEOq+G4Zp32Ta9LSds1to75NHm95lfRT0MwubR0nq69drHLhdOlqIeibtPpT9j7XEhb9crgaVhjwSeU+2bBHtekT7k0nZt2PTpiFsrDr1XQ9hMOfIeodNuPhJ338660e3Su+lEntOVd2n+D3I2lyeJ2OnpAAAAAElFTkSuQmCC" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -166,7 +171,30 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
 .back-btn { background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 5px; padding: 4px 0; font-family: 'Geist', sans-serif; transition: color 0.15s; }
 .back-btn:hover { color: var(--green-400); }
 .back-bar-title { font-size: 14px; font-weight: 600; color: var(--text-primary); }
-.back-bar-tag { font-size: 11px; font-weight: 600; padding: 3px 9px; background: var(--green-dim); color: var(--green-400); border: 1px solid var(--border-green); border-radius: 20px; margin-left: auto; flex-shrink: 0; }
+.back-bar-tag { font-size: 11px; font-weight: 600; padding: 3px 9px; background: var(--green-dim); color: var(--green-400); border: 1px solid var(--border-green); border-radius: 20px; margin-left: auto; flex-shrink: 0; position: relative; cursor: pointer; }
+.back-bar-tag .tag-tooltip {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  left: auto;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-green);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  white-space: normal;
+  width: 260px;
+  z-index: 9999;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  text-align: left;
+}
+.back-bar-tag:hover .tag-tooltip,
+.back-bar-tag.tooltip-open .tag-tooltip { display: block; }
+.back-bar-tag .tag-tooltip strong { color: var(--green-400); }
 
 .main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
 .content { padding: 20px; max-width: 860px; margin: 0 auto; width: 100%; padding-bottom: 90px; }
@@ -443,6 +471,9 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
   .hidden { display: none !important; }
   .home-card.full .home-card-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
 
+
+  /* Tooltip mobile */
+  .back-bar-tag .tag-tooltip { width: 220px; font-size: 11px; padding: 10px 12px; }
 </style>
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta http-equiv="X-Frame-Options" content="DENY">
@@ -625,7 +656,7 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
   <div class="back-bar" id="back-bar">
     <button class="back-btn" id="back-btn" onclick="goBack()">← Voltar</button>
     <span class="back-bar-title" id="back-bar-title"></span>
-    <span class="back-bar-tag">⚡ Taxas 2026</span>
+    <span class="back-bar-tag">⚡ Taxas 2026 · jun/26<div class="tag-tooltip"><strong>Mercado Livre (mar/2026)</strong><br>Clássico: 10–14% | Premium: 15–19%<br>Abaixo R$79: + custo fixo/variável por item<br><br><strong>Shopee (mar/2026)</strong><br>&lt;R$8: 50% | R$8–R$79: 20%+R$4<br>R$80–R$99: 14%+R$16 | R$100–R$199: 14%+R$20<br>R$200+: 14%+R$26 | CPF alto vol.: +R$3</div></span>
   </div>
 
   <!-- MAIN -->
@@ -635,7 +666,10 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
       <!-- HOME -->
       <div id="panel-home" class="panel active">
         <div class="section-welcome">
-          <div class="section-welcome-title" id="home-welcome">Olá! 👋</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:4px">
+            <div class="section-welcome-title" id="home-welcome">Olá! 👋</div>
+            <span class="back-bar-tag" style="margin-left:0">⚡ Taxas 2026 · jun/26<div class="tag-tooltip"><strong>Mercado Livre (mar/2026)</strong><br>Clássico: 10–14% | Premium: 15–19%<br>Abaixo R$79: + custo fixo/variável por item<br><br><strong>Shopee (mar/2026)</strong><br>&lt;R$8: 50% | R$8–R$79: 20%+R$4<br>R$80–R$99: 14%+R$16 | R$100–R$199: 14%+R$20<br>R$200+: 14%+R$26 | CPF alto vol.: +R$3</div></span>
+          </div>
           <div class="section-welcome-sub">O que você quer fazer hoje?</div>
         </div>
         <div class="home-grid">
@@ -868,26 +902,38 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
             <div class="form-group">
               <label>Plataforma</label>
               <select id="p-plat" onchange="onPlatPreco()">
-                <optgroup label="Mercado Livre — Clássico">
+                <optgroup label="Mercado Livre — Clássico (mar/2026)">
                   <option value="ml_10">ML Clássico · cat. baixa (10%)</option>
                   <option value="ml_12" selected>ML Clássico · cat. média (12%)</option>
                   <option value="ml_14">ML Clássico · cat. alta (14%)</option>
                 </optgroup>
-                <optgroup label="Mercado Livre — Premium">
+                <optgroup label="Mercado Livre — Premium (mar/2026)">
                   <option value="ml_15">ML Premium · cat. baixa (15%)</option>
                   <option value="ml_17">ML Premium · cat. média (17%)</option>
                   <option value="ml_19">ML Premium · cat. alta (19%)</option>
                 </optgroup>
-                <optgroup label="Shopee 2026">
-                  <option value="shopee">Shopee · faixa automática por preço</option>
+                <optgroup label="ML · Custo fixo produto abaixo R$79">
+                  <option value="ml_12_6">ML Clássico 12% + R$6 fixo (abaixo R$79)</option>
+                  <option value="ml_17_6">ML Premium 17% + R$6 fixo (abaixo R$79)</option>
+                </optgroup>
+                <optgroup label="ML · Custo variável por peso/dimensão (mar/2026)">
+                  <option value="ml_12_vol">ML Clássico 12% + custo por peso</option>
+                  <option value="ml_17_vol">ML Premium 17% + custo por peso</option>
+                </optgroup>
+                <optgroup label="Shopee 2026 (mar/2026)">
+                  <option value="shopee">Shopee · faixas automáticas por preço</option>
                 </optgroup>
                 <option value="custom">Personalizado</option>
               </select>
             </div>
             <div class="form-group" id="p-custom-wrap" style="display:none"><label>Taxa personalizada (%)</label><input type="number" id="p-taxa-custom" placeholder="0" min="0" max="100" /></div>
+            <div class="form-group" id="p-vol-wrap" style="display:none"><label>Peso real (g)</label><input type="number" id="p-peso" placeholder="ex: 300" min="0" /></div>
+            <div class="form-group" id="p-vol-wrap2" style="display:none"><label>Dimensões (cm): C × L × A</label>
+              <div style="display:flex;gap:6px"><input type="number" id="p-comp" placeholder="C" min="0" style="flex:1"><input type="number" id="p-larg" placeholder="L" min="0" style="flex:1"><input type="number" id="p-alt" placeholder="A" min="0" style="flex:1"></div>
+            </div>
             <div class="form-group"><label>Tipo de vendedor</label><select id="p-vendedor"><option value="cnpj">CNPJ / CPF baixo volume</option><option value="cpf">CPF alto volume (+450/90d)</option></select></div>
           </div>
-          <div class="info-box" id="p-info">ℹ️ <span>A Shopee cobra por faixa de preço + taxa fixa por item.</span></div>
+          <div class="info-box" id="p-info">ℹ️ <span>Shopee 2026: comissão por faixa de preço + taxa fixa/item. &lt;R$79: 20%+R$4 | R$80–99: 14%+R$16 | R$100–199: 14%+R$20 | R$200+: 14%+R$26. CPF alto vol. (+450 ped/90d): +R$3 por item. Atualizado jun/2026.</span></div>
           <button class="btn btn-primary" onclick="calcPreco()">🧮 Calcular preço</button>
           <div class="result-grid" id="p-result" style="display:none">
             <div class="metric"><div class="metric-label">Preço mínimo</div><div class="metric-value" id="p-min">—</div></div>
@@ -955,23 +1001,35 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
             <div class="form-group">
               <label>Plataforma</label>
               <select id="l-plat" onchange="onPlatLucro()">
-                <optgroup label="Mercado Livre — Clássico">
+                <optgroup label="Mercado Livre — Clássico (mar/2026)">
                   <option value="ml_10">ML Clássico · cat. baixa (10%)</option>
                   <option value="ml_12" selected>ML Clássico · cat. média (12%)</option>
                   <option value="ml_14">ML Clássico · cat. alta (14%)</option>
                 </optgroup>
-                <optgroup label="Mercado Livre — Premium">
+                <optgroup label="Mercado Livre — Premium (mar/2026)">
                   <option value="ml_15">ML Premium · cat. baixa (15%)</option>
                   <option value="ml_17">ML Premium · cat. média (17%)</option>
                   <option value="ml_19">ML Premium · cat. alta (19%)</option>
                 </optgroup>
-                <optgroup label="Shopee 2026">
-                  <option value="shopee">Shopee · faixa automática por preço</option>
+                <optgroup label="ML · Custo fixo produto abaixo R$79">
+                  <option value="ml_12_6">ML Clássico 12% + R$6 fixo (abaixo R$79)</option>
+                  <option value="ml_17_6">ML Premium 17% + R$6 fixo (abaixo R$79)</option>
+                </optgroup>
+                <optgroup label="ML · Custo variável por peso/dimensão (mar/2026)">
+                  <option value="ml_12_vol">ML Clássico 12% + custo por peso</option>
+                  <option value="ml_17_vol">ML Premium 17% + custo por peso</option>
+                </optgroup>
+                <optgroup label="Shopee 2026 (mar/2026)">
+                  <option value="shopee">Shopee · faixas automáticas por preço</option>
                 </optgroup>
                 <option value="custom">Personalizado</option>
               </select>
             </div>
             <div class="form-group" id="l-custom-wrap" style="display:none"><label>Taxa personalizada (%)</label><input type="number" id="l-taxa-custom" placeholder="0" /></div>
+            <div class="form-group" id="l-vol-wrap" style="display:none"><label>Peso real (g)</label><input type="number" id="l-peso" placeholder="ex: 300" min="0" /></div>
+            <div class="form-group" id="l-vol-wrap2" style="display:none"><label>Dimensões (cm): C × L × A</label>
+              <div style="display:flex;gap:6px"><input type="number" id="l-comp" placeholder="C" min="0" style="flex:1"><input type="number" id="l-larg" placeholder="L" min="0" style="flex:1"><input type="number" id="l-alt" placeholder="A" min="0" style="flex:1"></div>
+            </div>
             <div class="form-group"><label>Imposto / outros (%)</label><input type="number" id="l-imposto" placeholder="0" /></div>
             <div class="form-group"><label>Tipo de vendedor</label><select id="l-vendedor"><option value="cnpj">CNPJ / CPF baixo volume</option><option value="cpf">CPF alto volume (+450/90d)</option></select></div>
           </div>
@@ -1725,7 +1783,7 @@ function showTool(id) {
   if(id==='equipe') setTimeout(initEquipePanel,50);
   if(id==='dashboard') setTimeout(loadDashboard,50);
   if(id==='chat') setTimeout(loadChat,50);
-  if(id==='notas') setTimeout(async()=>{if(!currentTeam)await initEquipePanel();loadNotas();},50);
+  if(id==='notas') setTimeout(async()=>{if(!currentTeam)await loadCurrentTeam();loadNotas();},50);
   if(id==='historico') setTimeout(loadHistorico,50);
   if(id==='estoque'){loadUserStock().then(()=>renderCalcHistoryPanel('estoque','hist-estoque'));}
   if(['preco','lucro','comparador'].includes(id)){
@@ -2071,6 +2129,20 @@ async function salvarPrecificacao() {
 
 // ── CALCULADORAS ──
 const ML_RATES={ml_10:10,ml_12:12,ml_14:14,ml_15:15,ml_17:17,ml_19:19};
+function getMLCustoVariavel(pesoG, compCm, largCm, altCm) {
+  // Calcular peso cubado: (C x L x A) / 5000 em gramas
+  const pesoCubadoG = compCm && largCm && altCm ? (compCm * largCm * altCm / 5000) * 1000 : 0;
+  const pesoFinalG = Math.max(pesoG || 0, pesoCubadoG);
+  // Tabela Mercado Envios 2026 (aprox.)
+  if(pesoFinalG <= 300)  return 5.50;
+  if(pesoFinalG <= 500)  return 6.00;
+  if(pesoFinalG <= 1000) return 7.50;
+  if(pesoFinalG <= 2000) return 9.00;
+  if(pesoFinalG <= 5000) return 12.00;
+  if(pesoFinalG <= 10000) return 18.00;
+  if(pesoFinalG <= 20000) return 28.00;
+  return 45.00;
+}
 function getShopeeFaixa(preco,altoCPF){
   let perc,fixa;
   if(preco<8){perc=50;fixa=0;}
@@ -2081,7 +2153,14 @@ function getShopeeFaixa(preco,altoCPF){
   return{perc,fixa};
 }
 function faixaLabel(p){if(p<8)return'abaixo de R$8';if(p<80)return'R$8–R$79,99';if(p<100)return'R$80–R$99,99';if(p<200)return'R$100–R$199,99';return'R$200+';}
-function onPlatPreco(){const v=document.getElementById('p-plat').value;document.getElementById('p-custom-wrap').style.display=v==='custom'?'flex':'none';document.getElementById('p-info').classList.toggle('show',v==='shopee');}
+function onPlatPreco(){
+  const v=document.getElementById('p-plat').value;
+  document.getElementById('p-custom-wrap').style.display=v==='custom'?'flex':'none';
+  document.getElementById('p-info').classList.toggle('show',v==='shopee');
+  const isVol=v.endsWith('_vol');
+  document.getElementById('p-vol-wrap').style.display=isVol?'flex':'none';
+  document.getElementById('p-vol-wrap2').style.display=isVol?'flex':'none';
+}
 function calcPreco() {
   const custo=parseFloat(document.getElementById('p-custo').value)||0;
   const frete=parseFloat(document.getElementById('p-frete').value)||0;
@@ -2093,6 +2172,8 @@ function calcPreco() {
   let perc,fixa=0;
   if(plat==='custom') perc=parseFloat(document.getElementById('p-taxa-custom').value)||0;
   else if(plat==='shopee'){const f=getShopeeFaixa((base+fixa)/(1-(20+imposto+margem)/100),altoCPF);perc=f.perc;fixa=f.fixa;}
+  else if(plat.endsWith('_6')){perc=ML_RATES[plat.replace('_6','')];fixa=6;}
+  else if(plat.endsWith('_vol')){perc=ML_RATES[plat.replace('_vol','')];fixa=getMLCustoVariavel(parseFloat(document.getElementById('p-peso').value)||0,parseFloat(document.getElementById('p-comp').value)||0,parseFloat(document.getElementById('p-larg').value)||0,parseFloat(document.getElementById('p-alt').value)||0);}
   else perc=ML_RATES[plat];
   const deduc=perc+imposto;
   const min=(base+fixa)/(1-deduc/100);
@@ -2112,7 +2193,14 @@ function calcPreco() {
   // Manual save only — user clicks Salvar button
   renderCalcHistoryPanel('preco','hist-preco');
 }
-function onPlatLucro(){const v=document.getElementById('l-plat').value;document.getElementById('l-custom-wrap').style.display=v==='custom'?'flex':'none';if(v!=='shopee')document.getElementById('l-info').classList.remove('show');else onPrecoLucro();}
+function onPlatLucro(){
+  const v=document.getElementById('l-plat').value;
+  document.getElementById('l-custom-wrap').style.display=v==='custom'?'flex':'none';
+  if(v!=='shopee')document.getElementById('l-info').classList.remove('show');else onPrecoLucro();
+  const isVol=v.endsWith('_vol');
+  document.getElementById('l-vol-wrap').style.display=isVol?'flex':'none';
+  document.getElementById('l-vol-wrap2').style.display=isVol?'flex':'none';
+}
 function onPrecoLucro(){
   if(document.getElementById('l-plat').value!=='shopee') return;
   const preco=parseFloat(document.getElementById('l-preco').value)||0;
@@ -2130,6 +2218,8 @@ function calcLucro() {
   let perc,fixa=0;
   if(plat==='custom') perc=parseFloat(document.getElementById('l-taxa-custom').value)||0;
   else if(plat==='shopee'){const f=getShopeeFaixa(preco,altoCPF);perc=f.perc;fixa=f.fixa;}
+  else if(plat.endsWith('_6')){perc=ML_RATES[plat.replace('_6','')];fixa=6;}
+  else if(plat.endsWith('_vol')){perc=ML_RATES[plat.replace('_vol','')];fixa=getMLCustoVariavel(parseFloat(document.getElementById('l-peso').value)||0,parseFloat(document.getElementById('l-comp').value)||0,parseFloat(document.getElementById('l-larg').value)||0,parseFloat(document.getElementById('l-alt').value)||0);}
   else perc=ML_RATES[plat];
   const taxaV=preco*perc/100;
   const impostoV=preco*imposto/100;
@@ -2375,7 +2465,7 @@ async function enviarMensagem() {
 
 // ── NOTAS ──
 async function loadNotas() {
-  if(!currentTeam){await initEquipePanel();}
+  if(!currentTeam){await loadCurrentTeam();}
   if(!currentTeam) {
     const te=document.getElementById('notas-tarefas');
     const ne=document.getElementById('notas-notas');
@@ -2383,32 +2473,53 @@ async function loadNotas() {
     if(ne) ne.innerHTML='';
     return;
   }
-  const {data:notas}=await sb.from('team_notes').select('*, profiles:user_id(username)').eq('team_id',currentTeam.id).order('created_at',{ascending:false});
+  const {data:notas, error:notasErr}=await sb.from('team_notes').select('*').eq('team_id',currentTeam.id).order('created_at',{ascending:false});
+  if(notasErr){alert('Erro ao carregar notas: '+notasErr.message);return;}
   const tarefas=(notas||[]).filter(n=>n.is_task);
   const simples=(notas||[]).filter(n=>!n.is_task);
   const te=document.getElementById('notas-tarefas');
   const ne=document.getElementById('notas-notas');
-  te.innerHTML=tarefas.length?tarefas.map(n=>`<div style="padding:10px 12px;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:6px;${n.done?'opacity:0.6':''}"><div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><input type="checkbox" ${n.done?'checked':''} onchange="toggleTarefa('${n.id}',this.checked)" style="width:16px;height:16px;accent-color:var(--green-500);cursor:pointer;flex-shrink:0"><span style="flex:1;font-size:13px;${n.done?'text-decoration:line-through':''}">${escHtml(n.content)}</span><button onclick="deletarNota('${n.id}')" style="font-size:12px;color:var(--red);background:none;border:none;cursor:pointer;flex-shrink:0">✕</button></div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-left:26px"><span style="font-size:10px;color:var(--text-muted)">${n.profiles?.username||'—'}</span><button onclick="compartilharNota('${n.id}',${JSON.stringify(n.content)})" style="font-size:10px;padding:2px 8px;background:rgba(59,130,246,0.1);color:#60a5fa;border:1px solid rgba(59,130,246,0.25);border-radius:4px;cursor:pointer">👥 Equipe</button></div></div>`).join(''):'<div class="empty-state">Nenhuma tarefa ainda.</div>';
-  ne.innerHTML=simples.length?simples.map(n=>`<div style="padding:10px 12px;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:6px"><div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px"><span style="font-size:13px;color:var(--text-primary);flex:1;line-height:1.5">${escHtml(n.content)}</span><button onclick="deletarNota('${n.id}')" style="font-size:12px;color:var(--red);background:none;border:none;cursor:pointer;flex-shrink:0;padding:2px 6px">✕</button></div><div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span style="font-size:10px;color:var(--text-muted)">${n.profiles?.username||'—'} · ${timeAgo(n.created_at)}</span><button onclick="renomearNota('${n.id}',${JSON.stringify(n.content)})" style="font-size:10px;padding:2px 8px;background:var(--bg-card);color:var(--text-secondary);border:1px solid var(--border);border-radius:4px;cursor:pointer">✏️ Editar</button><button onclick="compartilharNota('${n.id}',${JSON.stringify(n.content)})" style="font-size:10px;padding:2px 8px;background:rgba(59,130,246,0.1);color:#60a5fa;border:1px solid rgba(59,130,246,0.25);border-radius:4px;cursor:pointer">👥 Equipe</button></div></div>`).join(''):'<div class="empty-state">Nenhuma nota ainda.</div>';
+  te.innerHTML=tarefas.length?tarefas.map(n=>`<div style="padding:10px 12px;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:6px;${n.done?'opacity:0.6':''}"><div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><input type="checkbox" ${n.done?'checked':''} onchange="toggleTarefa('${n.id}',this.checked)" style="width:16px;height:16px;accent-color:var(--green-500);cursor:pointer;flex-shrink:0"><span style="flex:1;font-size:13px;${n.done?'text-decoration:line-through':''}">${escHtml(n.content)}</span><button onclick="deletarNota('${n.id}')" style="font-size:12px;color:var(--red);background:none;border:none;cursor:pointer;flex-shrink:0">✕</button></div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-left:26px"><span style="font-size:10px;color:var(--text-muted)">você</span><button onclick="compartilharNota('${n.id}',${JSON.stringify(n.content)})" style="font-size:10px;padding:2px 8px;background:rgba(59,130,246,0.1);color:#60a5fa;border:1px solid rgba(59,130,246,0.25);border-radius:4px;cursor:pointer">👥 Equipe</button></div></div>`).join(''):'<div class="empty-state">Nenhuma tarefa ainda.</div>';
+  ne.innerHTML=simples.length?simples.map(n=>`<div style="padding:10px 12px;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:6px"><div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px"><span style="font-size:13px;color:var(--text-primary);flex:1;line-height:1.5">${escHtml(n.content)}</span><button onclick="deletarNota('${n.id}')" style="font-size:12px;color:var(--red);background:none;border:none;cursor:pointer;flex-shrink:0;padding:2px 6px">✕</button></div><div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span style="font-size:10px;color:var(--text-muted)">${timeAgo(n.created_at)}</span><button onclick="renomearNota('${n.id}',${JSON.stringify(n.content)})" style="font-size:10px;padding:2px 8px;background:var(--bg-card);color:var(--text-secondary);border:1px solid var(--border);border-radius:4px;cursor:pointer">✏️ Editar</button><button onclick="compartilharNota('${n.id}',${JSON.stringify(n.content)})" style="font-size:10px;padding:2px 8px;background:rgba(59,130,246,0.1);color:#60a5fa;border:1px solid rgba(59,130,246,0.25);border-radius:4px;cursor:pointer">👥 Equipe</button></div></div>`).join(''):'<div class="empty-state">Nenhuma nota ainda.</div>';
 }
+async function loadCurrentTeam() {
+  if(currentTeam) return true;
+  // Try to load team membership directly
+  const {data:mb} = await sb.from('team_members').select('team_id').eq('user_id',currentUser.id).limit(1);
+  if(mb && mb.length > 0) {
+    const {data:team} = await sb.from('teams').select('*').eq('id',mb[0].team_id).single();
+    if(team) { currentTeam = team; return true; }
+  }
+  // Admin fallback: get any team
+  if(currentProfile?.role === 'admin') {
+    const {data:teams} = await sb.from('teams').select('*').limit(1);
+    if(teams && teams.length > 0) { currentTeam = teams[0]; return true; }
+  }
+  return false;
+}
+
 async function adicionarNota(isTask) {
   const input = document.getElementById('nota-input');
   const text = input.value.trim();
   if(!text) { alert('Digite o conteúdo da nota.'); return; }
   if(!currentTeam) {
-    await initEquipePanel();
-    if(!currentTeam) { alert('Você precisa estar em uma equipe para usar notas.'); return; }
+    const loaded = await loadCurrentTeam();
+    if(!loaded) { alert('Você precisa estar em uma equipe para usar notas.'); return; }
   }
-  input.value = '';
-  const {error} = await sb.from('team_notes').insert({
+  const payload = {
     team_id: currentTeam.id,
     user_id: currentUser.id,
     content: text,
     is_task: isTask,
     done: false
-  });
-  if(error) { alert('Erro ao salvar nota: ' + error.message); input.value = text; return; }
-  await logActivity(currentTeam.id, isTask ? 'adicionou uma tarefa' : 'adicionou uma nota', text.slice(0,60));
+  };
+  const {data, error} = await sb.from('team_notes').insert(payload).select();
+  if(error) {
+    alert('Erro: ' + error.message + '\nCódigo: ' + error.code + '\nDetalhes: ' + JSON.stringify(error.details));
+    return;
+  }
+  input.value = '';
+  try { await logActivity(currentTeam.id, isTask ? 'adicionou uma tarefa' : 'adicionou uma nota', text.slice(0,60)); } catch(e){}
   await loadNotas();
 }
 async function toggleTarefa(id,done){await sb.from('team_notes').update({done}).eq('id',id);await loadNotas();}
@@ -2786,6 +2897,19 @@ async function checkUserRequest(){
     alert('✅ Nota enviada para o chat da equipe!');
   }
 
+
+// ── TOOLTIP MOBILE CLICK ──
+document.querySelectorAll('.back-bar-tag').forEach(tag => {
+  tag.addEventListener('click', function(e) {
+    e.stopPropagation();
+    const isOpen = this.classList.contains('tooltip-open');
+    document.querySelectorAll('.back-bar-tag').forEach(t => t.classList.remove('tooltip-open'));
+    if(!isOpen) this.classList.add('tooltip-open');
+  });
+});
+document.addEventListener('click', function() {
+  document.querySelectorAll('.back-bar-tag').forEach(t => t.classList.remove('tooltip-open'));
+});
 
 init();
 </script>
