@@ -7,6 +7,8 @@
   <meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Sellwise — Painel do Vendedor</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg viewBox='0 0 44 44' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='44' height='44' rx='10' fill='%23071a0d'/%3E%3Crect x='1.5' y='1.5' width='41' height='41' rx='9' fill='%23071a0d' stroke='%2322c55e' stroke-width='1.5'/%3E%3Crect x='9' y='12' width='20' height='4.5' rx='2.25' fill='%2322c55e'/%3E%3Crect x='9' y='19.75' width='14' height='4.5' rx='2.25' fill='%2322c55e'/%3E%3Crect x='9' y='27.5' width='17' height='4.5' rx='2.25' fill='%2322c55e'/%3E%3C/svg%3E" />
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg viewBox='0 0 44 44' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='44' height='44' rx='10' fill='%23071a0d'/%3E%3Crect x='1.5' y='1.5' width='41' height='41' rx='9' fill='%23071a0d' stroke='%2322c55e' stroke-width='1.5'/%3E%3Crect x='9' y='12' width='20' height='4.5' rx='2.25' fill='%2322c55e'/%3E%3Crect x='9' y='19.75' width='14' height='4.5' rx='2.25' fill='%2322c55e'/%3E%3Crect x='9' y='27.5' width='17' height='4.5' rx='2.25' fill='%2322c55e'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -66,7 +68,7 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
   justify-content: center; flex-shrink: 0; overflow: hidden;
 }
 .auth-logo-icon svg { width: 44px; height: 44px; }
-.auth-logo-name { font-size: 22px; font-weight: 800; color: #fff; letter-spacing: -0.5px; }
+.auth-logo-name { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
 .auth-logo-name span { color: #4ade80; font-weight: 800; }
 .auth-logo-tag { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
 .auth-heading { font-size: 22px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
@@ -107,6 +109,28 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
   position: sticky; top: 0; z-index: 50; flex-shrink: 0;
 }
 .header-logo { font-size: 19px; font-weight: 700; color: #ffffff; letter-spacing: -0.5px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+.header-logo-text {
+  position: relative;
+  background: linear-gradient(
+    90deg,
+    #22c55e 0%,
+    #22c55e 25%,
+    #4ade80 38%,
+    #a7f3d0 50%,
+    #4ade80 62%,
+    #22c55e 75%,
+    #22c55e 100%
+  );
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: logoShimmer 8s ease-in-out infinite;
+}
+@keyframes logoShimmer {
+  0%   { background-position: 200% center; }
+  100% { background-position: -100% center; }
+}
 .header-logo-icon { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; }
 .header-logo-icon svg { width: 15px; height: 15px; fill: #fff; }
 .header-logo span { color: var(--green-500); }
@@ -414,7 +438,7 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
   <div class="auth-card">
     <div class="auth-logo">
       <div class="auth-logo-icon" style="width:44px;height:44px;background:transparent;padding:0;overflow:visible"><svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;filter:drop-shadow(0 0 6px rgba(34,197,94,0.6))"><rect x="1.5" y="1.5" width="41" height="41" rx="10.5" fill="#071a0d" stroke="#22c55e" stroke-width="1.5"/><rect x="9" y="12" width="20" height="4.5" rx="2.25" fill="#22c55e"/><rect x="9" y="19.75" width="14" height="4.5" rx="2.25" fill="#22c55e"/><rect x="9" y="27.5" width="17" height="4.5" rx="2.25" fill="#22c55e"/></svg></div>
-      <div><span class="auth-logo-name">Sell<span>wise</span></span><div class="auth-logo-tag">Gestão para ML &amp; Shopee</div></div>
+      <div><span class="auth-logo-name header-logo-text">Sellwise</span><div class="auth-logo-tag">Gestão para ML &amp; Shopee</div></div>
     </div>
     
 
@@ -552,7 +576,7 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
   <!-- HEADER -->
   <header class="app-header">
     <div class="header-logo" onclick="goHome()">
-      <div class="header-logo-icon" style="width:34px;height:34px;background:transparent;padding:0;overflow:visible"><svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;width:34px;height:34px;filter:drop-shadow(0 0 4px rgba(34,197,94,0.5))"><rect x="1" y="1" width="30" height="30" rx="7.5" fill="#071a0d" stroke="#22c55e" stroke-width="1"/><rect x="6.5" y="8.5" width="15" height="3.5" rx="1.75" fill="#22c55e"/><rect x="6.5" y="14.25" width="10.5" height="3.5" rx="1.75" fill="#22c55e"/><rect x="6.5" y="20" width="13" height="3.5" rx="1.75" fill="#22c55e"/></svg></div><span style="letter-spacing:-0.3px">Sell<span style="color:var(--green-400)">wise</span></span>
+      <div class="header-logo-icon" style="width:34px;height:34px;background:transparent;padding:0;overflow:visible"><svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;width:34px;height:34px;filter:drop-shadow(0 0 4px rgba(34,197,94,0.5))"><rect x="1" y="1" width="30" height="30" rx="7.5" fill="#071a0d" stroke="#22c55e" stroke-width="1"/><rect x="6.5" y="8.5" width="15" height="3.5" rx="1.75" fill="#22c55e"/><rect x="6.5" y="14.25" width="10.5" height="3.5" rx="1.75" fill="#22c55e"/><rect x="6.5" y="20" width="13" height="3.5" rx="1.75" fill="#22c55e"/></svg></div><span class="header-logo-text">Sellwise</span>
     </div>
     <div class="header-right">
       <div style="text-align:right;display:none" id="header-user-info">
