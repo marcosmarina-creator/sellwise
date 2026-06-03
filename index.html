@@ -2523,6 +2523,7 @@ function renderMemberAvatars(profiles) {
   });
 }
 async function loadTeamStock() {
+  if(!currentTeam) { await loadCurrentTeam(); }
   if(!currentTeam) return;
   const {data:stock}=await sb.from('team_stock').select('*, profiles:created_by(username)').eq('team_id',currentTeam.id).order('created_at',{ascending:false});
   document.getElementById('equipe-stock-count').textContent=stock?.length||0;
@@ -2537,13 +2538,27 @@ async function loadTeamStock() {
   }).join('');
 }
 async function addTeamStock() {
-  if(!currentTeam) return;
-  const nome=document.getElementById('te-nome').value.trim();
-  if(!nome){alert('Informe o nome do produto.');return;}
-  const {error}=await sb.from('team_stock').insert({team_id:currentTeam.id,nome,sku:document.getElementById('te-sku').value.trim(),qtd:parseInt(document.getElementById('te-qtd').value)||0,min_qtd:parseInt(document.getElementById('te-min').value)||5,custo:parseFloat(document.getElementById('te-custo').value)||0,created_by:currentUser.id});
-  if(error){alert('Erro: '+error.message);return;}
-  await logActivity(currentTeam.id,'adicionou ao estoque',nome);
-  ['te-nome','te-sku','te-qtd','te-min','te-custo'].forEach(id=>document.getElementById(id).value='');
+  if(!currentTeam) {
+    await loadCurrentTeam();
+    if(!currentTeam) { alert('Você precisa estar em uma equipe para usar o estoque da equipe.'); return; }
+  }
+  const nome = document.getElementById('te-nome').value.trim();
+  if(!nome) { alert('Informe o nome do produto.'); return; }
+  const payload = {
+    team_id: currentTeam.id,
+    nome,
+    sku:     document.getElementById('te-sku').value.trim() || null,
+    qtd:     parseInt(document.getElementById('te-qtd').value) || 0,
+    min_qtd: parseInt(document.getElementById('te-min').value) || 5,
+    custo:   parseFloat(document.getElementById('te-custo').value) || 0,
+    created_by: currentUser.id
+  };
+  const {error} = await sb.from('team_stock').insert(payload);
+  if(error) { alert('Erro ao salvar: ' + error.message + ' (código: ' + error.code + ')'); return; }
+  await logActivity(currentTeam.id, 'adicionou ao estoque', nome);
+  ['te-nome','te-sku','te-qtd','te-min','te-custo'].forEach(id => {
+    const el = document.getElementById(id); if(el) el.value = '';
+  });
   await loadTeamStock();
 }
 async function removeTeamStock(id){await sb.from('team_stock').delete().eq('id',id);await loadTeamStock();}
@@ -2556,7 +2571,10 @@ async function loadTeamPricing() {
   tbody.innerHTML=pricing.map(p=>`<tr><td><strong>${escHtml(p.nome)}</strong></td><td>${fmt(p.custo)}</td><td style="font-size:12px;color:var(--text-muted)">${p.plataforma||'—'}</td><td style="color:var(--green-400);font-weight:600">${fmt(p.preco_sugerido||0)}</td><td style="color:var(--green-400)">${fmt(p.lucro||0)}</td><td style="font-size:12px;color:var(--text-muted)">${p.profiles?.username||'—'}</td><td><button class="btn btn-sm" onclick="removeTeamPricing('${p.id}')" style="color:var(--red);border-color:rgba(248,113,113,0.3);font-size:11px;padding:4px 8px">🗑</button></td></tr>`).join('');
 }
 async function addTeamPricing() {
-  if(!currentTeam) return;
+  if(!currentTeam) {
+    await loadCurrentTeam();
+    if(!currentTeam) { alert('Você precisa estar em uma equipe.'); return; }
+  }
   const nome=document.getElementById('tp-nome').value.trim();
   if(!nome){alert('Informe o nome do produto.');return;}
   const custo=parseFloat(document.getElementById('tp-custo').value)||0;
