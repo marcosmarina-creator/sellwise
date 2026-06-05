@@ -1461,7 +1461,12 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
             <div class="form-group"><label>Estoque mínimo</label><input type="number" id="te-min" placeholder="5" min="0" /></div>
             <div class="form-group"><label>Custo unitário (R$)</label><input type="number" id="te-custo" placeholder="0,00" step="0.01" /></div>
           </div>
-          <button class="btn btn-primary" onclick="addTeamStock()">+ Adicionar ao estoque</button>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn btn-primary" onclick="addTeamStock()">+ Adicionar ao estoque</button>
+            <button class="btn" onclick="document.getElementById('bling-csv-input').click()" style="border-color:rgba(99,102,241,0.5);color:#818cf8;background:rgba(99,102,241,0.08)">📥 Importar CSV Bling</button>
+            <input type="file" id="bling-csv-input" accept=".csv" style="display:none" onchange="importarBling(this)" />
+          </div>
+          <div id="bling-import-msg" style="font-size:12px;min-height:16px;margin-top:8px"></div>
           <div style="margin-top:16px">
             <div class="table-wrap">
               <table>
@@ -1596,7 +1601,7 @@ let _pinAttempts = 0;
 const _PIN_LOCK_KEY = 'sw_pin_lock';
 
 // ── UTILS ──
-function fmt(v) { return 'R$ ' + Number(v||0).toFixed(2).replace('.',','); }
+function fmt(v) { return 'R$ ' + Number(v||0).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2}); }
 function escHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function timeAgo(d) {
   const m=Math.floor((Date.now()-new Date(d))/60000),h=Math.floor(m/60),dy=Math.floor(h/24);
@@ -2525,7 +2530,8 @@ function renderMemberAvatars(profiles) {
 async function loadTeamStock() {
   if(!currentTeam) { await loadCurrentTeam(); }
   if(!currentTeam) return;
-  const {data:stock}=await sb.from('team_stock').select('*, profiles:created_by(username)').eq('team_id',currentTeam.id).order('created_at',{ascending:false});
+  const {data:stock, error:stockErr}=await sb.from('team_stock').select('*').eq('team_id',currentTeam.id).order('created_at',{ascending:false});
+  if(stockErr){console.error('loadTeamStock error:',stockErr);}
   document.getElementById('equipe-stock-count').textContent=stock?.length||0;
   const tbody=document.getElementById('te-tbody');
   if(!stock||!stock.length){tbody.innerHTML='<tr><td colspan="8"><div class="empty-state">Nenhum produto no estoque da equipe.</div></td></tr>';return;}
@@ -2534,7 +2540,7 @@ async function loadTeamStock() {
     if(p.qtd===0){cls='badge-out';lbl='Sem estoque';}
     else if(p.qtd<=p.min_qtd){cls='badge-low';lbl='Estoque baixo';}
     else{cls='badge-ok';lbl='Normal';}
-    return `<tr><td><strong>${escHtml(p.nome)}</strong></td><td style="color:var(--text-muted);font-size:12px">${p.sku||'—'}</td><td><strong>${p.qtd}</strong></td><td>${fmt(p.custo)}</td><td>${fmt(p.custo*p.qtd)}</td><td><span class="badge ${cls}">${lbl}</span></td><td style="font-size:12px;color:var(--text-muted)">${p.profiles?.username||'—'}</td><td><button class="btn btn-sm" onclick="removeTeamStock('${p.id}')" style="color:var(--red);border-color:rgba(248,113,113,0.3);font-size:11px;padding:4px 8px">🗑</button></td></tr>`;
+    return `<tr><td><strong>${escHtml(p.nome)}</strong></td><td style="color:var(--text-muted);font-size:12px">${p.sku||'—'}</td><td><strong>${p.qtd}</strong></td><td>${fmt(p.custo)}</td><td>${fmt(p.custo*p.qtd)}</td><td><span class="badge ${cls}">${lbl}</span></td><td style="font-size:12px;color:var(--text-muted)">${p.created_by ? '—' : '—'}</td><td><button class="btn btn-sm" onclick="removeTeamStock('${p.id}')" style="color:var(--red);border-color:rgba(248,113,113,0.3);font-size:11px;padding:4px 8px">🗑</button></td></tr>`;
   }).join('');
 }
 async function addTeamStock() {
@@ -2564,11 +2570,11 @@ async function addTeamStock() {
 async function removeTeamStock(id){await sb.from('team_stock').delete().eq('id',id);await loadTeamStock();}
 async function loadTeamPricing() {
   if(!currentTeam) return;
-  const {data:pricing}=await sb.from('team_pricing').select('*, profiles:created_by(username)').eq('team_id',currentTeam.id).order('created_at',{ascending:false});
+  const {data:pricing}=await sb.from('team_pricing').select('*').eq('team_id',currentTeam.id).order('created_at',{ascending:false});
   document.getElementById('equipe-pricing-count').textContent=pricing?.length||0;
   const tbody=document.getElementById('tp-tbody');
   if(!pricing||!pricing.length){tbody.innerHTML='<tr><td colspan="7"><div class="empty-state">Nenhuma precificação salva pela equipe.</div></td></tr>';return;}
-  tbody.innerHTML=pricing.map(p=>`<tr><td><strong>${escHtml(p.nome)}</strong></td><td>${fmt(p.custo)}</td><td style="font-size:12px;color:var(--text-muted)">${p.plataforma||'—'}</td><td style="color:var(--green-400);font-weight:600">${fmt(p.preco_sugerido||0)}</td><td style="color:var(--green-400)">${fmt(p.lucro||0)}</td><td style="font-size:12px;color:var(--text-muted)">${p.profiles?.username||'—'}</td><td><button class="btn btn-sm" onclick="removeTeamPricing('${p.id}')" style="color:var(--red);border-color:rgba(248,113,113,0.3);font-size:11px;padding:4px 8px">🗑</button></td></tr>`).join('');
+  tbody.innerHTML=pricing.map(p=>`<tr><td><strong>${escHtml(p.nome)}</strong></td><td>${fmt(p.custo)}</td><td style="font-size:12px;color:var(--text-muted)">${p.plataforma||'—'}</td><td style="color:var(--green-400);font-weight:600">${fmt(p.preco_sugerido||0)}</td><td style="color:var(--green-400)">${fmt(p.lucro||0)}</td><td style="font-size:12px;color:var(--text-muted)">—</td><td><button class="btn btn-sm" onclick="removeTeamPricing('${p.id}')" style="color:var(--red);border-color:rgba(248,113,113,0.3);font-size:11px;padding:4px 8px">🗑</button></td></tr>`).join('');
 }
 async function addTeamPricing() {
   if(!currentTeam) {
@@ -3293,6 +3299,80 @@ async function checkUserRequest(){
     _planilhaCache.push({...row, id:data.id, margem:margem_raw+'%'});
     if(msg) { msg.style.color='var(--green-400)'; msg.textContent='✅ Produto salvo!'; }
     setTimeout(() => { fecharFormPlanilha(); renderPlanilha(); }, 700);
+  }
+
+
+  // ── IMPORTAR BLING CSV ──
+  async function importarBling(inputEl) {
+    const file = inputEl?.files?.[0];
+    if(!file) return;
+    if(!currentTeam) {
+      await loadCurrentTeam();
+      if(!currentTeam) { alert('Você precisa estar em uma equipe.'); return; }
+    }
+    const msg = document.getElementById('bling-import-msg');
+    if(msg) { msg.style.color='var(--text-muted)'; msg.textContent='📥 Lendo arquivo...'; }
+
+    const text = await file.text();
+    // Remove BOM
+    const csv = text.replace(/^\uFEFF/, '');
+    const lines = csv.split('\n').filter(l => l.trim());
+    if(lines.length < 2) { if(msg) { msg.style.color='var(--red)'; msg.textContent='Arquivo vazio ou inválido.'; } return; }
+
+    const headers = lines[0].split(';').map(h => h.replace(/"/g,'').trim());
+    const idxCod  = headers.indexOf('Código');
+    const idxDesc = headers.indexOf('Descrição');
+    const idxEst  = headers.indexOf('Estoque');
+    const idxCust = headers.indexOf('Preço de custo');
+    const idxMin  = headers.indexOf('Estoque mínimo');
+
+    const parseNum = s => parseFloat((s||'0').replace(/"/g,'').replace(',','.')) || 0;
+    const clean    = s => (s||'').replace(/"/g,'').trim();
+
+    const produtos = [];
+    for(let i = 1; i < lines.length; i++) {
+      const cols = lines[i].split(';');
+      if(cols.length < 3) continue;
+      const sku  = clean(cols[idxCod]);
+      const nome = clean(cols[idxDesc]);
+      if(!nome) continue;
+      produtos.push({
+        team_id: currentTeam.id,
+        nome,
+        sku:     sku || null,
+        qtd:     Math.round(parseNum(cols[idxEst])),
+        min_qtd: Math.round(parseNum(cols[idxMin])) || 5,
+        custo:   parseNum(cols[idxCust]),
+        created_by: currentUser.id
+      });
+    }
+
+    if(!produtos.length) {
+      if(msg) { msg.style.color='var(--red)'; msg.textContent='Nenhum produto encontrado no arquivo.'; }
+      return;
+    }
+
+    if(msg) { msg.style.color='var(--text-muted)'; msg.textContent=`Importando ${produtos.length} produtos...`; }
+
+    // Insert in batches of 20
+    let ok = 0, erros = 0;
+    for(let i = 0; i < produtos.length; i += 20) {
+      const batch = produtos.slice(i, i+20);
+      const {error} = await sb.from('team_stock').insert(batch);
+      if(error) { erros += batch.length; console.error('Bling import error:', error); }
+      else ok += batch.length;
+      if(msg) msg.textContent = `Importando... ${Math.min(i+20, produtos.length)}/${produtos.length}`;
+    }
+
+    await logActivity(currentTeam.id, 'importou estoque do Bling', `${ok} produtos importados`);
+    if(msg) {
+      msg.style.color = erros ? '#fbbf24' : 'var(--green-400)';
+      msg.textContent = erros
+        ? `✅ ${ok} importados | ⚠️ ${erros} com erro`
+        : `✅ ${ok} produtos importados com sucesso!`;
+    }
+    inputEl.value = '';
+    await loadTeamStock();
   }
 
 
