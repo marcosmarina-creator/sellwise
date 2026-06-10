@@ -3159,7 +3159,12 @@ async function checkUserRequest(){
 
   async function loadPlanilha() {
     if(!currentTeam) { await loadCurrentTeam(); }
-    if(!currentTeam) { renderPlanilha(); return; }
+    if(!currentTeam) {
+      _planilhaCache = [];
+      const el = document.getElementById('planilha-tbody');
+      if(el) el.innerHTML = '<div class="empty-state">Você precisa estar em uma equipe para usar a planilha.</div>';
+      return;
+    }
     const {data, error} = await sb.from('planilha_produtos').select('*').eq('team_id', currentTeam.id).order('created_at', {ascending: true});
     if(error) { console.error('loadPlanilha error:', error); return; }
     if(data && data.length > 0) {
@@ -3177,9 +3182,8 @@ async function checkUserRequest(){
         alerta: r.alerta || false
       }));
     } else {
-      // First load: seed with default data
-      _planilhaCache = PLANILHA_DATA;
-      await seedPlanilha();
+      // Nova equipe — começa em branco
+      _planilhaCache = [];
     }
     renderPlanilha();
   }
@@ -3198,7 +3202,7 @@ async function checkUserRequest(){
   function renderPlanilha(filtro) {
     const el = document.getElementById('planilha-tbody');
     if(!el) return;
-    const source = _planilhaCache.length ? _planilhaCache : PLANILHA_DATA;
+    const source = _planilhaCache;
     const q = (filtro || document.getElementById('planilha-search')?.value || '').toLowerCase();
     const dados = q
       ? source.filter(r =>
