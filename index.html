@@ -3158,7 +3158,9 @@ async function checkUserRequest(){
   let _planilhaCache = [];
 
   async function loadPlanilha() {
-    const {data, error} = await sb.from('planilha_produtos').select('*').order('created_at', {ascending: true});
+    if(!currentTeam) { await loadCurrentTeam(); }
+    if(!currentTeam) { renderPlanilha(); return; }
+    const {data, error} = await sb.from('planilha_produtos').select('*').eq('team_id', currentTeam.id).order('created_at', {ascending: true});
     if(error) { console.error('loadPlanilha error:', error); return; }
     if(data && data.length > 0) {
       _planilhaCache = data.map(r => ({
@@ -3183,7 +3185,9 @@ async function checkUserRequest(){
   }
 
   async function seedPlanilha() {
+    if(!currentTeam) return;
     const rows = PLANILHA_DATA.map(r => ({
+      team_id: currentTeam.id,
       sku: r.sku, nome: r.nome, custo: r.custo,
       ml_c: r.ml_c, ml_p: r.ml_p, shopee: r.shopee,
       margem_raw: r.margem_raw, obs: r.obs, alerta: r.alerta || false
@@ -3251,7 +3255,7 @@ async function checkUserRequest(){
 
   async function deletarProdutoPlanilha(id) {
     if(!confirm('Apagar este produto da planilha?')) return;
-    await sb.from('planilha_produtos').delete().eq('id', id);
+    await sb.from('planilha_produtos').delete().eq('id', id).eq('team_id', currentTeam?.id || '');
     _planilhaCache = _planilhaCache.filter(r => r.id !== id);
     renderPlanilha();
   }
@@ -3288,7 +3292,8 @@ async function checkUserRequest(){
     if(msg) { msg.style.color='var(--text-muted)'; msg.textContent='Salvando...'; }
 
     const fmt = v => (!v || v==='—') ? '—' : (v.startsWith('R$') ? v : 'R$ '+v);
-    const row = { sku, nome, custo:fmt(custo), ml_c:fmt(mlc), ml_p:fmt(mlp),
+    if(!currentTeam) { await loadCurrentTeam(); if(!currentTeam) { if(msg){msg.style.color='var(--red)';msg.textContent='Você precisa estar em uma equipe.';}return;} }
+    const row = { team_id: currentTeam.id, sku, nome, custo:fmt(custo), ml_c:fmt(mlc), ml_p:fmt(mlp),
                   shopee:fmt(shopee), margem_raw, obs, alerta:false };
 
     const {data, error} = await sb.from('planilha_produtos').insert(row).select().single();
