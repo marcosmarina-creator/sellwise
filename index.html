@@ -999,52 +999,69 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
             <div class="form-group"><label>Imposto / outros (%)</label><input type="number" id="p-imposto" placeholder="0" min="0" /></div>
           </div>
           <div class="card-title" style="margin-top:8px">Plataforma</div>
-          
-          <div class="form-grid">
-            <div class="form-group">
-              <label>Plataforma</label>
-              <select id="p-plat" onchange="onPlatPreco()">
-                <optgroup label="Mercado Livre — Clássico (mar/2026)">
-                  <option value="ml_10">ML Clássico · cat. baixa (10%)</option>
-                  <option value="ml_12" selected>ML Clássico · cat. média (12%)</option>
-                  <option value="ml_14">ML Clássico · cat. alta (14%)</option>
-                </optgroup>
-                <optgroup label="Mercado Livre — Premium (mar/2026)">
-                  <option value="ml_15">ML Premium · cat. baixa (15%)</option>
-                  <option value="ml_17">ML Premium · cat. média (17%)</option>
-                  <option value="ml_19">ML Premium · cat. alta (19%)</option>
-                </optgroup>
-                <optgroup label="ML · Custo fixo produto abaixo R$79">
-                  <option value="ml_12_6">ML Clássico 12% + R$6 fixo (abaixo R$79)</option>
-                  <option value="ml_17_6">ML Premium 17% + R$6 fixo (abaixo R$79)</option>
-                </optgroup>
-                <optgroup label="ML · Custo variável por peso/dimensão (mar/2026)">
-                  <option value="ml_12_vol">ML Clássico 12% + custo por peso</option>
-                  <option value="ml_17_vol">ML Premium 17% + custo por peso</option>
-                </optgroup>
-                <optgroup label="Shopee 2026 (mar/2026)">
-                  <option value="shopee">Shopee · faixas automáticas por preço</option>
-                </optgroup>
-                <option value="custom">Personalizado</option>
-              </select>
-            </div>
-            <div class="form-group" id="p-custom-wrap" style="display:none"><label>Taxa personalizada (%)</label><input type="number" id="p-taxa-custom" placeholder="0" min="0" max="100" /></div>
-            <div class="form-group" id="p-vol-wrap" style="display:none">
-              <label>Peso real</label>
-              <div style="display:flex;gap:6px">
-                <input type="number" id="p-peso" placeholder="ex: 300" min="0" style="flex:1" />
-                <select id="p-peso-unit" style="width:70px;flex-shrink:0;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:13px;padding:8px 6px">
-                  <option value="g">g</option>
-                  <option value="kg">kg</option>
-                </select>
+
+          <!-- Toggle plataforma -->
+          <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+            <button id="p-btn-mlc" onclick="setPlatPreco('mlc')" style="flex:1;min-width:90px;padding:10px;border-radius:var(--radius);border:2px solid var(--green-500);background:rgba(34,197,94,0.12);color:var(--green-400);font-family:'Geist',sans-serif;font-size:13px;font-weight:700;cursor:pointer">🟡 ML Clássico</button>
+            <button id="p-btn-mlp" onclick="setPlatPreco('mlp')" style="flex:1;min-width:90px;padding:10px;border-radius:var(--radius);border:2px solid var(--border-strong);background:transparent;color:var(--text-secondary);font-family:'Geist',sans-serif;font-size:13px;font-weight:700;cursor:pointer">🟠 ML Premium</button>
+            <button id="p-btn-sh" onclick="setPlatPreco('sh')" style="flex:1;min-width:90px;padding:10px;border-radius:var(--radius);border:2px solid var(--border-strong);background:transparent;color:var(--text-secondary);font-family:'Geist',sans-serif;font-size:13px;font-weight:700;cursor:pointer">🛒 Shopee</button>
+            <button id="p-btn-custom" onclick="setPlatPreco('custom')" style="flex:1;min-width:90px;padding:10px;border-radius:var(--radius);border:2px solid var(--border-strong);background:transparent;color:var(--text-secondary);font-family:'Geist',sans-serif;font-size:13px;font-weight:600;cursor:pointer">⚙️ Custom</button>
+          </div>
+
+          <!-- Campos ML (Clássico/Premium) -->
+          <div id="p-ml-fields">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>% Comissão da sua categoria</label>
+                <div style="display:flex;gap:6px;align-items:center">
+                  <input type="number" id="p-taxa-ml" value="12" min="1" max="30" step="0.5" style="flex:1" />
+                  <span style="color:var(--text-muted);font-size:14px;flex-shrink:0">%</span>
+                </div>
+                <div style="font-size:11px;color:var(--text-muted);margin-top:4px" id="p-ml-hint">Clássico: 10–14% | Verifique no painel do ML em "Minha Conta"</div>
+              </div>
+              <div class="form-group"><label>Tipo de vendedor</label><select id="p-vendedor"><option value="cnpj">CNPJ / CPF baixo volume</option><option value="cpf">CPF alto volume (+450/90d)</option></select></div>
+              <div class="form-group">
+                <label>Peso da embalagem (auto-calcula custo)</label>
+                <div style="display:flex;gap:6px">
+                  <input type="number" id="p-peso" placeholder="ex: 300" min="0" style="flex:1" />
+                  <select id="p-peso-unit" style="width:68px;flex-shrink:0;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:13px;padding:8px 6px">
+                    <option value="g">g</option>
+                    <option value="kg">kg</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Dimensões embalagem C × L × A (cm)</label>
+                <div style="display:flex;gap:6px">
+                  <input type="number" id="p-comp" placeholder="C" min="0" style="flex:1">
+                  <input type="number" id="p-larg" placeholder="L" min="0" style="flex:1">
+                  <input type="number" id="p-alt"  placeholder="A" min="0" style="flex:1">
+                </div>
               </div>
             </div>
-            <div class="form-group" id="p-vol-wrap2" style="display:none"><label>Dimensões (cm): C × L × A</label>
-              <div style="display:flex;gap:6px"><input type="number" id="p-comp" placeholder="C" min="0" style="flex:1"><input type="number" id="p-larg" placeholder="L" min="0" style="flex:1"><input type="number" id="p-alt" placeholder="A" min="0" style="flex:1"></div>
-            </div>
-            <div class="form-group"><label>Tipo de vendedor</label><select id="p-vendedor"><option value="cnpj">CNPJ / CPF baixo volume</option><option value="cpf">CPF alto volume (+450/90d)</option></select></div>
+            <div class="info-box show" id="p-ml-custo-info"><span id="p-ml-custo-txt">💡 Preencha peso e dimensões para calcular o custo operacional automaticamente (necessário apenas para produtos abaixo de R$79).</span></div>
           </div>
-          <div class="info-box" id="p-info">ℹ️ <span>Shopee 2026: comissão por faixa de preço + taxa fixa/item. &lt;R$79: 20%+R$4 | R$80–99: 14%+R$16 | R$100–199: 14%+R$20 | R$200+: 14%+R$26. CPF alto vol. (+450 ped/90d): +R$3 por item. Atualizado jun/2026.</span></div>
+
+          <!-- Campos Shopee -->
+          <div id="p-sh-fields" style="display:none">
+            <div class="form-grid">
+              <div class="form-group"><label>Tipo de vendedor</label><select id="p-vendedor-sh"><option value="cnpj">CNPJ / CPF baixo volume</option><option value="cpf">CPF alto volume (+450/90d)</option></select></div>
+            </div>
+            <div class="info-box show">ℹ️ <span>Shopee 2026: &lt;R$8: 50% | R$8–R$79: 20%+R$4 | R$80–R$99: 14%+R$16 | R$100–R$199: 14%+R$20 | R$200+: 14%+R$26. CPF alto vol.: +R$3</span></div>
+          </div>
+
+          <!-- Campos Custom -->
+          <div id="p-custom-fields" style="display:none">
+            <div class="form-grid">
+              <div class="form-group"><label>Taxa personalizada (%)</label><input type="number" id="p-taxa-custom" placeholder="0" min="0" max="100" /></div>
+              <div class="form-group"><label>Tipo de vendedor</label><select id="p-vendedor-custom"><option value="cnpj">CNPJ</option><option value="cpf">CPF alto vol.</option></select></div>
+            </div>
+          </div>
+
+          <!-- Hidden compat -->
+          <select id="p-plat" style="display:none"><option value="ml_12" selected>ml_12</option><option value="shopee">shopee</option><option value="custom">custom</option></select>
+          <div class="info-box" id="p-info" style="display:none"><span></span></div>
+
           <button class="btn btn-primary" onclick="calcPreco()">🧮 Calcular preço</button>
           <div class="result-grid" id="p-result" style="display:none">
             <div class="metric"><div class="metric-label">Preço mínimo</div><div class="metric-value" id="p-min">—</div></div>
@@ -1107,53 +1124,66 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
             <div class="form-group"><label>Qtd vendida (simulação)</label><input type="number" id="l-qtd" placeholder="1" min="1" /></div>
           </div>
           <div class="card-title" style="margin-top:8px">Plataforma &amp; taxas</div>
-          
-          <div class="form-grid">
-            <div class="form-group">
-              <label>Plataforma</label>
-              <select id="l-plat" onchange="onPlatLucro()">
-                <optgroup label="Mercado Livre — Clássico (mar/2026)">
-                  <option value="ml_10">ML Clássico · cat. baixa (10%)</option>
-                  <option value="ml_12" selected>ML Clássico · cat. média (12%)</option>
-                  <option value="ml_14">ML Clássico · cat. alta (14%)</option>
-                </optgroup>
-                <optgroup label="Mercado Livre — Premium (mar/2026)">
-                  <option value="ml_15">ML Premium · cat. baixa (15%)</option>
-                  <option value="ml_17">ML Premium · cat. média (17%)</option>
-                  <option value="ml_19">ML Premium · cat. alta (19%)</option>
-                </optgroup>
-                <optgroup label="ML · Custo fixo produto abaixo R$79">
-                  <option value="ml_12_6">ML Clássico 12% + R$6 fixo (abaixo R$79)</option>
-                  <option value="ml_17_6">ML Premium 17% + R$6 fixo (abaixo R$79)</option>
-                </optgroup>
-                <optgroup label="ML · Custo variável por peso/dimensão (mar/2026)">
-                  <option value="ml_12_vol">ML Clássico 12% + custo por peso</option>
-                  <option value="ml_17_vol">ML Premium 17% + custo por peso</option>
-                </optgroup>
-                <optgroup label="Shopee 2026 (mar/2026)">
-                  <option value="shopee">Shopee · faixas automáticas por preço</option>
-                </optgroup>
-                <option value="custom">Personalizado</option>
-              </select>
-            </div>
-            <div class="form-group" id="l-custom-wrap" style="display:none"><label>Taxa personalizada (%)</label><input type="number" id="l-taxa-custom" placeholder="0" /></div>
-            <div class="form-group" id="l-vol-wrap" style="display:none">
-              <label>Peso real</label>
-              <div style="display:flex;gap:6px">
-                <input type="number" id="l-peso" placeholder="ex: 300" min="0" style="flex:1" />
-                <select id="l-peso-unit" style="width:70px;flex-shrink:0;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:13px;padding:8px 6px">
-                  <option value="g">g</option>
-                  <option value="kg">kg</option>
-                </select>
+
+          <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+            <button id="l-btn-mlc" onclick="setPlatLucro('mlc')" style="flex:1;min-width:90px;padding:10px;border-radius:var(--radius);border:2px solid var(--green-500);background:rgba(34,197,94,0.12);color:var(--green-400);font-family:'Geist',sans-serif;font-size:13px;font-weight:700;cursor:pointer">🟡 ML Clássico</button>
+            <button id="l-btn-mlp" onclick="setPlatLucro('mlp')" style="flex:1;min-width:90px;padding:10px;border-radius:var(--radius);border:2px solid var(--border-strong);background:transparent;color:var(--text-secondary);font-family:'Geist',sans-serif;font-size:13px;font-weight:700;cursor:pointer">🟠 ML Premium</button>
+            <button id="l-btn-sh" onclick="setPlatLucro('sh')" style="flex:1;min-width:90px;padding:10px;border-radius:var(--radius);border:2px solid var(--border-strong);background:transparent;color:var(--text-secondary);font-family:'Geist',sans-serif;font-size:13px;font-weight:700;cursor:pointer">🛒 Shopee</button>
+            <button id="l-btn-custom" onclick="setPlatLucro('custom')" style="flex:1;min-width:90px;padding:10px;border-radius:var(--radius);border:2px solid var(--border-strong);background:transparent;color:var(--text-secondary);font-family:'Geist',sans-serif;font-size:13px;font-weight:600;cursor:pointer">⚙️ Custom</button>
+          </div>
+
+          <div id="l-ml-fields">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>% Comissão da sua categoria</label>
+                <div style="display:flex;gap:6px;align-items:center">
+                  <input type="number" id="l-taxa-ml" value="12" min="1" max="30" step="0.5" style="flex:1" />
+                  <span style="color:var(--text-muted);font-size:14px;flex-shrink:0">%</span>
+                </div>
+                <div style="font-size:11px;color:var(--text-muted);margin-top:4px" id="l-ml-hint">Clássico: 10–14% | Verifique no painel do ML em "Minha Conta"</div>
+              </div>
+              <div class="form-group"><label>Imposto / outros (%)</label><input type="number" id="l-imposto" placeholder="0" /></div>
+              <div class="form-group"><label>Tipo de vendedor</label><select id="l-vendedor"><option value="cnpj">CNPJ / CPF baixo volume</option><option value="cpf">CPF alto volume (+450/90d)</option></select></div>
+              <div class="form-group">
+                <label>Peso da embalagem</label>
+                <div style="display:flex;gap:6px">
+                  <input type="number" id="l-peso" placeholder="ex: 300" min="0" style="flex:1" />
+                  <select id="l-peso-unit" style="width:68px;flex-shrink:0;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-primary);font-size:13px;padding:8px 6px">
+                    <option value="g">g</option>
+                    <option value="kg">kg</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Dimensões embalagem C × L × A (cm)</label>
+                <div style="display:flex;gap:6px">
+                  <input type="number" id="l-comp" placeholder="C" min="0" style="flex:1">
+                  <input type="number" id="l-larg" placeholder="L" min="0" style="flex:1">
+                  <input type="number" id="l-alt"  placeholder="A" min="0" style="flex:1">
+                </div>
               </div>
             </div>
-            <div class="form-group" id="l-vol-wrap2" style="display:none"><label>Dimensões (cm): C × L × A</label>
-              <div style="display:flex;gap:6px"><input type="number" id="l-comp" placeholder="C" min="0" style="flex:1"><input type="number" id="l-larg" placeholder="L" min="0" style="flex:1"><input type="number" id="l-alt" placeholder="A" min="0" style="flex:1"></div>
-            </div>
-            <div class="form-group"><label>Imposto / outros (%)</label><input type="number" id="l-imposto" placeholder="0" /></div>
-            <div class="form-group"><label>Tipo de vendedor</label><select id="l-vendedor"><option value="cnpj">CNPJ / CPF baixo volume</option><option value="cpf">CPF alto volume (+450/90d)</option></select></div>
+            <div class="info-box show" id="l-info"><span id="l-info-txt">💡 Peso e dimensões calculam o custo operacional automaticamente para produtos abaixo de R$79.</span></div>
           </div>
-          <div class="info-box show" id="l-info"><span id="l-info-txt"></span></div>
+
+          <div id="l-sh-fields" style="display:none">
+            <div class="form-grid">
+              <div class="form-group"><label>Imposto / outros (%)</label><input type="number" id="l-imposto-sh" placeholder="0" /></div>
+              <div class="form-group"><label>Tipo de vendedor</label><select id="l-vendedor-sh"><option value="cnpj">CNPJ / CPF baixo volume</option><option value="cpf">CPF alto volume (+450/90d)</option></select></div>
+            </div>
+            <div class="info-box show"><span>Shopee 2026: &lt;R$8: 50% | R$8–R$79: 20%+R$4 | R$80–R$99: 14%+R$16 | R$100–R$199: 14%+R$20 | R$200+: 14%+R$26</span></div>
+          </div>
+
+          <div id="l-custom-fields" style="display:none">
+            <div class="form-grid">
+              <div class="form-group"><label>Taxa personalizada (%)</label><input type="number" id="l-taxa-custom" placeholder="0" /></div>
+              <div class="form-group"><label>Imposto (%)</label><input type="number" id="l-imposto-custom" placeholder="0" /></div>
+              <div class="form-group"><label>Tipo de vendedor</label><select id="l-vendedor-custom"><option value="cnpj">CNPJ</option><option value="cpf">CPF alto vol.</option></select></div>
+            </div>
+          </div>
+
+          <select id="l-plat" style="display:none"><option value="ml_12" selected>ml_12</option><option value="shopee">shopee</option><option value="custom">custom</option></select>
+
           <button class="btn btn-primary" onclick="calcLucro()">📈 Simular lucratividade</button>
           <div class="result-grid" id="l-result" style="display:none">
             <div class="metric"><div class="metric-label">Receita bruta</div><div class="metric-value" id="l-bruta">—</div></div>
@@ -1582,6 +1612,52 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
 </div><!-- /app -->
 
 <script>
+  // ── TOGGLE PLATAFORMA — PRECIFICAÇÃO ──
+  let _pPlatMode = 'mlc'; // mlc | mlp | sh | custom
+  function setPlatPreco(mode) {
+    _pPlatMode = mode;
+    const btns = {mlc:'p-btn-mlc', mlp:'p-btn-mlp', sh:'p-btn-sh', custom:'p-btn-custom'};
+    const active = 'border:2px solid var(--green-500);background:rgba(34,197,94,0.12);color:var(--green-400)';
+    const inactive = 'border:2px solid var(--border-strong);background:transparent;color:var(--text-secondary)';
+    Object.entries(btns).forEach(([k,id]) => {
+      const el = document.getElementById(id);
+      if(el) { el.style.cssText = el.style.cssText.split(';').slice(0,-1).join(';') + ';' + (k===mode ? active : inactive); }
+    });
+    // Show/hide field groups
+    document.getElementById('p-ml-fields').style.display   = (mode==='mlc'||mode==='mlp') ? 'block' : 'none';
+    document.getElementById('p-sh-fields').style.display   = mode==='sh'     ? 'block' : 'none';
+    document.getElementById('p-custom-fields').style.display = mode==='custom' ? 'block' : 'none';
+    // Update commission hint
+    const hint = document.getElementById('p-ml-hint');
+    const taxaEl = document.getElementById('p-taxa-ml');
+    if(mode==='mlc') { if(hint) hint.textContent='Clássico: 10–14% | Verifique no painel do ML em "Minha Conta"'; if(taxaEl && taxaEl.value=='17') taxaEl.value='12'; }
+    if(mode==='mlp') { if(hint) hint.textContent='Premium: 15–19% | Verifique no painel do ML em "Minha Conta"'; if(taxaEl && taxaEl.value=='12') taxaEl.value='17'; }
+    // Update custo info text
+    onPlatPreco();
+  }
+
+  // ── TOGGLE PLATAFORMA — LUCRATIVIDADE ──
+  let _lPlatMode = 'mlc';
+  function setPlatLucro(mode) {
+    _lPlatMode = mode;
+    const btns = {mlc:'l-btn-mlc', mlp:'l-btn-mlp', sh:'l-btn-sh', custom:'l-btn-custom'};
+    const active = 'border:2px solid var(--green-500);background:rgba(34,197,94,0.12);color:var(--green-400)';
+    const inactive = 'border:2px solid var(--border-strong);background:transparent;color:var(--text-secondary)';
+    Object.entries(btns).forEach(([k,id]) => {
+      const el = document.getElementById(id);
+      if(el) { el.style.cssText = el.style.cssText.split(';').slice(0,-1).join(';') + ';' + (k===mode ? active : inactive); }
+    });
+    document.getElementById('l-ml-fields').style.display   = (mode==='mlc'||mode==='mlp') ? 'block' : 'none';
+    document.getElementById('l-sh-fields').style.display   = mode==='sh'     ? 'block' : 'none';
+    document.getElementById('l-custom-fields').style.display = mode==='custom' ? 'block' : 'none';
+    const hint = document.getElementById('l-ml-hint');
+    const taxaEl = document.getElementById('l-taxa-ml');
+    if(mode==='mlc') { if(hint) hint.textContent='Clássico: 10–14% | Verifique no painel do ML em "Minha Conta"'; if(taxaEl && taxaEl.value=='17') taxaEl.value='12'; }
+    if(mode==='mlp') { if(hint) hint.textContent='Premium: 15–19% | Verifique no painel do ML em "Minha Conta"'; if(taxaEl && taxaEl.value=='12') taxaEl.value='17'; }
+    onPlatLucro();
+  }
+
+
 const SUPABASE_URL = 'https://hvogaewmntafzbaoywtc.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_9Ml38cIckwmUnjLB0DdGSQ_l4ZCFwr-';
 const ADMIN_H = 'd03411b7e84e579ac402dd01ef17f65528d3299c603657b643d03a864841bc92';
@@ -2333,27 +2409,34 @@ function getShopeeFaixa(preco,altoCPF){
 }
 function faixaLabel(p){if(p<8)return'abaixo de R$8';if(p<80)return'R$8–R$79,99';if(p<100)return'R$80–R$99,99';if(p<200)return'R$100–R$199,99';return'R$200+';}
 function onPlatPreco(){
-  const v=document.getElementById('p-plat').value;
-  document.getElementById('p-custom-wrap').style.display=v==='custom'?'flex':'none';
-  document.getElementById('p-info').classList.toggle('show',v==='shopee');
-  const isVol=v.endsWith('_vol');
-  document.getElementById('p-vol-wrap').style.display=isVol?'flex':'none';
-  document.getElementById('p-vol-wrap2').style.display=isVol?'flex':'none';
+  // Update custo info when weight/dimensions change
+  const mode = _pPlatMode || 'mlc';
+  if(mode==='mlc'||mode==='mlp') {
+    const pu = document.getElementById('p-peso-unit')?.value||'g';
+    const pesoG = (pu==='kg'?(parseFloat(document.getElementById('p-peso').value)||0)*1000:(parseFloat(document.getElementById('p-peso').value)||0));
+    const comp = parseFloat(document.getElementById('p-comp').value)||0;
+    const larg = parseFloat(document.getElementById('p-larg').value)||0;
+    const alt  = parseFloat(document.getElementById('p-alt').value)||0;
+    const txt = document.getElementById('p-ml-custo-txt');
+    if(pesoG>0 || (comp>0&&larg>0&&alt>0)) {
+      const custo_op = getMLCustoVariavel(pesoG, comp, larg, alt);
+      if(txt) txt.textContent = `⚙️ Custo operacional calculado: ${fmt(custo_op)}/item (válido para produtos abaixo de R$79)`;
+    } else {
+      if(txt) txt.textContent = '💡 Preencha peso e dimensões para calcular o custo operacional (apenas produtos abaixo de R$79).';
+    }
+  }
 }
 function calcPreco() {
   const custo=parseFloat(document.getElementById('p-custo').value)||0;
   const frete=parseFloat(document.getElementById('p-frete').value)||0;
   const margem=parseFloat(document.getElementById('p-margem').value)||20;
   const imposto=parseFloat(document.getElementById('p-imposto').value)||0;
-  const plat=document.getElementById('p-plat').value;
-  const altoCPF=document.getElementById('p-vendedor').value==='cpf';
+  const mode_p=_pPlatMode||'mlc';
   const base=custo+frete;
-  let perc,fixa=0;
-  if(plat==='custom') perc=parseFloat(document.getElementById('p-taxa-custom').value)||0;
-  else if(plat==='shopee'){const f=getShopeeFaixa((base+fixa)/(1-(20+imposto+margem)/100),altoCPF);perc=f.perc;fixa=f.fixa;}
-  else if(plat.endsWith('_6')){perc=ML_RATES[plat.replace('_6','')];fixa=6;}
-  else if(plat.endsWith('_vol')){perc=ML_RATES[plat.replace('_vol','')];const _pu=document.getElementById('p-peso-unit')?.value||'g';const _pg=(_pu==='kg'?(parseFloat(document.getElementById('p-peso').value)||0)*1000:(parseFloat(document.getElementById('p-peso').value)||0));fixa=getMLCustoVariavel(_pg,parseFloat(document.getElementById('p-comp').value)||0,parseFloat(document.getElementById('p-larg').value)||0,parseFloat(document.getElementById('p-alt').value)||0);}
-  else perc=ML_RATES[plat];
+  let perc,fixa=0,altoCPF=false;
+  if(mode_p==='sh'){altoCPF=document.getElementById('p-vendedor-sh')?.value==='cpf';const f=getShopeeFaixa((base)/(1-(20+imposto+margem)/100),altoCPF);perc=f.perc;fixa=f.fixa;}
+  else if(mode_p==='custom'){perc=parseFloat(document.getElementById('p-taxa-custom').value)||0;altoCPF=document.getElementById('p-vendedor-custom')?.value==='cpf';}
+  else{perc=parseFloat(document.getElementById('p-taxa-ml').value)||(mode_p==='mlp'?17:12);altoCPF=document.getElementById('p-vendedor')?.value==='cpf';const pu=document.getElementById('p-peso-unit')?.value||'g';const pg=(pu==='kg'?(parseFloat(document.getElementById('p-peso').value)||0)*1000:(parseFloat(document.getElementById('p-peso').value)||0));const pc=parseFloat(document.getElementById('p-comp').value)||0;const pl=parseFloat(document.getElementById('p-larg').value)||0;const pa=parseFloat(document.getElementById('p-alt').value)||0;const pe=(base)/(1-(perc+imposto+margem)/100);if((pg>0||(pc>0&&pl>0&&pa>0))&&pe<79)fixa=getMLCustoVariavel(pg,pc,pl,pa);}
   const deduc=perc+imposto;
   const min=(base+fixa)/(1-deduc/100);
   const sug=(base+fixa)/(1-(deduc+margem)/100);
@@ -2373,18 +2456,25 @@ function calcPreco() {
   renderCalcHistoryPanel('preco','hist-preco');
 }
 function onPlatLucro(){
-  const v=document.getElementById('l-plat').value;
-  document.getElementById('l-custom-wrap').style.display=v==='custom'?'flex':'none';
-  if(v!=='shopee')document.getElementById('l-info').classList.remove('show');else onPrecoLucro();
-  const isVol=v.endsWith('_vol');
-  document.getElementById('l-vol-wrap').style.display=isVol?'flex':'none';
-  document.getElementById('l-vol-wrap2').style.display=isVol?'flex':'none';
+  const mode = _lPlatMode || 'mlc';
+  if(mode==='sh') onPrecoLucro();
+  const lu = document.getElementById('l-peso-unit')?.value||'g';
+  const pesoG = (lu==='kg'?(parseFloat(document.getElementById('l-peso').value)||0)*1000:(parseFloat(document.getElementById('l-peso').value)||0));
+  const comp = parseFloat(document.getElementById('l-comp').value)||0;
+  const larg = parseFloat(document.getElementById('l-larg').value)||0;
+  const alt  = parseFloat(document.getElementById('l-alt').value)||0;
+  const preco = parseFloat(document.getElementById('l-preco').value)||0;
+  const txt = document.getElementById('l-info-txt');
+  if((mode==='mlc'||mode==='mlp') && preco>0 && preco<79 && (pesoG>0||(comp>0&&larg>0&&alt>0))) {
+    const custo_op = getMLCustoVariavel(pesoG, comp, larg, alt);
+    if(txt) { txt.textContent = `⚙️ Produto abaixo de R$79: custo operacional = ${fmt(custo_op)}/item`; document.getElementById('l-info').classList.add('show'); }
+  }
 }
 function onPrecoLucro(){
-  if(document.getElementById('l-plat').value!=='shopee') return;
+  if(_lPlatMode!=='sh') return;
   const preco=parseFloat(document.getElementById('l-preco').value)||0;
-  const altoCPF=document.getElementById('l-vendedor').value==='cpf';
-  if(preco>0){const f=getShopeeFaixa(preco,altoCPF);document.getElementById('l-info-txt').textContent=`Shopee 2026 · Faixa ${faixaLabel(preco)}: ${f.perc}% + R$${f.fixa},00 fixo.`;document.getElementById('l-info').classList.add('show');}
+  const altoCPF=document.getElementById('l-vendedor-sh')?.value==='cpf';
+  if(preco>0){const f=getShopeeFaixa(preco,altoCPF);const txt=document.getElementById('l-info-txt');if(txt)txt.textContent=`Shopee 2026 · Faixa ${faixaLabel(preco)}: ${f.perc}% + R$${f.fixa},00 fixo.`;const info=document.getElementById('l-info');if(info)info.classList.add('show');}
 }
 function calcLucro() {
   const preco=parseFloat(document.getElementById('l-preco').value)||0;
@@ -2392,14 +2482,11 @@ function calcLucro() {
   const frete=parseFloat(document.getElementById('l-frete').value)||0;
   const imposto=parseFloat(document.getElementById('l-imposto').value)||0;
   const qtd=parseInt(document.getElementById('l-qtd').value)||1;
-  const plat=document.getElementById('l-plat').value;
-  const altoCPF=document.getElementById('l-vendedor').value==='cpf';
-  let perc,fixa=0;
-  if(plat==='custom') perc=parseFloat(document.getElementById('l-taxa-custom').value)||0;
-  else if(plat==='shopee'){const f=getShopeeFaixa(preco,altoCPF);perc=f.perc;fixa=f.fixa;}
-  else if(plat.endsWith('_6')){perc=ML_RATES[plat.replace('_6','')];fixa=6;}
-  else if(plat.endsWith('_vol')){perc=ML_RATES[plat.replace('_vol','')];const _lu=document.getElementById('l-peso-unit')?.value||'g';const _lg=(_lu==='kg'?(parseFloat(document.getElementById('l-peso').value)||0)*1000:(parseFloat(document.getElementById('l-peso').value)||0));fixa=getMLCustoVariavel(_lg,parseFloat(document.getElementById('l-comp').value)||0,parseFloat(document.getElementById('l-larg').value)||0,parseFloat(document.getElementById('l-alt').value)||0);}
-  else perc=ML_RATES[plat];
+  const mode_l=_lPlatMode||'mlc';
+  let perc,fixa=0,altoCPF=false;
+  if(mode_l==='sh'){imposto=parseFloat(document.getElementById('l-imposto-sh')?.value)||0;altoCPF=document.getElementById('l-vendedor-sh')?.value==='cpf';const f=getShopeeFaixa(preco,altoCPF);perc=f.perc;fixa=f.fixa;}
+  else if(mode_l==='custom'){perc=parseFloat(document.getElementById('l-taxa-custom').value)||0;imposto=parseFloat(document.getElementById('l-imposto-custom')?.value)||0;altoCPF=document.getElementById('l-vendedor-custom')?.value==='cpf';}
+  else{perc=parseFloat(document.getElementById('l-taxa-ml').value)||(mode_l==='mlp'?17:12);imposto=parseFloat(document.getElementById('l-imposto')?.value)||0;altoCPF=document.getElementById('l-vendedor')?.value==='cpf';if(preco<79){const lu=document.getElementById('l-peso-unit')?.value||'g';const pg=(lu==='kg'?(parseFloat(document.getElementById('l-peso').value)||0)*1000:(parseFloat(document.getElementById('l-peso').value)||0));const lc=parseFloat(document.getElementById('l-comp').value)||0;const ll=parseFloat(document.getElementById('l-larg').value)||0;const la=parseFloat(document.getElementById('l-alt').value)||0;if(pg>0||(lc>0&&ll>0&&la>0))fixa=getMLCustoVariavel(pg,lc,ll,la);}}
   const taxaV=preco*perc/100;
   const impostoV=preco*imposto/100;
   const platTotal=taxaV+fixa;
