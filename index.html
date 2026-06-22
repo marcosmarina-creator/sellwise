@@ -2480,31 +2480,50 @@ function calcLucro() {
   const preco=parseFloat(document.getElementById('l-preco').value)||0;
   const custo=parseFloat(document.getElementById('l-custo').value)||0;
   const frete=parseFloat(document.getElementById('l-frete').value)||0;
-  const imposto=parseFloat(document.getElementById('l-imposto').value)||0;
   const qtd=parseInt(document.getElementById('l-qtd').value)||1;
   const mode_l=_lPlatMode||'mlc';
-  let perc,fixa=0,altoCPF=false;
-  if(mode_l==='sh'){imposto=parseFloat(document.getElementById('l-imposto-sh')?.value)||0;altoCPF=document.getElementById('l-vendedor-sh')?.value==='cpf';const f=getShopeeFaixa(preco,altoCPF);perc=f.perc;fixa=f.fixa;}
-  else if(mode_l==='custom'){perc=parseFloat(document.getElementById('l-taxa-custom').value)||0;imposto=parseFloat(document.getElementById('l-imposto-custom')?.value)||0;altoCPF=document.getElementById('l-vendedor-custom')?.value==='cpf';}
-  else{perc=parseFloat(document.getElementById('l-taxa-ml').value)||(mode_l==='mlp'?17:12);imposto=parseFloat(document.getElementById('l-imposto')?.value)||0;altoCPF=document.getElementById('l-vendedor')?.value==='cpf';if(preco<79){const lu=document.getElementById('l-peso-unit')?.value||'g';const pg=(lu==='kg'?(parseFloat(document.getElementById('l-peso').value)||0)*1000:(parseFloat(document.getElementById('l-peso').value)||0));const lc=parseFloat(document.getElementById('l-comp').value)||0;const ll=parseFloat(document.getElementById('l-larg').value)||0;const la=parseFloat(document.getElementById('l-alt').value)||0;if(pg>0||(lc>0&&ll>0&&la>0))fixa=getMLCustoVariavel(pg,lc,ll,la);}}
+  let perc, fixa=0, imposto=0, altoCPF=false;
+
+  if(mode_l==='sh'){
+    imposto=parseFloat(document.getElementById('l-imposto-sh')?.value)||0;
+    altoCPF=document.getElementById('l-vendedor-sh')?.value==='cpf';
+    const f=getShopeeFaixa(preco,altoCPF); perc=f.perc; fixa=f.fixa;
+  } else if(mode_l==='custom'){
+    perc=parseFloat(document.getElementById('l-taxa-custom').value)||0;
+    imposto=parseFloat(document.getElementById('l-imposto-custom')?.value)||0;
+    altoCPF=document.getElementById('l-vendedor-custom')?.value==='cpf';
+  } else {
+    perc=parseFloat(document.getElementById('l-taxa-ml').value)||(mode_l==='mlp'?17:12);
+    imposto=parseFloat(document.getElementById('l-imposto')?.value)||0;
+    altoCPF=document.getElementById('l-vendedor')?.value==='cpf';
+    if(preco<79){
+      const lu=document.getElementById('l-peso-unit')?.value||'g';
+      const pg=(lu==='kg'?(parseFloat(document.getElementById('l-peso').value)||0)*1000:(parseFloat(document.getElementById('l-peso').value)||0));
+      const lc=parseFloat(document.getElementById('l-comp').value)||0;
+      const ll=parseFloat(document.getElementById('l-larg').value)||0;
+      const la=parseFloat(document.getElementById('l-alt').value)||0;
+      if(pg>0||(lc>0&&ll>0&&la>0)) fixa=getMLCustoVariavel(pg,lc,ll,la);
+    }
+  }
+
   const taxaV=preco*perc/100;
   const impostoV=preco*imposto/100;
   const platTotal=taxaV+fixa;
   const outros=custo+frete+impostoV;
   const lucro=preco-platTotal-outros;
   const margem=preco>0?(lucro/preco*100):0;
+
   document.getElementById('l-bruta').textContent=fmt(preco);
-  document.getElementById('l-taxa-r').textContent=fmt(platTotal)+' ('+perc+'%'+(fixa>0?'+R$'+fixa:'')+ ')';
+  document.getElementById('l-taxa-r').textContent=fmt(platTotal)+' ('+perc+'%'+(fixa>0?' +R$'+fixa.toFixed(2):'')+')';
   document.getElementById('l-outros').textContent=fmt(outros);
   const el=document.getElementById('l-liq');
-  el.textContent=fmt(lucro);el.className='metric-value '+(lucro>=0?'positive':'negative');
+  el.textContent=fmt(lucro); el.className='metric-value '+(lucro>=0?'positive':'negative');
   document.getElementById('l-marg').textContent=margem.toFixed(1)+'%';
   document.getElementById('l-total').textContent=fmt(lucro*qtd);
   document.getElementById('l-result').style.display='grid';
   document.getElementById('l-save-area').style.display='block';
-  window._lastLucro={preco,custo,frete,plat,lucro:fmt(lucro),margem:margem.toFixed(1)+'%'};
+  window._lastLucro={preco,custo,frete,plat:mode_l,lucro:fmt(lucro),margem:margem.toFixed(1)+'%'};
   const hlc=document.getElementById('hist-lucro-card'); if(hlc) hlc.style.display='block';
-
   renderCalcHistoryPanel('lucro','hist-lucro');
 }
 function onPrecoComp(){
