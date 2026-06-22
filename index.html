@@ -872,7 +872,7 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
 
         <!-- FORM ADICIONAR PRODUTO -->
         <div id="planilha-form" style="display:none;background:var(--bg-card);border:1px solid var(--border-green);border-radius:12px;padding:16px;margin-bottom:14px">
-          <div style="font-size:13px;font-weight:700;color:var(--green-400);margin-bottom:14px">➕ Novo Produto</div>
+          <div id="planilha-form-title" style="font-size:13px;font-weight:700;color:var(--green-400);margin-bottom:14px">➕ Novo Produto</div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
             <div>
               <label style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;display:block;margin-bottom:4px">SKU</label>
@@ -908,7 +908,7 @@ html, body { height: 100%; font-family: 'Geist', sans-serif; background: var(--b
             </div>
           </div>
           <div style="display:flex;gap:8px">
-            <button onclick="adicionarProdutoPlanilha()" style="flex:1;padding:11px;background:var(--green-700);color:#fff;border:none;border-radius:var(--radius);font-size:14px;font-weight:600;cursor:pointer;font-family:'Geist',sans-serif">💾 Salvar Produto</button>
+            <button id="planilha-form-btn" onclick="adicionarProdutoPlanilha()" style="flex:1;padding:11px;background:var(--green-700);color:#fff;border:none;border-radius:var(--radius);font-size:14px;font-weight:600;cursor:pointer;font-family:'Geist',sans-serif">💾 Salvar Produto</button>
             <button onclick="fecharFormPlanilha()" style="padding:11px 16px;background:var(--bg-elevated);color:var(--text-secondary);border:1px solid var(--border);border-radius:var(--radius);font-size:14px;cursor:pointer;font-family:'Geist',sans-serif">Cancelar</button>
           </div>
           <div id="pf-msg" style="font-size:12px;margin-top:8px;min-height:16px"></div>
@@ -3243,6 +3243,7 @@ async function checkUserRequest(){
   }
 
   let _planilhaCache = [];
+  let _planilhaEditId = null; // null = adding, string = editing
 
   async function loadPlanilha() {
     if(!currentTeam) { await loadCurrentTeam(); }
@@ -3334,7 +3335,10 @@ async function checkUserRequest(){
         </div>
         <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding-top:8px;border-top:1px solid var(--border)">
           ${r.obs && r.obs !== '—' ? `<span style="font-size:12px;color:${r.alerta ? '#fbbf24' : 'var(--text-muted)'}">📌 ${escHtml(r.obs)}</span>` : '<span></span>'}
-          ${r.id ? `<button onclick="deletarProdutoPlanilha('${r.id}')" style="font-size:11px;padding:3px 9px;background:rgba(248,113,113,0.08);color:var(--red);border:1px solid rgba(248,113,113,0.25);border-radius:5px;cursor:pointer;flex-shrink:0">🗑 Remover</button>` : ''}
+          <div style="display:flex;gap:6px;flex-shrink:0">
+            ${r.id ? `<button onclick="editarProdutoPlanilha('${r.id}')" style="font-size:11px;padding:3px 9px;background:rgba(34,197,94,0.08);color:var(--green-400);border:1px solid rgba(34,197,94,0.25);border-radius:5px;cursor:pointer">✏️ Editar</button>` : ''}
+            ${r.id ? `<button onclick="deletarProdutoPlanilha('${r.id}')" style="font-size:11px;padding:3px 9px;background:rgba(248,113,113,0.08);color:var(--red);border:1px solid rgba(248,113,113,0.25);border-radius:5px;cursor:pointer">🗑 Remover</button>` : ''}
+          </div>
         </div>
       </div>`).join('');
   }
@@ -3352,13 +3356,55 @@ async function checkUserRequest(){
   }
 
   function abrirFormPlanilha() {
+    _planilhaEditId = null; // reset: mode = ADD
     const form = document.getElementById('planilha-form');
+    const title = document.getElementById('planilha-form-title');
+    const btn   = document.getElementById('planilha-form-btn');
+    if(title) title.textContent = '➕ Novo Produto';
+    if(btn)   btn.textContent  = '💾 Salvar Produto';
     if(form) { form.style.display = form.style.display === 'none' ? 'block' : 'none'; }
   }
 
-  function fecharFormPlanilha() {
+  function editarProdutoPlanilha(id) {
+    const produto = _planilhaCache.find(r => r.id === id);
+    if(!produto) { alert('Produto não encontrado.'); return; }
+
+    _planilhaEditId = id; // mode = EDIT
+
+    // Open form
     const form = document.getElementById('planilha-form');
-    if(form) form.style.display = 'none';
+    if(form) form.style.display = 'block';
+
+    // Update title and button
+    const title = document.getElementById('planilha-form-title');
+    const btn   = document.getElementById('planilha-form-btn');
+    if(title) title.textContent = '✏️ Editar Produto';
+    if(btn)   btn.textContent   = '💾 Atualizar Produto';
+
+    // Pre-fill all fields
+    const f = (id) => document.getElementById(id);
+    const stripRS = v => (v||'').replace(/^R\$\s*/,'').trim();
+    f('pf-sku').value    = produto.sku === '—' ? '' : (produto.sku || '');
+    f('pf-nome').value   = produto.nome || '';
+    f('pf-custo').value  = stripRS(produto.custo);
+    f('pf-mlc').value    = stripRS(produto.ml_c);
+    f('pf-mlp').value    = stripRS(produto.ml_p);
+    f('pf-shopee').value = stripRS(produto.shopee);
+    f('pf-margem').value = produto.margem_raw || 0;
+    f('pf-obs').value    = produto.obs === '—' ? '' : (produto.obs || '');
+
+    // Scroll to form
+    form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function fecharFormPlanilha() {
+    _planilhaEditId = null; // always reset edit mode
+    const form  = document.getElementById('planilha-form');
+    const title = document.getElementById('planilha-form-title');
+    const btn   = document.getElementById('planilha-form-btn');
+    if(form)  form.style.display = 'none';
+    if(title) title.textContent = '➕ Novo Produto';
+    if(btn)   btn.textContent   = '💾 Salvar Produto';
     ['pf-sku','pf-nome','pf-custo','pf-mlc','pf-mlp','pf-shopee','pf-margem','pf-obs'].forEach(id => {
       const el = document.getElementById(id); if(el) el.value = '';
     });
@@ -3366,34 +3412,51 @@ async function checkUserRequest(){
   }
 
   async function adicionarProdutoPlanilha() {
-    const sku    = document.getElementById('pf-sku')?.value.trim() || '—';
-    const nome   = document.getElementById('pf-nome')?.value.trim();
-    const custo  = document.getElementById('pf-custo')?.value.trim() || '—';
-    const mlc    = document.getElementById('pf-mlc')?.value.trim() || '—';
-    const mlp    = document.getElementById('pf-mlp')?.value.trim() || '—';
-    const shopee = document.getElementById('pf-shopee')?.value.trim() || '—';
+    const sku      = document.getElementById('pf-sku')?.value.trim() || '—';
+    const nome     = document.getElementById('pf-nome')?.value.trim();
+    const custo    = document.getElementById('pf-custo')?.value.trim() || '—';
+    const mlc      = document.getElementById('pf-mlc')?.value.trim() || '—';
+    const mlp      = document.getElementById('pf-mlp')?.value.trim() || '—';
+    const shopee   = document.getElementById('pf-shopee')?.value.trim() || '—';
     const margem_raw = parseInt(document.getElementById('pf-margem')?.value) || 0;
-    const obs    = document.getElementById('pf-obs')?.value.trim() || '—';
-    const msg    = document.getElementById('pf-msg');
+    const obs      = document.getElementById('pf-obs')?.value.trim() || '—';
+    const msg      = document.getElementById('pf-msg');
 
     if(!nome) {
       if(msg) { msg.style.color='var(--red)'; msg.textContent='Informe o nome do produto.'; }
       return;
     }
+    if(!currentTeam) {
+      await loadCurrentTeam();
+      if(!currentTeam) { if(msg){msg.style.color='var(--red)';msg.textContent='Você precisa estar em uma equipe.';}return; }
+    }
     if(msg) { msg.style.color='var(--text-muted)'; msg.textContent='Salvando...'; }
 
-    const fmt = v => (!v || v==='—') ? '—' : (v.startsWith('R$') ? v : 'R$ '+v);
-    if(!currentTeam) { await loadCurrentTeam(); if(!currentTeam) { if(msg){msg.style.color='var(--red)';msg.textContent='Você precisa estar em uma equipe.';}return;} }
-    const row = { team_id: currentTeam.id, sku, nome, custo:fmt(custo), ml_c:fmt(mlc), ml_p:fmt(mlp),
-                  shopee:fmt(shopee), margem_raw, obs, alerta:false };
+    const fmtVal = v => (!v || v==='—') ? '—' : (v.startsWith('R$') ? v : 'R$ '+v);
+    const row = {
+      team_id: currentTeam.id, sku, nome,
+      custo: fmtVal(custo), ml_c: fmtVal(mlc), ml_p: fmtVal(mlp),
+      shopee: fmtVal(shopee), margem_raw, obs, alerta: false
+    };
 
-    const {data, error} = await sb.from('planilha_produtos').insert(row).select().single();
-    if(error) {
-      if(msg) { msg.style.color='var(--red)'; msg.textContent='Erro: '+error.message; }
-      return;
+    if(_planilhaEditId) {
+      // MODO EDIÇÃO — atualiza registro existente
+      const {error} = await sb.from('planilha_produtos')
+        .update(row)
+        .eq('id', _planilhaEditId)
+        .eq('team_id', currentTeam.id);
+      if(error) { if(msg){msg.style.color='var(--red)';msg.textContent='Erro ao atualizar: '+error.message;} return; }
+      const idx2 = _planilhaCache.findIndex(r => r.id === _planilhaEditId);
+      if(idx2 >= 0) _planilhaCache[idx2] = {...row, id:_planilhaEditId, margem:margem_raw+'%'};
+      _planilhaEditId = null;
+      if(msg) { msg.style.color='var(--green-400)'; msg.textContent='✅ Produto atualizado!'; }
+    } else {
+      // MODO ADIÇÃO — insere novo registro
+      const {data, error} = await sb.from('planilha_produtos').insert(row).select().single();
+      if(error) { if(msg){msg.style.color='var(--red)';msg.textContent='Erro ao salvar: '+error.message;} return; }
+      _planilhaCache.push({...row, id:data.id, margem:margem_raw+'%'});
+      if(msg) { msg.style.color='var(--green-400)'; msg.textContent='✅ Produto salvo!'; }
     }
-    _planilhaCache.push({...row, id:data.id, margem:margem_raw+'%'});
-    if(msg) { msg.style.color='var(--green-400)'; msg.textContent='✅ Produto salvo!'; }
     setTimeout(() => { fecharFormPlanilha(); renderPlanilha(); }, 700);
   }
 
